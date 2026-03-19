@@ -1,0 +1,273 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
+  <defs>
+    <!-- Amber gradients -->
+    <linearGradient id="amber" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+    <linearGradient id="amberDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="amberLight" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#fcd34d"/>
+    </linearGradient>
+    <linearGradient id="steel" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+    <linearGradient id="steelLight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#475569"/>
+    </linearGradient>
+    <!-- Seal glow -->
+    <radialGradient id="sealGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="640" fill="#0f172a"/>
+
+  <!-- Subtle hex grid -->
+  <g opacity="0.04" stroke="#94a3b8" stroke-width="0.5" fill="none">
+    <!-- Row 1 -->
+    <polygon points="40,20 60,10 80,20 80,40 60,50 40,40"/>
+    <polygon points="80,20 100,10 120,20 120,40 100,50 80,40"/>
+    <polygon points="120,20 140,10 160,20 160,40 140,50 120,40"/>
+    <polygon points="160,20 180,10 200,20 200,40 180,50 160,40"/>
+    <polygon points="200,20 220,10 240,20 240,40 220,50 200,40"/>
+    <polygon points="240,20 260,10 280,20 280,40 260,50 240,40"/>
+    <polygon points="280,20 300,10 320,20 320,40 300,50 280,40"/>
+    <polygon points="320,20 340,10 360,20 360,40 340,50 320,40"/>
+    <polygon points="360,20 380,10 400,20 400,40 380,50 360,40"/>
+    <polygon points="400,20 420,10 440,20 440,40 420,50 400,40"/>
+    <polygon points="440,20 460,10 480,20 480,40 460,50 440,40"/>
+    <polygon points="480,20 500,10 520,20 520,40 500,50 480,40"/>
+    <polygon points="520,20 540,10 560,20 560,40 540,50 520,40"/>
+    <polygon points="560,20 580,10 600,20 600,40 580,50 560,40"/>
+    <polygon points="600,20 620,10 640,20 640,40 620,50 600,40"/>
+    <polygon points="640,20 660,10 680,20 680,40 660,50 640,40"/>
+    <polygon points="680,20 700,10 720,20 720,40 700,50 680,40"/>
+    <polygon points="720,20 740,10 760,20 760,40 740,50 720,40"/>
+    <polygon points="760,20 780,10 800,20 800,40 780,50 760,40"/>
+    <polygon points="800,20 820,10 840,20 840,40 820,50 800,40"/>
+    <polygon points="840,20 860,10 880,20 880,40 860,50 840,40"/>
+    <polygon points="880,20 900,10 920,20 920,40 900,50 880,40"/>
+    <polygon points="920,20 940,10 960,20 960,40 940,50 920,40"/>
+    <polygon points="960,20 980,10 1000,20 1000,40 980,50 960,40"/>
+    <polygon points="1000,20 1020,10 1040,20 1040,40 1020,50 1000,40"/>
+    <polygon points="1040,20 1060,10 1080,20 1080,40 1060,50 1040,40"/>
+    <polygon points="1080,20 1100,10 1120,20 1120,40 1100,50 1080,40"/>
+    <polygon points="1120,20 1140,10 1160,20 1160,40 1140,50 1120,40"/>
+    <polygon points="1160,20 1180,10 1200,20 1200,40 1180,50 1160,40"/>
+    <polygon points="1200,20 1220,10 1240,20 1240,40 1220,50 1200,40"/>
+    <!-- Row 2 (offset) -->
+    <polygon points="60,50 80,40 100,50 100,70 80,80 60,70"/>
+    <polygon points="100,50 120,40 140,50 140,70 120,80 100,70"/>
+    <polygon points="140,50 160,40 180,50 180,70 160,80 140,70"/>
+    <polygon points="180,50 200,40 220,50 220,70 200,80 180,70"/>
+    <polygon points="220,50 240,40 260,50 260,70 240,80 220,70"/>
+    <polygon points="260,50 280,40 300,50 300,70 280,80 260,70"/>
+    <polygon points="300,50 320,40 340,50 340,70 320,80 300,70"/>
+    <polygon points="340,50 360,40 380,50 380,70 360,80 340,70"/>
+    <polygon points="380,50 400,40 420,50 420,70 400,80 380,70"/>
+    <polygon points="420,50 440,40 460,50 460,70 440,80 420,70"/>
+    <polygon points="460,50 480,40 500,50 500,70 480,80 460,70"/>
+    <polygon points="500,50 520,40 540,50 540,70 520,80 500,70"/>
+    <polygon points="540,50 560,40 580,50 580,70 560,80 540,70"/>
+    <polygon points="580,50 600,40 620,50 620,70 600,80 580,70"/>
+    <polygon points="620,50 640,40 660,50 660,70 640,80 620,70"/>
+    <polygon points="660,50 680,40 700,50 700,70 680,80 660,70"/>
+    <polygon points="700,50 720,40 740,50 740,70 720,80 700,70"/>
+    <polygon points="740,50 760,40 780,50 780,70 760,80 740,70"/>
+    <polygon points="780,50 800,40 820,50 820,70 800,80 780,70"/>
+    <polygon points="820,50 840,40 860,50 860,70 840,80 820,70"/>
+    <polygon points="860,50 880,40 900,50 900,70 880,80 860,70"/>
+    <polygon points="900,50 920,40 940,50 940,70 920,80 900,70"/>
+    <polygon points="940,50 960,40 980,50 980,70 960,80 940,70"/>
+    <polygon points="980,50 1000,40 1020,50 1020,70 1000,80 980,70"/>
+    <polygon points="1020,50 1040,40 1060,50 1060,70 1040,80 1020,70"/>
+    <polygon points="1060,50 1080,40 1100,50 1100,70 1080,80 1060,70"/>
+    <polygon points="1100,50 1120,40 1140,50 1140,70 1120,80 1100,70"/>
+    <polygon points="1140,50 1160,40 1180,50 1180,70 1160,80 1140,70"/>
+    <polygon points="1180,50 1200,40 1220,50 1220,70 1200,80 1180,70"/>
+    <!-- Row 3 -->
+    <polygon points="40,80 60,70 80,80 80,100 60,110 40,100"/>
+    <polygon points="80,80 100,70 120,80 120,100 100,110 80,100"/>
+    <polygon points="120,80 140,70 160,80 160,100 140,110 120,100"/>
+    <polygon points="160,80 180,70 200,80 200,100 180,110 160,100"/>
+    <polygon points="200,80 220,70 240,80 240,100 220,110 200,100"/>
+    <polygon points="240,80 260,70 280,80 280,100 260,110 240,100"/>
+    <polygon points="280,80 300,70 320,80 320,100 300,110 280,100"/>
+    <polygon points="320,80 340,70 360,80 360,100 340,110 320,100"/>
+    <polygon points="360,80 380,70 400,80 400,100 380,110 360,100"/>
+    <polygon points="400,80 420,70 440,80 440,100 420,110 400,100"/>
+    <polygon points="440,80 460,70 480,80 480,100 460,110 440,100"/>
+    <polygon points="480,80 500,70 520,80 520,100 500,110 480,100"/>
+    <polygon points="520,80 540,70 560,80 560,100 540,110 520,100"/>
+    <polygon points="560,80 580,70 600,80 600,100 580,110 560,100"/>
+    <polygon points="600,80 620,70 640,80 640,100 620,110 600,100"/>
+    <polygon points="640,80 660,70 680,80 680,100 660,110 640,100"/>
+    <polygon points="680,80 700,70 720,80 720,100 700,110 680,100"/>
+    <polygon points="720,80 740,70 760,80 760,100 740,110 720,100"/>
+    <polygon points="760,80 780,70 800,80 800,100 780,110 760,100"/>
+    <polygon points="800,80 820,70 840,80 840,100 820,110 800,100"/>
+    <polygon points="840,80 860,70 880,80 880,100 860,110 840,100"/>
+    <polygon points="880,80 900,70 920,80 920,100 900,110 880,100"/>
+    <polygon points="920,80 940,70 960,80 960,100 940,110 920,100"/>
+    <polygon points="960,80 980,70 1000,80 1000,100 980,110 960,100"/>
+    <polygon points="1000,80 1020,70 1040,80 1040,100 1020,110 1000,100"/>
+    <polygon points="1040,80 1060,70 1080,80 1080,100 1060,110 1040,100"/>
+    <polygon points="1080,80 1100,70 1120,80 1120,100 1100,110 1080,100"/>
+    <polygon points="1120,80 1140,70 1160,80 1160,100 1140,110 1120,100"/>
+    <polygon points="1160,80 1180,70 1200,80 1200,100 1180,110 1160,100"/>
+    <polygon points="1200,80 1220,70 1240,80 1240,100 1220,110 1200,100"/>
+    <!-- Rows 4-10 (sparser) -->
+    <polygon points="60,110 80,100 100,110 100,130 80,140 60,130"/>
+    <polygon points="140,110 160,100 180,110 180,130 160,140 140,130"/>
+    <polygon points="220,110 240,100 260,110 260,130 240,140 220,130"/>
+    <polygon points="300,110 320,100 340,110 340,130 320,140 300,130"/>
+    <polygon points="380,110 400,100 420,110 420,130 400,140 380,130"/>
+    <polygon points="460,110 480,100 500,110 500,130 480,140 460,130"/>
+    <polygon points="540,110 560,100 580,110 580,130 560,140 540,130"/>
+    <polygon points="620,110 640,100 660,110 660,130 640,140 620,130"/>
+    <polygon points="700,110 720,100 740,110 740,130 720,140 700,130"/>
+    <polygon points="780,110 800,100 820,110 820,130 800,140 780,130"/>
+    <polygon points="860,110 880,100 900,110 900,130 880,140 860,130"/>
+    <polygon points="940,110 960,100 980,110 980,130 960,140 940,130"/>
+    <polygon points="1020,110 1040,100 1060,110 1060,130 1040,140 1020,130"/>
+    <polygon points="1100,110 1120,100 1140,110 1140,130 1120,140 1100,130"/>
+    <polygon points="1180,110 1200,100 1220,110 1220,130 1200,140 1180,130"/>
+    <!-- Sparse middle rows -->
+    <polygon points="40,140 60,130 80,140 80,160 60,170 40,160"/>
+    <polygon points="160,140 180,130 200,140 200,160 180,170 160,160"/>
+    <polygon points="280,140 300,130 320,140 320,160 300,170 280,160"/>
+    <polygon points="400,140 420,130 440,140 440,160 420,170 400,160"/>
+    <polygon points="520,140 540,130 560,140 560,160 540,170 520,160"/>
+    <polygon points="640,140 660,130 680,140 680,160 660,170 640,160"/>
+    <polygon points="760,140 780,130 800,140 800,160 780,170 760,160"/>
+    <polygon points="880,140 900,130 920,140 920,160 900,170 880,160"/>
+    <polygon points="1000,140 1020,130 1040,140 1040,160 1020,170 1000,160"/>
+    <polygon points="1120,140 1140,130 1160,140 1160,160 1140,170 1120,160"/>
+    <polygon points="1240,140 1260,130 1280,140 1280,160 1260,170 1240,160"/>
+    <!-- Bottom sparse rows -->
+    <polygon points="60,470 80,460 100,470 100,490 80,500 60,490"/>
+    <polygon points="180,470 200,460 220,470 220,490 200,500 180,490"/>
+    <polygon points="300,470 320,460 340,470 340,490 320,500 300,490"/>
+    <polygon points="420,470 440,460 460,470 460,490 440,500 420,490"/>
+    <polygon points="540,470 560,460 580,470 580,490 560,500 540,490"/>
+    <polygon points="660,470 680,460 700,470 700,490 680,500 660,490"/>
+    <polygon points="780,470 800,460 820,470 820,490 800,500 780,490"/>
+    <polygon points="900,470 920,460 940,470 940,490 920,500 900,490"/>
+    <polygon points="1020,470 1040,460 1060,470 1060,490 1040,500 1020,490"/>
+    <polygon points="1140,470 1160,460 1180,470 1180,490 1160,500 1140,490"/>
+    <polygon points="40,500 60,490 80,500 80,520 60,530 40,520"/>
+    <polygon points="160,500 180,490 200,500 200,520 180,530 160,520"/>
+    <polygon points="280,500 300,490 320,500 320,520 300,530 280,520"/>
+    <polygon points="400,500 420,490 440,500 440,520 420,530 400,520"/>
+    <polygon points="520,500 540,490 560,500 560,520 540,530 520,520"/>
+    <polygon points="640,500 660,490 680,500 680,520 660,530 640,520"/>
+    <polygon points="760,500 780,490 800,500 800,520 780,530 760,520"/>
+    <polygon points="880,500 900,490 920,500 920,520 900,530 880,520"/>
+    <polygon points="1000,500 1020,490 1040,500 1040,520 1020,530 1000,520"/>
+    <polygon points="1120,500 1140,490 1160,500 1160,520 1140,530 1120,520"/>
+    <polygon points="60,530 80,520 100,530 100,550 80,560 60,550"/>
+    <polygon points="180,530 200,520 220,530 220,550 200,560 180,550"/>
+    <polygon points="300,530 320,520 340,530 340,550 320,560 300,550"/>
+    <polygon points="420,530 440,520 460,530 460,550 440,560 420,550"/>
+    <polygon points="540,530 560,520 580,530 580,550 560,560 540,550"/>
+    <polygon points="660,530 680,520 700,530 700,550 680,560 660,550"/>
+    <polygon points="780,530 800,520 820,530 820,550 800,560 780,550"/>
+    <polygon points="900,530 920,520 940,530 940,550 920,560 900,550"/>
+    <polygon points="1020,530 1040,520 1060,530 1060,550 1040,560 1020,550"/>
+    <polygon points="1140,530 1160,520 1180,530 1180,550 1160,560 1140,550"/>
+    <polygon points="40,560 60,550 80,560 80,580 60,590 40,580"/>
+    <polygon points="160,560 180,550 200,560 200,580 180,590 160,580"/>
+    <polygon points="280,560 300,550 320,560 320,580 300,590 280,580"/>
+    <polygon points="400,560 420,550 440,560 440,580 420,590 400,580"/>
+    <polygon points="520,560 540,550 560,560 560,580 540,590 520,580"/>
+    <polygon points="640,560 660,550 680,560 680,580 660,590 640,580"/>
+    <polygon points="760,560 780,550 800,560 800,580 780,590 760,580"/>
+    <polygon points="880,560 900,550 920,560 920,580 900,590 880,580"/>
+    <polygon points="1000,560 1020,550 1040,560 1040,580 1020,590 1000,580"/>
+    <polygon points="1120,560 1140,550 1160,560 1160,580 1140,590 1120,580"/>
+    <polygon points="60,590 80,580 100,590 100,610 80,620 60,610"/>
+    <polygon points="180,590 200,580 220,590 220,610 200,620 180,610"/>
+    <polygon points="300,590 320,580 340,590 340,610 320,620 300,610"/>
+    <polygon points="420,590 440,580 460,590 460,610 440,620 420,610"/>
+    <polygon points="540,590 560,580 580,590 580,610 560,620 540,610"/>
+    <polygon points="660,590 680,580 700,590 700,610 680,620 660,610"/>
+    <polygon points="780,590 800,580 820,590 820,610 800,620 780,610"/>
+    <polygon points="900,590 920,580 940,590 940,610 920,620 900,610"/>
+    <polygon points="1020,590 1040,580 1060,590 1060,610 1040,620 1020,610"/>
+    <polygon points="1140,590 1160,580 1180,590 1180,610 1160,620 1140,610"/>
+  </g>
+
+  <!-- Glow behind seal -->
+  <circle cx="310" cy="310" r="180" fill="url(#sealGlow)"/>
+
+  <!-- Attestation seal — geometric rosette with checkmark -->
+  <g transform="translate(310, 310)">
+    <!-- Outer scalloped ring (12-point star/seal shape) -->
+    <polygon points="0,-140 36,-120 54,-148 90,-108 118,-128 128,-82 158,-88 148,-40 178,-30 148,10 172,36 132,52 144,86 100,82 96,118 56,98 38,130 8,98 -22,130 -36,98 -76,118 -80,82 -124,86 -112,52 -152,36 -128,10 -158,-30 -128,-40 -138,-88 -108,-82 -98,-128 -70,-108 -34,-148 -16,-120"
+      fill="url(#amberDark)" opacity="0.9"/>
+
+    <!-- Inner seal disc -->
+    <circle cx="0" cy="0" r="95" fill="#1e293b" stroke="url(#amber)" stroke-width="3"/>
+
+    <!-- Inner ring detail -->
+    <circle cx="0" cy="0" r="80" fill="none" stroke="#d97706" stroke-width="1" opacity="0.5"/>
+    <circle cx="0" cy="0" r="75" fill="none" stroke="#d97706" stroke-width="0.5" opacity="0.3"/>
+
+    <!-- 31000 text arc at top inside the ring -->
+    <text x="0" y="-52" text-anchor="middle" fill="#f59e0b" font-family="'SF Mono', 'Fira Code', 'JetBrains Mono', monospace" font-size="16" font-weight="bold" letter-spacing="4">31000</text>
+
+    <!-- Checkmark — bold, geometric -->
+    <polyline points="-30,5 -8,30 35,-25" fill="none" stroke="url(#amberLight)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- NIP-VA text at bottom inside the ring -->
+    <text x="0" y="62" text-anchor="middle" fill="#94a3b8" font-family="'SF Mono', 'Fira Code', 'JetBrains Mono', monospace" font-size="12" letter-spacing="3" opacity="0.7">NIP-VA</text>
+  </g>
+
+  <!-- Floating attestation fragments / event tags -->
+  <g opacity="0.3" font-family="'SF Mono', 'Fira Code', monospace" font-size="10" fill="#64748b">
+    <!-- Scattered tag labels suggesting Nostr event structure -->
+    <text x="120" y="160" transform="rotate(-12, 120, 160)">["d", "skill:typescript"]</text>
+    <text x="80" y="440" transform="rotate(5, 80, 440)">["p", "ab12...ef"]</text>
+    <text x="400" y="140" transform="rotate(-3, 400, 140)">["s", "active"]</text>
+    <text x="140" y="520" transform="rotate(8, 140, 520)">["type", "endorsement"]</text>
+    <text x="380" y="480" transform="rotate(-6, 380, 480)">["proof", "https://..."]</text>
+  </g>
+
+  <!-- Signal rings emanating from seal -->
+  <g fill="none" stroke="#fbbf24" stroke-linecap="round">
+    <circle cx="310" cy="310" r="155" stroke-width="1.5" opacity="0.15"/>
+    <circle cx="310" cy="310" r="175" stroke-width="1" opacity="0.08"/>
+    <circle cx="310" cy="310" r="195" stroke-width="0.5" opacity="0.04"/>
+  </g>
+
+  <!-- Divider -->
+  <g transform="translate(580, 220)">
+    <line x1="0" y1="0" x2="0" y2="200" stroke="#334155" stroke-width="1" opacity="0.5"/>
+    <line x1="6" y1="0" x2="6" y2="200" stroke="#334155" stroke-width="1" opacity="0.5"/>
+    <!-- Checkmark badge icon between divider lines -->
+    <g transform="translate(-5, 85)" fill="none" stroke="#64748b" stroke-width="1.5">
+      <rect x="0" y="4" width="16" height="14" rx="2" fill="#1e293b" stroke="#64748b"/>
+      <polyline points="4,11 7,15 12,8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+
+  <!-- Title: nostr-attestations -->
+  <text x="660" y="305" fill="#f8fafc" font-family="'SF Mono', 'Fira Code', 'JetBrains Mono', 'Menlo', monospace" font-size="40" font-weight="bold">nostr-</text>
+  <text x="660" y="352" fill="#f8fafc" font-family="'SF Mono', 'Fira Code', 'JetBrains Mono', 'Menlo', monospace" font-size="40" font-weight="bold">attestations</text>
+
+  <!-- Tagline -->
+  <text x="660" y="390" fill="#94a3b8" font-family="'Inter', -apple-system, 'Segoe UI', sans-serif" font-size="18">one kind for all attestations.</text>
+
+  <!-- Keyword ticker -->
+  <text x="40" y="622" fill="#94a3b8" opacity="0.06" font-family="'SF Mono', 'Fira Code', monospace" font-size="12" letter-spacing="2">nostr  kind-31000  attestation  endorsement  credential  verification  builder  parser  validator  test-vectors  NIP-VA  addressable  revocation  provenance  zero-dependency  typescript</text>
+
+</svg>
