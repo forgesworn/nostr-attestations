@@ -1,0 +1,74 @@
+# nostr-attestations
+
+> One Nostr event kind for all attestations — credentials, endorsements,
+> vouches, provenance, licensing, and trust. Differentiated by a `type` tag,
+> not by inventing new event kinds.
+
+nostr-attestations is a zero-dependency TypeScript library implementing NIP-VA
+(kind 31000 Verifiable Attestations). It provides builders, parsers, validators,
+and frozen test vectors for creating and consuming attestation events on Nostr.
+
+No relay client, no signing library, no crypto — bring your own. Works with
+nostr-tools, any Nostr SDK, or bare WebSocket code.
+
+## Getting Started
+
+```
+npm install nostr-attestations
+```
+
+```typescript
+import { createAttestation, TYPES } from 'nostr-attestations'
+
+// Create an unsigned attestation event template
+const event = createAttestation({
+  type: TYPES.CREDENTIAL,
+  identifier: '<subject-pubkey>',
+  subject: '<subject-pubkey>',
+  summary: 'Professional credential verified',
+  expiration: 1735689600,
+  tags: [['profession', 'attorney'], ['jurisdiction', 'US-NY']],
+  content: JSON.stringify({ proof: '...' }),
+})
+// => { kind: 31000, tags: [...], content: '...' }
+// Sign with your preferred library and publish to relays
+```
+
+## Key Concepts
+
+- **One kind, many types** — kind 31000 with a `type` tag. New attestation types need zero protocol changes.
+- **Builders** — `createAttestation()` and `createRevocation()` return unsigned `EventTemplate` objects.
+- **Parsers** — `parseAttestation()` extracts typed data from any `NostrEvent`. `isRevoked()` checks revocation status.
+- **Validators** — `validateAttestation()` checks structural correctness (required tags, d-tag format).
+- **Filters** — `attestationFilter()` and `revocationFilter()` build Nostr relay query filters.
+- **D-tag convention** — `<type>:<identifier>` ensures one attestation per publisher per type per subject.
+- **Revocation** — re-publish with `["s", "revoked"]`. Addressable event semantics handle the rest.
+- **Application profiles** — applications define their own types, tags, and content schemas.
+
+## API Surface
+
+- `createAttestation(params)` — build unsigned attestation event
+- `createRevocation(params)` — build unsigned revocation event
+- `parseAttestation(event)` — parse NostrEvent into typed Attestation
+- `isRevoked(event)` — check if event is a revoked attestation
+- `validateAttestation(event)` — structural validation
+- `buildDTag(type, identifier)` — construct d-tag string
+- `parseDTag(dTag)` — parse d-tag into type and identifier
+- `attestationFilter(params)` — build relay query filter
+- `revocationFilter(type, identifier)` — build revocation check filter
+- `ATTESTATION_KIND` — 31000
+- `TYPES` — well-known type constants (credential, endorsement, vouch, verifier, provenance)
+
+## Use Cases
+
+- Identity verification (credentials, vouches, verifier registration)
+- Professional licensing (regulatory credentials with jurisdiction tags)
+- Product provenance (authenticity attestations with chain-of-custody)
+- Peer endorsement (bilateral trust relationships)
+- Service reputation (provider endorsements across marketplaces)
+
+## Optional
+
+- [NIP-VA.md](https://github.com/forgesworn/nostr-attestations/blob/main/NIP-VA.md): full NIP specification
+- [README](https://github.com/forgesworn/nostr-attestations/blob/main/README.md): full API reference
+- [vectors/](https://github.com/forgesworn/nostr-attestations/tree/main/vectors): 10 frozen conformance test vectors
