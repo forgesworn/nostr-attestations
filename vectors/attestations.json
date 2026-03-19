@@ -1,0 +1,398 @@
+[
+  {
+    "name": "simple-credential",
+    "description": "Third-party credential attestation with expiration and profession tags",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        ["d", "credential:def456"],
+        ["type", "credential"],
+        ["p", "def456"],
+        ["expiration", "1735689600"],
+        ["summary", "Professional credential verified"],
+        ["profession", "attorney"],
+        ["jurisdiction", "US-NY"]
+      ],
+      "content": "{\"proof\":\"ring-sig-abc\"}",
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sig": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "credential",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "def456",
+      "subject": "def456",
+      "summary": "Professional credential verified",
+      "expiration": 1735689600,
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        ["d", "credential:def456"],
+        ["type", "credential"],
+        ["p", "def456"],
+        ["expiration", "1735689600"],
+        ["summary", "Professional credential verified"],
+        ["profession", "attorney"],
+        ["jurisdiction", "US-NY"]
+      ],
+      "content": "{\"proof\":\"ring-sig-abc\"}"
+    },
+    "valid": true
+  },
+  {
+    "name": "self-attestation",
+    "description": "Verifier registration with no p tag — self-attestation",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        ["d", "verifier:notary"],
+        ["type", "verifier"],
+        ["summary", "Identity verification service"]
+      ],
+      "content": "",
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sig": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "verifier",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "notary",
+      "subject": null,
+      "summary": "Identity verification service",
+      "expiration": null,
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        ["d", "verifier:notary"],
+        ["type", "verifier"],
+        ["summary", "Identity verification service"]
+      ],
+      "content": ""
+    },
+    "valid": true
+  },
+  {
+    "name": "endorsement-with-app-tags",
+    "description": "Endorsement with context and confidence application-specific tags",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        ["d", "endorsement:def456"],
+        ["type", "endorsement"],
+        ["p", "def456"],
+        ["summary", "Reliable provider"],
+        ["context", "plumbing"],
+        ["confidence", "high"]
+      ],
+      "content": "",
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sig": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "endorsement",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "def456",
+      "subject": "def456",
+      "summary": "Reliable provider",
+      "expiration": null,
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        ["d", "endorsement:def456"],
+        ["type", "endorsement"],
+        ["p", "def456"],
+        ["summary", "Reliable provider"],
+        ["context", "plumbing"],
+        ["confidence", "high"]
+      ],
+      "content": ""
+    },
+    "valid": true
+  },
+  {
+    "name": "provenance-with-event-ref",
+    "description": "Provenance attestation with e tag referencing the original event",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        ["d", "provenance:evt123"],
+        ["type", "provenance"],
+        ["e", "evt123"],
+        ["summary", "Authenticity verified"],
+        ["origin", "Sheffield, UK"],
+        ["method", "physical-inspection"]
+      ],
+      "content": "{\"chain_of_custody\":[\"maker\",\"distributor\",\"retailer\"]}",
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sig": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "provenance",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "evt123",
+      "subject": null,
+      "summary": "Authenticity verified",
+      "expiration": null,
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        ["d", "provenance:evt123"],
+        ["type", "provenance"],
+        ["e", "evt123"],
+        ["summary", "Authenticity verified"],
+        ["origin", "Sheffield, UK"],
+        ["method", "physical-inspection"]
+      ],
+      "content": "{\"chain_of_custody\":[\"maker\",\"distributor\",\"retailer\"]}"
+    },
+    "valid": true
+  },
+  {
+    "name": "revocation-with-reason",
+    "description": "Revoked credential with reason tag",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        ["d", "credential:def456"],
+        ["type", "credential"],
+        ["p", "def456"],
+        ["s", "revoked"],
+        ["reason", "license-expired"],
+        ["summary", "Credential revoked"]
+      ],
+      "content": "",
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sig": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "credential",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "def456",
+      "subject": "def456",
+      "summary": "Credential revoked",
+      "expiration": null,
+      "revoked": true,
+      "reason": "license-expired",
+      "tags": [
+        ["d", "credential:def456"],
+        ["type", "credential"],
+        ["p", "def456"],
+        ["s", "revoked"],
+        ["reason", "license-expired"],
+        ["summary", "Credential revoked"]
+      ],
+      "content": ""
+    },
+    "valid": true
+  },
+  {
+    "name": "revocation-with-effective",
+    "description": "Revocation with effective timestamp indicating when revocation takes effect",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        ["d", "credential:ghi789"],
+        ["type", "credential"],
+        ["p", "ghi789"],
+        ["s", "revoked"],
+        ["reason", "compromised"],
+        ["effective", "1704067200"]
+      ],
+      "content": "",
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sig": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "credential",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "ghi789",
+      "subject": "ghi789",
+      "summary": null,
+      "expiration": null,
+      "revoked": true,
+      "reason": "compromised",
+      "tags": [
+        ["d", "credential:ghi789"],
+        ["type", "credential"],
+        ["p", "ghi789"],
+        ["s", "revoked"],
+        ["reason", "compromised"],
+        ["effective", "1704067200"]
+      ],
+      "content": ""
+    },
+    "valid": true
+  },
+  {
+    "name": "attestation-with-expiration",
+    "description": "NIP-40 expiration tag parsed as a number",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        ["d", "vouch:def456"],
+        ["type", "vouch"],
+        ["p", "def456"],
+        ["expiration", "1735689600"]
+      ],
+      "content": "",
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sig": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "vouch",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "def456",
+      "subject": "def456",
+      "summary": null,
+      "expiration": 1735689600,
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        ["d", "vouch:def456"],
+        ["type", "vouch"],
+        ["p", "def456"],
+        ["expiration", "1735689600"]
+      ],
+      "content": ""
+    },
+    "valid": true
+  },
+  {
+    "name": "attestation-with-labels",
+    "description": "NIP-32 L/l namespace label tags alongside standard attestation tags",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        ["d", "credential:def456"],
+        ["type", "credential"],
+        ["p", "def456"],
+        ["L", "example.com/identity"],
+        ["l", "verified", "example.com/identity"]
+      ],
+      "content": "",
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sig": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "credential",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "def456",
+      "subject": "def456",
+      "summary": null,
+      "expiration": null,
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        ["d", "credential:def456"],
+        ["type", "credential"],
+        ["p", "def456"],
+        ["L", "example.com/identity"],
+        ["l", "verified", "example.com/identity"]
+      ],
+      "content": ""
+    },
+    "valid": true
+  },
+  {
+    "name": "minimal-attestation",
+    "description": "Only required tags — d tag has no colon so identifier is null",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        ["d", "credential"],
+        ["type", "credential"]
+      ],
+      "content": "",
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sig": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "credential",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": null,
+      "subject": null,
+      "summary": null,
+      "expiration": null,
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        ["d", "credential"],
+        ["type", "credential"]
+      ],
+      "content": ""
+    },
+    "valid": true
+  },
+  {
+    "name": "attestation-with-json-content",
+    "description": "Structured proof payload in content field",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        ["d", "credential:def456"],
+        ["type", "credential"],
+        ["p", "def456"]
+      ],
+      "content": "{\"signatures\":[{\"type\":\"schnorr\",\"value\":\"deadbeef\"}],\"merkle_root\":\"cafebabe\"}",
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sig": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "credential",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "def456",
+      "subject": "def456",
+      "summary": null,
+      "expiration": null,
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        ["d", "credential:def456"],
+        ["type", "credential"],
+        ["p", "def456"]
+      ],
+      "content": "{\"signatures\":[{\"type\":\"schnorr\",\"value\":\"deadbeef\"}],\"merkle_root\":\"cafebabe\"}"
+    },
+    "valid": true
+  }
+]
