@@ -1,6 +1,6 @@
 {
   "name": "nostr-attestations",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Builders, parsers, and validators for NIP-VA (kind 31000) Verifiable Attestation events on Nostr.",
   "type": "module",
   "main": "./dist/index.js",

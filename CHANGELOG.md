@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/forgesworn/nostr-attestations/compare/v1.0.0...v1.0.1) (2026-03-20)
+
+
+### Bug Fixes
+
+* correct nak commands in verification walkthrough ([845b88a](https://github.com/forgesworn/nostr-attestations/commit/845b88a5b07a346dc9661e3c8909b26b47fd97b0))
+* remove unindexed tag filter from endorsement query ([8fe314d](https://github.com/forgesworn/nostr-attestations/commit/8fe314dd75a7a6611db2029ab76478f6d1935bc8))
+
 # 1.0.0 (2026-03-20)
 
 
