@@ -55,8 +55,20 @@ describe('createAttestation', () => {
     expect(event.content).toBe('{"proof":"..."}')
   })
 
+  it('throws if type is empty', () => {
+    expect(() => createAttestation({ type: '' })).toThrow('type must not be empty')
+  })
+
   it('throws if type contains colons', () => {
     expect(() => createAttestation({ type: 'foo:bar' })).toThrow('must not contain colons')
+  })
+
+  it('throws if expiration is NaN', () => {
+    expect(() => createAttestation({ type: 'credential', expiration: NaN })).toThrow('expiration must be a finite number')
+  })
+
+  it('throws if expiration is Infinity', () => {
+    expect(() => createAttestation({ type: 'credential', expiration: Infinity })).toThrow('expiration must be a finite number')
   })
 
   it('defaults identifier to subject when subject provided but no identifier', () => {
@@ -90,6 +102,10 @@ describe('createRevocation', () => {
       effective: 1704067200,
     })
     expect(event.tags).toContainEqual(['effective', '1704067200'])
+  })
+
+  it('throws if effective is NaN', () => {
+    expect(() => createRevocation({ type: 'credential', identifier: 'abc', effective: NaN })).toThrow('effective must be a finite number')
   })
 
   it('adds p tag when subject provided', () => {

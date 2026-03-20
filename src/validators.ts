@@ -19,8 +19,10 @@ export function validateAttestation(event: NostrEvent): ValidationResult {
   }
 
   const type = findTag(event.tags, 'type')
-  if (!type) {
+  if (type == null) {
     errors.push('missing required type tag')
+  } else if (!type.trim()) {
+    errors.push('type tag must not be empty')
   } else if (type.includes(':')) {
     errors.push('type must not contain colons')
   }

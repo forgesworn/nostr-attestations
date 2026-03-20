@@ -7,6 +7,7 @@ import type { AttestationParams, RevocationParams, EventTemplate } from './types
  * The caller is responsible for signing (adding pubkey, id, sig, created_at).
  */
 export function createAttestation(params: AttestationParams): EventTemplate {
+  if (!params.type) throw new Error('type must not be empty')
   if (params.type.includes(':')) throw new Error('type must not contain colons')
 
   const tags: string[][] = []
@@ -30,6 +31,7 @@ export function createAttestation(params: AttestationParams): EventTemplate {
   }
 
   if (params.expiration != null) {
+    if (!Number.isFinite(params.expiration)) throw new Error('expiration must be a finite number')
     tags.push(['expiration', String(params.expiration)])
   }
 
@@ -66,6 +68,7 @@ export function createRevocation(params: RevocationParams): EventTemplate {
   }
 
   if (params.effective != null) {
+    if (!Number.isFinite(params.effective)) throw new Error('effective must be a finite number')
     tags.push(['effective', String(params.effective)])
   }
 

@@ -50,6 +50,15 @@ describe('validateAttestation', () => {
     expect(result.errors).toContain('missing required type tag')
   })
 
+  it('fails when type tag is empty string', () => {
+    const result = validateAttestation(makeEvent([
+      ['d', ''],
+      ['type', ''],
+    ]))
+    expect(result.valid).toBe(false)
+    expect(result.errors).toContain('type tag must not be empty')
+  })
+
   it('fails when type contains colons', () => {
     const result = validateAttestation(makeEvent([
       ['d', 'foo:bar:abc'],
