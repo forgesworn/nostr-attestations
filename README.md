@@ -139,19 +139,19 @@ All verification uses [nak](https://github.com/fiatjaf/nak) (the Nostr Army Knif
 **2. Nostr → GitHub** — the repo announcement points back here:
 
 ```bash
-nak req -q -k 30617 \
+nak req -k 30617 \
   -a $(nak decode npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2) \
-  -t d=nostr-attestations \
-  wss://relay.damus.io 2>/dev/null
+  -d nostr-attestations \
+  wss://relay.damus.io
 # Look for the "web" tag → github.com/forgesworn/nostr-attestations
 ```
 
 **3. Verify the authorship claim** — signed by the same key:
 
 ```bash
-nak req -q -k 31000 \
+nak req -k 31000 \
   -a $(nak decode npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2) \
-  -t d=authorship:nostr-attestations \
+  -d authorship:nostr-attestations \
   wss://relay.damus.io 2>/dev/null | nak verify \
   && echo "✓ Signature valid"
 ```
@@ -159,9 +159,10 @@ nak req -q -k 31000 \
 **4. Check for third-party endorsements:**
 
 ```bash
-nak req -q -k 31000 \
+nak req -k 31000 \
+  -t type=endorsement \
   -t a=30617:da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd:nostr-attestations \
-  wss://relay.damus.io 2>/dev/null
+  wss://relay.damus.io
 ```
 
 Same npub on both sides — you'd need to control both GitHub and the private key to fake it. Third-party endorsements add independent signatures that can't be faked by one person.
@@ -170,10 +171,10 @@ Same npub on both sides — you'd need to control both GitHub and the private ke
 
 ```bash
 nak event -k 31000 \
-  --sec <your-nsec> \
-  -t d=endorsement:da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd \
+  --prompt-sec \
+  -d endorsement:da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd \
   -t type=endorsement \
-  -t p=da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd \
+  -p da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd \
   -t a=30617:da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd:nostr-attestations \
   -t summary="Reviewed and endorsed nostr-attestations" \
   wss://relay.damus.io wss://nos.lol wss://relay.nostr.band
