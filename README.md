@@ -128,7 +128,9 @@ const attestation = parseAttestation(event)
 
 This library's authorship is claimed on Nostr using the very protocol it implements — NIP-VA eating its own dog food.
 
-A self-attestation alone only proves that the holder of a private key *claims* authorship — not that the claim is true. The real value comes from **third-party attestations**: other pubkeys independently publishing `type: endorsement` events that reference this repo. Each endorsement is an additional signature from a different keypair. Stack enough and you have a web of trust — not one person saying "I made this" but multiple people saying "yes, they made this."
+A self-attestation alone only proves that the holder of a private key *claims* authorship — not that the claim is true. The real value comes from **third-party attestations**: other pubkeys independently publishing `type: endorsement` events that reference this repo.
+
+But counting endorsements isn't enough either — anyone can create 50 throwaway npubs and endorse themselves. What matters is **who** endorses, not how many. A single endorsement from a pubkey with a verified NIP-05 domain, a history of notes, and followers you recognise is worth more than a thousand from anonymous keys. This is a web of trust, not a vote count. When verifying, ask: do I know this endorser? Do people I trust follow them? That's how you resist Sybil attacks without a centralised authority.
 
 All verification uses [nak](https://github.com/fiatjaf/nak) (the Nostr Army Knife). Install with `go install github.com/fiatjaf/nak@latest` or `brew install fiatjaf/tap/nak`.
 
