@@ -2,6 +2,8 @@
 
 One Nostr event kind for all attestations — credentials, endorsements, vouches, provenance, licensing, and trust.
 
+**Nostr:** [`npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2`](https://njump.me/npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2)
+
 ## Install
 
 ```
