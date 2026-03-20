@@ -51,7 +51,7 @@ const revocation = createRevocation({
 // Publish — addressable event semantics replace the original
 
 // Check if a fetched event is revoked
-const revoked = isRevoked(event) // true if ["s", "revoked"] tag present
+const revoked = isRevoked(event) // true if ["status", "revoked"] tag present
 ```
 
 ## Parsing
@@ -90,7 +90,7 @@ const attestation = parseAttestation(event)
 | Function | Signature | Returns |
 |----------|-----------|---------|
 | `parseAttestation` | `(event: NostrEvent) => Attestation` | Typed attestation data |
-| `isRevoked` | `(event: NostrEvent) => boolean` | True if event has `["s", "revoked"]` |
+| `isRevoked` | `(event: NostrEvent) => boolean` | True if event has `["status", "revoked"]` |
 
 ### Validators
 
@@ -112,7 +112,7 @@ const attestation = parseAttestation(event)
 | Export | Value | Description |
 |--------|-------|-------------|
 | `ATTESTATION_KIND` | `31000` | NIP-VA event kind |
-| `TYPES` | `{ CREDENTIAL, ENDORSEMENT, VOUCH, VERIFIER, PROVENANCE }` | Well-known type strings |
+| `TYPES` | `{ CREDENTIAL, ENDORSEMENT, VOUCH, VERIFIER, PROVENANCE }` | Well-known type constants |
 
 ### Types
 

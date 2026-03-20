@@ -11,5 +11,4 @@ export const TYPES = {
   VOUCH: 'vouch',
   VERIFIER: 'verifier',
   PROVENANCE: 'provenance',
-  REVOCATION: 'revocation',
 } as const

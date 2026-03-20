@@ -52,12 +52,15 @@ Kind `31000` (Verifiable Attestation) -- an addressable event per [NIP-01](01.md
 
 #### Optional
 
-| Tag | Value                    | Description                     |
-| --- | ------------------------ | ------------------------------- |
-| `L` | `<namespace>`            | Label namespace per [NIP-32](32.md) |
-| `l` | `<label>`, `<namespace>` | Label value per [NIP-32](32.md)     |
-| `e` | `<event-id>`             | Reference to a related event    |
-| `a` | `<kind>:<pubkey>:<d-tag>`| Reference to a related addressable event |
+| Tag          | Value                    | Description                                                              |
+| ------------ | ------------------------ | ------------------------------------------------------------------------ |
+| `valid_from` | `<unix-timestamp>`       | Earliest time the attestation is valid (deferred activation)             |
+| `L`          | `<namespace>`            | Label namespace per [NIP-32](32.md)                                      |
+| `l`          | `<label>`, `<namespace>` | Label value per [NIP-32](32.md)                                          |
+| `e`          | `<event-id>`             | Reference to a related event                                             |
+| `a`          | `<kind>:<pubkey>:<d-tag>`| Reference to a related addressable event                                 |
+
+When `valid_from` is present, clients SHOULD treat the attestation as inactive before that timestamp. Combined with `expiration`, this defines a validity window: the attestation is valid from `valid_from` until `expiration`.
 
 Applications MAY define additional tags specific to their attestation types. Such tags are carried on the event alongside the tags defined here.
 
@@ -84,17 +87,35 @@ This convention ensures:
 2. **Relay-side filtering.** Clients can query by `d` tag prefix to retrieve all attestations of a particular type.
 3. **No collisions.** Different attestation types from the same publisher occupy distinct `d` tag slots.
 
+```mermaid
+graph LR
+    subgraph "Publisher A (verifier)"
+        A1["d: credential:Bob:gas_safe"]
+        A2["d: credential:Bob:dbs"]
+        A3["d: endorsement:Carol"]
+    end
+
+    subgraph "Publisher B (peer)"
+        B1["d: vouch:Bob"]
+        B2["d: endorsement:Bob"]
+    end
+
+    A1 -.- |"unique per publisher,\ntype, and subject"| A2
+    A1 ~~~ A3
+    B1 ~~~ B2
+```
+
 ### Revocation
 
-To revoke a previously issued attestation, the publisher replaces the original event with an updated version that includes an `["s", "revoked"]` tag. Because addressable events are replaceable, the revocation supersedes the original.
+To revoke a previously issued attestation, the publisher replaces the original event with an updated version that includes a `["status", "revoked"]` tag. Because addressable events are replaceable, the revocation supersedes the original.
 
-The `s` tag is a single-letter status tag specific to this NIP. The only defined value is `revoked`. Applications MUST NOT use the `s` tag for other purposes on kind `31000` events.
+The `status` tag is used exclusively for lifecycle state on kind `31000` events. The only defined value is `revoked`. Applications MUST NOT define additional `status` values on kind `31000` events without a subsequent NIP.
 
 #### Revocation Tags
 
 | Tag         | Value              | Required | Description                                           |
 | ----------- | ------------------ | -------- | ----------------------------------------------------- |
-| `s`         | `revoked`          | Yes      | Signals this attestation has been revoked             |
+| `status`    | `revoked`          | Yes      | Signals this attestation has been revoked             |
 | `reason`    | `<human-readable>` | No       | Why the attestation was revoked                       |
 | `effective` | `<unix-timestamp>` | No       | When the revocation takes effect (may differ from `created_at`) |
 
@@ -108,7 +129,7 @@ Example: to revoke a credential previously issued with `d` tag `credential:<subj
     ["d", "credential:<subject-pubkey>"],
     ["type", "credential"],
     ["p", "<subject-pubkey>"],
-    ["s", "revoked"],
+    ["status", "revoked"],
     ["reason", "license-expired"],
     ["effective", "1704067200"],
     ["summary", "Credential revoked: license expired"]
@@ -117,7 +138,43 @@ Example: to revoke a credential previously issued with `d` tag `credential:<subj
 }
 ```
 
-Clients MUST check for the `s` tag with value `revoked` before treating any attestation as valid. If an `effective` tag is present, clients SHOULD treat the attestation as valid before that timestamp and revoked after it.
+Clients MUST check for the `status` tag with value `revoked` before treating any attestation as valid. If an `effective` tag is present, clients SHOULD treat the attestation as valid before that timestamp and revoked after it.
+
+### Attestation Lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> Active : publisher signs & publishes
+    Active --> Active : publisher updates (same d-tag)
+    Active --> Revoked : publisher adds ["status", "revoked"]
+    Active --> Expired : expiration timestamp passes
+    Revoked --> [*]
+    Expired --> [*]
+
+    note right of Active : addressable event —\nlatest version wins
+    note right of Revoked : revocation supersedes\nexpiration
+```
+
+### Verification Flow
+
+```mermaid
+sequenceDiagram
+    participant Publisher
+    participant Relay
+    participant Client
+
+    Publisher->>Relay: kind 31000 (attestation)
+    Note over Relay: stored as addressable event
+
+    Client->>Relay: REQ {"kinds":[31000], "#p":["subject"]}
+    Relay-->>Client: matching attestation events
+
+    Client->>Client: check status ≠ revoked
+    Client->>Client: check expiration not passed
+    Client->>Client: check valid_from (if present)
+    Client->>Client: evaluate publisher trust
+    Client->>Client: parse application-specific tags
+```
 
 Examples
 --------
@@ -205,7 +262,23 @@ A certifier attests to the authenticity of a product:
 Application Profiles
 --------------------
 
-The attestation kind is intentionally minimal. Application-specific semantics are defined by profiles that specify:
+The attestation kind is intentionally minimal. One kind serves the full range of attestation use cases:
+
+```mermaid
+graph TD
+    K["kind 31000\nVerifiable Attestation"]
+    K --> C["type: credential\nProfessional licensing"]
+    K --> E["type: endorsement\nPeer trust"]
+    K --> V["type: vouch\nLightweight trust signal"]
+    K --> P["type: provenance\nSupply chain"]
+    K --> F["type: fact-check\nEvent verification"]
+    K --> D["type: ...\nAny future type"]
+
+    style K fill:#7c3aed,color:#fff
+    style D fill:#6b7280,color:#fff,stroke-dasharray: 5 5
+```
+
+Application-specific semantics are defined by profiles that specify:
 
 - Which `type` values they use
 - Which additional tags they carry
@@ -216,7 +289,7 @@ Profiles are expected to be documented by their respective applications. The fol
 
 ### Identity Verification
 
-A verification system uses 6 attestation types to manage the full lifecycle of identity credentials. Revocation is handled via the `s: revoked` mechanism rather than a separate type:
+A verification system uses 6 attestation types to manage the full lifecycle of identity credentials. Revocation is handled via the `status: revoked` mechanism rather than a separate type:
 
 | Type              | Subject (`p` tag) | Content                                        |
 | ----------------- | ----------------- | ---------------------------------------------- |
@@ -227,17 +300,17 @@ A verification system uses 6 attestation types to manage the full lifecycle of i
 | `identity-bridge` | omitted (self)    | Proof linking multiple identities              |
 | `delegation`      | delegate          | Empty                                          |
 
-Revocation of any of these attestation types is performed by re-publishing with `["s", "revoked"]` and an optional `reason` tag. Application-specific tags: `tier`, `scope`, `method`, `profession`, `jurisdiction`, `age-range`.
+Revocation of any of these attestation types is performed by re-publishing with `["status", "revoked"]` and an optional `reason` tag. Application-specific tags: `tier`, `scope`, `method`, `profession`, `jurisdiction`, `age-range`.
 
 ### Professional Licensing
 
 A licensing authority attests that practitioners hold valid regulatory credentials:
 
-| Type                     | Subject (`p` tag)    | Content                    |
-| ------------------------ | -------------------- | -------------------------- |
-| `credential-attestation` | licensed practitioner | Structured credential data |
+| Type         | Subject (`p` tag)    | Content                    |
+| ------------ | -------------------- | -------------------------- |
+| `credential` | licensed practitioner | Structured credential data |
 
-Application-specific tags: `license`, `body`, `jurisdiction`, `effective`.
+Application-specific tags: `credential_type`, `credential_name`, `issuer_type`, `jurisdiction`, `verification_url`.
 
 ### Product Provenance
 
@@ -258,6 +331,16 @@ A trust network enables bilateral endorsements between participants:
 | `endorsement` | endorsed identity | Empty   |
 
 Application-specific tags: `context`, `rating`, `confidence`.
+
+### Event Verification
+
+A fact-checking service attests to the accuracy of claims in Nostr events:
+
+| Type         | Subject (`p` tag) | Content               |
+| ------------ | ----------------- | --------------------- |
+| `fact-check` | event publisher   | Verification evidence |
+
+The `e` tag references the event being verified. Application-specific tags: `verdict`, `confidence`, `methodology`.
 
 NIP-32 Interoperability
 -----------------------
@@ -280,19 +363,59 @@ Example label accompanying an identity verification credential:
 
 The label namespace and vocabulary are application-defined. The NIP-32 event serves as a discoverability bridge, not as the authoritative attestation.
 
-Relationship to Kind 31871 (Attestations)
-------------------------------------------
+Relay Queries
+-------------
 
-A separate proposal defines kind `31871` for event-focused attestations -- claims about whether a specific Nostr event is truthful. That proposal uses four event kinds (31871, 31872, 31873, 11871) to model attestation requests, recommendations, and proficiency declarations.
+### Fetch all attestations about a subject
 
-This NIP takes a different approach:
+```json
+{"kinds": [31000], "#p": ["<subject-pubkey>"]}
+```
 
-- **Identity-centric rather than event-centric.** Kind `31000` attests about pubkeys (credentials, endorsements, vouches), not about event truthfulness. The `p` tag identifies the subject identity; the `e` and `a` tags are optional references.
-- **One kind, many types.** A single event kind with a `type` tag replaces the need for multiple kind numbers. New attestation types require no protocol changes.
-- **No state machine.** Addressable event semantics handle updates and revocations natively. The `s` tag signals revocation without requiring a separate state transition model.
-- **Application profiles over protocol roles.** Rather than defining attestor/requestor/recommender as protocol-level concepts, this NIP lets applications define their own roles through type conventions.
+### Fetch all attestations by a specific issuer
 
-The two proposals are complementary. Kind `31871` is well-suited for event verification workflows with built-in request/response mechanics. Kind `31000` is suited for the broader attestation landscape: credentials, endorsements, licensing, provenance, and trust management.
+```json
+{"kinds": [31000], "authors": ["<issuer-pubkey>"]}
+```
+
+### Fetch a specific attestation (for revocation checking)
+
+```json
+{"kinds": [31000], "authors": ["<issuer-pubkey>"], "#d": ["credential:<subject-pubkey>"]}
+```
+
+### Fetch all attestations about a subject from a specific issuer
+
+```json
+{"kinds": [31000], "authors": ["<issuer-pubkey>"], "#p": ["<subject-pubkey>"]}
+```
+
+Type Values
+-----------
+
+Type values are application-defined strings. Applications SHOULD choose descriptive, unambiguous type names. Collision between applications using the same type value with different semantics is possible; applications SHOULD use application-specific tags alongside the `type` tag to disambiguate when needed.
+
+Well-known type values (informational, not normative):
+
+| Type          | Typical use                                        |
+| ------------- | -------------------------------------------------- |
+| `credential`  | Third-party verification of qualifications         |
+| `endorsement` | Peer recommendation based on direct experience     |
+| `vouch`       | Lightweight trust signal                           |
+| `verifier`    | Self-declaration of verification service status    |
+| `provenance`  | Authenticity or chain-of-custody claim             |
+
+Applications are encouraged to document their type conventions so that other clients can interoperate.
+
+Relationship to Kind 31871
+--------------------------
+
+A separate proposal defines kinds `31871`, `31872`, `31873`, and `11871` for attestations with a built-in request/payment workflow and state machine. This NIP covers the same problem space with a different philosophy:
+
+- **One kind, many types.** The four concepts in that proposal -- attestation, request, recommendation, proficiency -- map to four `type` values on a single kind. New attestation types require no protocol changes and no new kind numbers.
+- **Both identity and event attestations.** Kind `31000` is not limited to identity claims. The `e` and `a` tags allow attestations about events (e.g. fact-checking, content verification) alongside attestations about pubkeys (credentials, endorsements). The `type` tag distinguishes the use case.
+- **No state machine.** Addressable event semantics handle updates and revocations natively. Request/response workflows, payment integration, and multi-step state machines are application-level concerns that can be built on top of the attestation primitive without protocol-level kinds.
+- **Application profiles over protocol roles.** Rather than defining attestor/requestor/recommender as protocol-level concepts with dedicated kinds, this NIP lets applications define their own roles through type conventions.
 
 Security Considerations
 -----------------------
@@ -309,9 +432,17 @@ The `type` and `d` tag structure binds each attestation to a specific context. A
 
 The `p` tag reveals which pubkey is the subject of an attestation. For attestations that require privacy (e.g. medical credentials, sensitive endorsements), publishers SHOULD use [NIP-59](59.md) gift wrapping to deliver attestations privately rather than publishing them to public relays.
 
+### Third-party Revocation
+
+The `status: revoked` mechanism is for **self-revocation** -- the original publisher withdraws their own attestation by re-publishing with the `status` tag. Third-party revocation -- where a party other than the original publisher asserts that an attestation should no longer be trusted -- is modeled as a separate attestation event (e.g. a new attestation with a type such as `challenge-result`), not as a replacement of the original event. Only the original publisher can replace their own addressable event.
+
 ### Revocation Timing
 
 Clients MUST always fetch the latest version of an addressable event. For revocations, the `effective` tag (if present) indicates when the revocation takes effect, which may differ from the event's `created_at`. Clients SHOULD treat an attestation as invalid if a revocation with a matching `d` tag exists, even if the revocation's `created_at` is only slightly newer.
+
+### Expiration and Revocation Precedence
+
+An attestation that carries a `["status", "revoked"]` tag MUST be treated as invalid regardless of its `expiration` timestamp. Revocation is authoritative -- an attestation whose expiration date is still in the future but which has been revoked is not valid.
 
 ### Attestation Chain Depth
 
@@ -325,10 +456,12 @@ This NIP introduces a new event kind. No existing events are affected. Clients t
 Implementation Evidence
 -----------------------
 
-The following independent implementations use the attestation pattern described in this NIP. All were developed before this NIP was drafted, converging independently on the same structural pattern (addressable event, `type` tag differentiation, conditional `p` tag, application-defined content):
+The pattern described in this NIP emerged from practical implementation across five distinct application domains within a single ecosystem. Each application adopted this structural pattern -- addressable event, `type` tag differentiation, conditional `p` tag, application-defined content -- based on its own requirements, before this NIP was drafted. The NIP formalises the common structure that proved useful across all five:
 
-1. **Identity verification protocol** -- 6 attestation types covering credentials, vouches, verifier registration, challenges, identity bridges, and delegation. Revocation via `s: revoked` replacement. Ring signature proofs in content.
-2. **Professional licensing system** -- credential attestation for regulated professions with structured tags for license details, issuing bodies, and jurisdictions.
-3. **Reputation framework** -- credential attestation combined with activity evidence for computing trust scores across service marketplace interactions.
-4. **Trust network** -- provider endorsement attestations enabling bilateral trust relationships between service participants.
-5. **Product provenance system** -- authenticity attestations tracking product verification and chain-of-custody claims.
+1. **Identity verification** -- 6 attestation types covering credentials, vouches, verifier registration, challenges, identity bridges, and delegation. Ring signature proofs in content. Revocation via `status: revoked` replacement.
+2. **Professional licensing** -- credential attestations for regulated professions with structured tags for licence details, issuing bodies, and jurisdictions.
+3. **Reputation and trust scoring** -- credential attestations combined with activity evidence for computing trust scores across service marketplace interactions.
+4. **Trust networks** -- provider endorsement attestations enabling bilateral trust relationships between service participants.
+5. **Product provenance** -- authenticity attestations tracking product verification and chain-of-custody claims.
+
+A reference implementation is available as [`nostr-attestations`](https://github.com/forgesworn/nostr-attestations) -- a zero-dependency TypeScript library with builders, parsers, validators, and 10 frozen conformance test vectors.

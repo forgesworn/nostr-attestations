@@ -54,7 +54,7 @@ export function createRevocation(params: RevocationParams): EventTemplate {
   const tags: string[][] = [
     ['d', buildDTag(params.type, params.identifier)],
     ['type', params.type],
-    ['s', 'revoked'],
+    ['status', 'revoked'],
   ]
 
   if (params.subject) {

@@ -72,7 +72,7 @@ describe('parseAttestation', () => {
       tags: [
         ['d', 'credential:sub'],
         ['type', 'credential'],
-        ['s', 'revoked'],
+        ['status', 'revoked'],
         ['reason', 'license-expired'],
       ],
     })
@@ -105,23 +105,23 @@ describe('isRevoked', () => {
     expect(isRevoked(makeEvent())).toBe(false)
   })
 
-  it('returns true when s:revoked tag present', () => {
+  it('returns true when status:revoked tag present', () => {
     const event = makeEvent({
       tags: [
         ['d', 'credential:sub'],
         ['type', 'credential'],
-        ['s', 'revoked'],
+        ['status', 'revoked'],
       ],
     })
     expect(isRevoked(event)).toBe(true)
   })
 
-  it('returns false for s tag with other value', () => {
+  it('returns false for status tag with other value', () => {
     const event = makeEvent({
       tags: [
         ['d', 'credential:sub'],
         ['type', 'credential'],
-        ['s', 'active'],
+        ['status', 'active'],
       ],
     })
     expect(isRevoked(event)).toBe(false)
@@ -130,7 +130,7 @@ describe('isRevoked', () => {
   it('returns false for wrong kind', () => {
     const event = makeEvent({
       kind: 1,
-      tags: [['s', 'revoked']],
+      tags: [['status', 'revoked']],
     })
     expect(isRevoked(event)).toBe(false)
   })

@@ -86,7 +86,7 @@ describe('validateAttestation', () => {
     const result = validateAttestation(makeEvent([
       ['d', 'credential:abc'],
       ['type', 'credential'],
-      ['s', 'revoked'],
+      ['status', 'revoked'],
     ]))
     expect(result.valid).toBe(true)
   })

@@ -27,7 +27,7 @@ export function parseAttestation(event: NostrEvent): Attestation | null {
     subject: findTag(event.tags, 'p'),
     summary: findTag(event.tags, 'summary'),
     expiration: expirationStr ? Number(expirationStr) : null,
-    revoked: findTag(event.tags, 's') === 'revoked',
+    revoked: findTag(event.tags, 'status') === 'revoked',
     reason: findTag(event.tags, 'reason'),
     tags: event.tags,
     content: event.content,
@@ -40,5 +40,5 @@ export function parseAttestation(event: NostrEvent): Attestation | null {
  */
 export function isRevoked(event: NostrEvent): boolean {
   if (event.kind !== ATTESTATION_KIND) return false
-  return findTag(event.tags, 's') === 'revoked'
+  return findTag(event.tags, 'status') === 'revoked'
 }

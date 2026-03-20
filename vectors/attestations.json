@@ -174,7 +174,7 @@
         ["d", "credential:def456"],
         ["type", "credential"],
         ["p", "def456"],
-        ["s", "revoked"],
+        ["status", "revoked"],
         ["reason", "license-expired"],
         ["summary", "Credential revoked"]
       ],
@@ -197,7 +197,7 @@
         ["d", "credential:def456"],
         ["type", "credential"],
         ["p", "def456"],
-        ["s", "revoked"],
+        ["status", "revoked"],
         ["reason", "license-expired"],
         ["summary", "Credential revoked"]
       ],
@@ -216,7 +216,7 @@
         ["d", "credential:ghi789"],
         ["type", "credential"],
         ["p", "ghi789"],
-        ["s", "revoked"],
+        ["status", "revoked"],
         ["reason", "compromised"],
         ["effective", "1704067200"]
       ],
@@ -239,7 +239,7 @@
         ["d", "credential:ghi789"],
         ["type", "credential"],
         ["p", "ghi789"],
-        ["s", "revoked"],
+        ["status", "revoked"],
         ["reason", "compromised"],
         ["effective", "1704067200"]
       ],

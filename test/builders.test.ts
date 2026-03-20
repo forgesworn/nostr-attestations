@@ -66,10 +66,10 @@ describe('createAttestation', () => {
 })
 
 describe('createRevocation', () => {
-  it('creates revocation with s:revoked tag', () => {
+  it('creates revocation with status:revoked tag', () => {
     const event = createRevocation({ type: 'credential', identifier: 'abc123' })
     expect(event.kind).toBe(ATTESTATION_KIND)
-    expect(event.tags).toContainEqual(['s', 'revoked'])
+    expect(event.tags).toContainEqual(['status', 'revoked'])
     expect(event.tags).toContainEqual(['type', 'credential'])
     expect(event.tags).toContainEqual(['d', 'credential:abc123'])
   })

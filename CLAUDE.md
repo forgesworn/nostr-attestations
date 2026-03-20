@@ -39,6 +39,6 @@ Zero-dependency TypeScript library for NIP-VA (kind 31000) Verifiable Attestatio
 
 - `identifier` = d-tag second segment (any string). `subject` = p-tag (hex pubkey). They are distinct concepts.
 - Type values MUST NOT contain colons — first colon in d-tag is the delimiter.
-- Revocation = re-publish with `["s", "revoked"]` tag. The `s` tag is specific to this NIP.
+- Revocation = re-publish with `["status", "revoked"]` tag. Multi-letter tag avoids claiming a new single-letter indexed tag.
 - `EventTemplate` has optional `created_at` — signing libraries typically set this.
 - `Attestation` parsed type includes `pubkey` and `createdAt` from the outer event.
