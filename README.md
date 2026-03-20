@@ -130,7 +130,21 @@ This library's authorship is claimed on Nostr using the very protocol it impleme
 
 A self-attestation alone only proves that the holder of a private key *claims* authorship — not that the claim is true. The real value comes from **third-party attestations**: other pubkeys independently publishing `type: endorsement` events that reference this repo. Each endorsement is an additional signature from a different keypair. Stack enough and you have a web of trust — not one person saying "I made this" but multiple people saying "yes, they made this."
 
-**Verify the authorship claim with [nak](https://github.com/fiatjaf/nak):**
+All verification uses [nak](https://github.com/fiatjaf/nak) (the Nostr Army Knife). Install with `go install github.com/fiatjaf/nak@latest` or `brew install fiatjaf/tap/nak`.
+
+**1. GitHub → Nostr** — this README claims `npub1mgv...` (see header above)
+
+**2. Nostr → GitHub** — the repo announcement points back here:
+
+```bash
+nak req -q -k 30617 \
+  -a $(nak decode npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2) \
+  -t d=nostr-attestations \
+  wss://relay.damus.io 2>/dev/null
+# Look for the "web" tag → github.com/forgesworn/nostr-attestations
+```
+
+**3. Verify the authorship claim** — signed by the same key:
 
 ```bash
 nak req -q -k 31000 \
@@ -140,16 +154,28 @@ nak req -q -k 31000 \
   && echo "✓ Signature valid"
 ```
 
-**Query the raw attestation:**
+**4. Check for third-party endorsements:**
 
 ```bash
 nak req -q -k 31000 \
-  -a $(nak decode npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2) \
-  -t d=authorship:nostr-attestations \
+  -t a=30617:da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd:nostr-attestations \
   wss://relay.damus.io 2>/dev/null
 ```
 
-**Endorse it yourself** — publish a kind 31000 `type: endorsement` event referencing this repo's `a` tag. That's how decentralised trust works: no authority, just signatures.
+Same npub on both sides — you'd need to control both GitHub and the private key to fake it. Third-party endorsements add independent signatures that can't be faked by one person.
+
+**Endorse it yourself:**
+
+```bash
+nak event -k 31000 \
+  --sec <your-nsec> \
+  -t d=endorsement:da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd \
+  -t type=endorsement \
+  -t p=da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd \
+  -t a=30617:da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd:nostr-attestations \
+  -t summary="Reviewed and endorsed nostr-attestations" \
+  wss://relay.damus.io wss://nos.lol wss://relay.nostr.band
+```
 
 ## NIP-VA
 
