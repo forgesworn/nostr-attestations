@@ -124,9 +124,11 @@ const attestation = parseAttestation(event)
 
 ## Attested on Nostr
 
-This library's authorship is attested on Nostr using the very protocol it implements — NIP-VA eating its own dog food.
+This library's authorship is claimed on Nostr using the very protocol it implements — NIP-VA eating its own dog food.
 
-**Verify with [nak](https://github.com/fiatjaf/nak):**
+A self-attestation alone only proves that the holder of a private key *claims* authorship — not that the claim is true. The real value comes from **third-party attestations**: other pubkeys independently publishing `type: endorsement` events that reference this repo. Each endorsement is an additional signature from a different keypair. Stack enough and you have a web of trust — not one person saying "I made this" but multiple people saying "yes, they made this."
+
+**Verify the authorship claim with [nak](https://github.com/fiatjaf/nak):**
 
 ```bash
 nak req -q -k 31000 \
@@ -136,7 +138,7 @@ nak req -q -k 31000 \
   && echo "✓ Signature valid"
 ```
 
-**Or query the raw attestation:**
+**Query the raw attestation:**
 
 ```bash
 nak req -q -k 31000 \
@@ -145,7 +147,7 @@ nak req -q -k 31000 \
   wss://relay.damus.io 2>/dev/null
 ```
 
-The attestation is a kind 31000 event signed by [`npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2`](https://njump.me/npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2) with an `a` tag binding it to the repository announcement. No centralised authority — just a Nostr keypair, a signature, and a relay.
+**Endorse it yourself** — publish a kind 31000 `type: endorsement` event referencing this repo's `a` tag. That's how decentralised trust works: no authority, just signatures.
 
 ## NIP-VA
 
