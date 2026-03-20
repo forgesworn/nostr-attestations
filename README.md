@@ -2,6 +2,8 @@
 
 One Nostr event kind for all attestations — credentials, endorsements, vouches, provenance, licensing, and trust.
 
+**Nostr:** [`npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2`](https://njump.me/npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2)
+
 ## Install
 
 ```
@@ -122,9 +124,64 @@ const attestation = parseAttestation(event)
 
 `vectors/attestations.json` contains 10 frozen conformance test vectors covering the full range of attestation types (credential, endorsement, vouch, verifier, provenance) and states (active, revoked, self-attestation). Any conformant implementation must produce identical parse results from these inputs. The vectors are pinned — if tests against them fail, the implementation is broken, not the vector.
 
+## Attested on Nostr
+
+This library's authorship is claimed on Nostr using the very protocol it implements — NIP-VA eating its own dog food.
+
+A self-attestation alone only proves that the holder of a private key *claims* authorship — not that the claim is true. The real value comes from **third-party attestations**: other pubkeys independently publishing `type: endorsement` events that reference this repo.
+
+But counting endorsements isn't enough either — anyone can create 50 throwaway npubs and endorse themselves. What matters is **who** endorses, not how many. A single endorsement from a pubkey with a verified NIP-05 domain, a history of notes, and followers you recognise is worth more than a thousand from anonymous keys. This is a web of trust, not a vote count. When verifying, ask: do I know this endorser? Do people I trust follow them? That's how you resist Sybil attacks without a centralised authority.
+
+All verification uses [nak](https://github.com/fiatjaf/nak) (the Nostr Army Knife). Install with `go install github.com/fiatjaf/nak@latest` or `brew install fiatjaf/tap/nak`.
+
+**1. GitHub → Nostr** — this README claims `npub1mgv...` (see header above)
+
+**2. Nostr → GitHub** — the repo announcement points back here:
+
+```bash
+nak req -q -k 30617 \
+  -a $(nak decode npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2) \
+  -t d=nostr-attestations \
+  wss://relay.damus.io 2>/dev/null
+# Look for the "web" tag → github.com/forgesworn/nostr-attestations
+```
+
+**3. Verify the authorship claim** — signed by the same key:
+
+```bash
+nak req -q -k 31000 \
+  -a $(nak decode npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2) \
+  -t d=authorship:nostr-attestations \
+  wss://relay.damus.io 2>/dev/null | nak verify \
+  && echo "✓ Signature valid"
+```
+
+**4. Check for third-party endorsements:**
+
+```bash
+nak req -q -k 31000 \
+  -t a=30617:da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd:nostr-attestations \
+  wss://relay.damus.io 2>/dev/null
+```
+
+Same npub on both sides — you'd need to control both GitHub and the private key to fake it. Third-party endorsements add independent signatures that can't be faked by one person.
+
+**Endorse it yourself:**
+
+```bash
+nak event -k 31000 \
+  --sec <your-nsec> \
+  -t d=endorsement:da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd \
+  -t type=endorsement \
+  -t p=da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd \
+  -t a=30617:da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd:nostr-attestations \
+  -t summary="Reviewed and endorsed nostr-attestations" \
+  wss://relay.damus.io wss://nos.lol wss://relay.nostr.band
+```
+
 ## NIP-VA
 
-Full protocol specification: [NIP-VA.md](./NIP-VA.md)
+Full protocol specification: [NIP-VA.md](./NIP-VA.md) | [NostrHub](https://nostrhub.io/npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2)
 
 ## Licence
 
