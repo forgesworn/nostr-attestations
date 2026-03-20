@@ -43,6 +43,7 @@ const event = createAttestation({
 - **Filters** — `attestationFilter()` and `revocationFilter()` build Nostr relay query filters.
 - **D-tag convention** — `<type>:<identifier>` ensures one attestation per publisher per type per subject.
 - **Revocation** — re-publish with `["status", "revoked"]`. Addressable event semantics handle the rest.
+- **Validity windows** — optional `valid_from` + `expiration` tags define when an attestation is active.
 - **Application profiles** — applications define their own types, tags, and content schemas.
 
 ## API Surface
