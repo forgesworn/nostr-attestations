@@ -129,19 +129,20 @@ This library's authorship is attested on Nostr using the very protocol it implem
 **Verify with [nak](https://github.com/fiatjaf/nak):**
 
 ```bash
-nak req -k 31000 \
-  -a da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd \
+nak req -q -k 31000 \
+  -a $(nak decode npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2) \
   -t d=authorship:nostr-attestations \
-  wss://relay.damus.io | nak verify
+  wss://relay.damus.io 2>/dev/null | nak verify \
+  && echo "✓ Signature valid"
 ```
 
 **Or query the raw attestation:**
 
 ```bash
-nak req -k 31000 \
-  -a da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd \
+nak req -q -k 31000 \
+  -a $(nak decode npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2) \
   -t d=authorship:nostr-attestations \
-  wss://relay.damus.io
+  wss://relay.damus.io 2>/dev/null
 ```
 
 The attestation is a kind 31000 event signed by [`npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2`](https://njump.me/npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2) with an `a` tag binding it to the repository announcement. No centralised authority — just a Nostr keypair, a signature, and a relay.
