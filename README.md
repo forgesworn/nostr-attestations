@@ -122,9 +122,33 @@ const attestation = parseAttestation(event)
 
 `vectors/attestations.json` contains 10 frozen conformance test vectors covering the full range of attestation types (credential, endorsement, vouch, verifier, provenance) and states (active, revoked, self-attestation). Any conformant implementation must produce identical parse results from these inputs. The vectors are pinned — if tests against them fail, the implementation is broken, not the vector.
 
+## Attested on Nostr
+
+This library's authorship is attested on Nostr using the very protocol it implements — NIP-VA eating its own dog food.
+
+**Verify with [nak](https://github.com/fiatjaf/nak):**
+
+```bash
+nak req -k 31000 \
+  -a da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd \
+  -t d=authorship:nostr-attestations \
+  wss://relay.damus.io | nak verify
+```
+
+**Or query the raw attestation:**
+
+```bash
+nak req -k 31000 \
+  -a da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd \
+  -t d=authorship:nostr-attestations \
+  wss://relay.damus.io
+```
+
+The attestation is a kind 31000 event signed by [`npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2`](https://njump.me/npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2) with an `a` tag binding it to the repository announcement. No centralised authority — just a Nostr keypair, a signature, and a relay.
+
 ## NIP-VA
 
-Full protocol specification: [NIP-VA.md](./NIP-VA.md)
+Full protocol specification: [NIP-VA.md](./NIP-VA.md) | [NostrHub](https://nostrhub.io/npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2)
 
 ## Licence
 
