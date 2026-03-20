@@ -160,9 +160,9 @@ nak req -k 31000 \
 
 ```bash
 nak req -k 31000 \
-  -t type=endorsement \
   -t a=30617:da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd:nostr-attestations \
   wss://relay.damus.io
+# Returns all attestations referencing this repo — filter by pubkey or type client-side
 ```
 
 Same npub on both sides — you'd need to control both GitHub and the private key to fake it. Third-party endorsements add independent signatures that can't be faked by one person.
