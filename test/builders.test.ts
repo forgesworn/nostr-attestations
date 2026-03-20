@@ -71,6 +71,15 @@ describe('createAttestation', () => {
     expect(() => createAttestation({ type: 'credential', expiration: Infinity })).toThrow('expiration must be a finite number')
   })
 
+  it('adds valid_from tag', () => {
+    const event = createAttestation({ type: 'credential', validFrom: 1700000000 })
+    expect(event.tags).toContainEqual(['valid_from', '1700000000'])
+  })
+
+  it('throws if validFrom is NaN', () => {
+    expect(() => createAttestation({ type: 'credential', validFrom: NaN })).toThrow('validFrom must be a finite number')
+  })
+
   it('defaults identifier to subject when subject provided but no identifier', () => {
     const event = createAttestation({ type: 'credential', subject: 'deadbeef' })
     expect(event.tags).toContainEqual(['d', 'credential:deadbeef'])

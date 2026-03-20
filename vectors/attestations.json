@@ -7,13 +7,34 @@
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "created_at": 1700000000,
       "tags": [
-        ["d", "credential:def456"],
-        ["type", "credential"],
-        ["p", "def456"],
-        ["expiration", "1735689600"],
-        ["summary", "Professional credential verified"],
-        ["profession", "attorney"],
-        ["jurisdiction", "US-NY"]
+        [
+          "d",
+          "credential:def456"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "expiration",
+          "1735689600"
+        ],
+        [
+          "summary",
+          "Professional credential verified"
+        ],
+        [
+          "profession",
+          "attorney"
+        ],
+        [
+          "jurisdiction",
+          "US-NY"
+        ]
       ],
       "content": "{\"proof\":\"ring-sig-abc\"}",
       "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -31,15 +52,37 @@
       "revoked": false,
       "reason": null,
       "tags": [
-        ["d", "credential:def456"],
-        ["type", "credential"],
-        ["p", "def456"],
-        ["expiration", "1735689600"],
-        ["summary", "Professional credential verified"],
-        ["profession", "attorney"],
-        ["jurisdiction", "US-NY"]
+        [
+          "d",
+          "credential:def456"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "expiration",
+          "1735689600"
+        ],
+        [
+          "summary",
+          "Professional credential verified"
+        ],
+        [
+          "profession",
+          "attorney"
+        ],
+        [
+          "jurisdiction",
+          "US-NY"
+        ]
       ],
-      "content": "{\"proof\":\"ring-sig-abc\"}"
+      "content": "{\"proof\":\"ring-sig-abc\"}",
+      "validFrom": null
     },
     "valid": true
   },
@@ -51,9 +94,18 @@
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "created_at": 1700000000,
       "tags": [
-        ["d", "verifier:notary"],
-        ["type", "verifier"],
-        ["summary", "Identity verification service"]
+        [
+          "d",
+          "verifier:notary"
+        ],
+        [
+          "type",
+          "verifier"
+        ],
+        [
+          "summary",
+          "Identity verification service"
+        ]
       ],
       "content": "",
       "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -71,11 +123,21 @@
       "revoked": false,
       "reason": null,
       "tags": [
-        ["d", "verifier:notary"],
-        ["type", "verifier"],
-        ["summary", "Identity verification service"]
+        [
+          "d",
+          "verifier:notary"
+        ],
+        [
+          "type",
+          "verifier"
+        ],
+        [
+          "summary",
+          "Identity verification service"
+        ]
       ],
-      "content": ""
+      "content": "",
+      "validFrom": null
     },
     "valid": true
   },
@@ -87,12 +149,30 @@
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "created_at": 1700000000,
       "tags": [
-        ["d", "endorsement:def456"],
-        ["type", "endorsement"],
-        ["p", "def456"],
-        ["summary", "Reliable provider"],
-        ["context", "plumbing"],
-        ["confidence", "high"]
+        [
+          "d",
+          "endorsement:def456"
+        ],
+        [
+          "type",
+          "endorsement"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "summary",
+          "Reliable provider"
+        ],
+        [
+          "context",
+          "plumbing"
+        ],
+        [
+          "confidence",
+          "high"
+        ]
       ],
       "content": "",
       "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -110,14 +190,33 @@
       "revoked": false,
       "reason": null,
       "tags": [
-        ["d", "endorsement:def456"],
-        ["type", "endorsement"],
-        ["p", "def456"],
-        ["summary", "Reliable provider"],
-        ["context", "plumbing"],
-        ["confidence", "high"]
+        [
+          "d",
+          "endorsement:def456"
+        ],
+        [
+          "type",
+          "endorsement"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "summary",
+          "Reliable provider"
+        ],
+        [
+          "context",
+          "plumbing"
+        ],
+        [
+          "confidence",
+          "high"
+        ]
       ],
-      "content": ""
+      "content": "",
+      "validFrom": null
     },
     "valid": true
   },
@@ -129,12 +228,30 @@
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "created_at": 1700000000,
       "tags": [
-        ["d", "provenance:evt123"],
-        ["type", "provenance"],
-        ["e", "evt123"],
-        ["summary", "Authenticity verified"],
-        ["origin", "Sheffield, UK"],
-        ["method", "physical-inspection"]
+        [
+          "d",
+          "provenance:evt123"
+        ],
+        [
+          "type",
+          "provenance"
+        ],
+        [
+          "e",
+          "evt123"
+        ],
+        [
+          "summary",
+          "Authenticity verified"
+        ],
+        [
+          "origin",
+          "Sheffield, UK"
+        ],
+        [
+          "method",
+          "physical-inspection"
+        ]
       ],
       "content": "{\"chain_of_custody\":[\"maker\",\"distributor\",\"retailer\"]}",
       "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -152,14 +269,33 @@
       "revoked": false,
       "reason": null,
       "tags": [
-        ["d", "provenance:evt123"],
-        ["type", "provenance"],
-        ["e", "evt123"],
-        ["summary", "Authenticity verified"],
-        ["origin", "Sheffield, UK"],
-        ["method", "physical-inspection"]
+        [
+          "d",
+          "provenance:evt123"
+        ],
+        [
+          "type",
+          "provenance"
+        ],
+        [
+          "e",
+          "evt123"
+        ],
+        [
+          "summary",
+          "Authenticity verified"
+        ],
+        [
+          "origin",
+          "Sheffield, UK"
+        ],
+        [
+          "method",
+          "physical-inspection"
+        ]
       ],
-      "content": "{\"chain_of_custody\":[\"maker\",\"distributor\",\"retailer\"]}"
+      "content": "{\"chain_of_custody\":[\"maker\",\"distributor\",\"retailer\"]}",
+      "validFrom": null
     },
     "valid": true
   },
@@ -171,12 +307,30 @@
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "created_at": 1700000000,
       "tags": [
-        ["d", "credential:def456"],
-        ["type", "credential"],
-        ["p", "def456"],
-        ["status", "revoked"],
-        ["reason", "license-expired"],
-        ["summary", "Credential revoked"]
+        [
+          "d",
+          "credential:def456"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "status",
+          "revoked"
+        ],
+        [
+          "reason",
+          "license-expired"
+        ],
+        [
+          "summary",
+          "Credential revoked"
+        ]
       ],
       "content": "",
       "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -194,14 +348,33 @@
       "revoked": true,
       "reason": "license-expired",
       "tags": [
-        ["d", "credential:def456"],
-        ["type", "credential"],
-        ["p", "def456"],
-        ["status", "revoked"],
-        ["reason", "license-expired"],
-        ["summary", "Credential revoked"]
+        [
+          "d",
+          "credential:def456"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "status",
+          "revoked"
+        ],
+        [
+          "reason",
+          "license-expired"
+        ],
+        [
+          "summary",
+          "Credential revoked"
+        ]
       ],
-      "content": ""
+      "content": "",
+      "validFrom": null
     },
     "valid": true
   },
@@ -213,12 +386,30 @@
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "created_at": 1700000000,
       "tags": [
-        ["d", "credential:ghi789"],
-        ["type", "credential"],
-        ["p", "ghi789"],
-        ["status", "revoked"],
-        ["reason", "compromised"],
-        ["effective", "1704067200"]
+        [
+          "d",
+          "credential:ghi789"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "ghi789"
+        ],
+        [
+          "status",
+          "revoked"
+        ],
+        [
+          "reason",
+          "compromised"
+        ],
+        [
+          "effective",
+          "1704067200"
+        ]
       ],
       "content": "",
       "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -236,14 +427,33 @@
       "revoked": true,
       "reason": "compromised",
       "tags": [
-        ["d", "credential:ghi789"],
-        ["type", "credential"],
-        ["p", "ghi789"],
-        ["status", "revoked"],
-        ["reason", "compromised"],
-        ["effective", "1704067200"]
+        [
+          "d",
+          "credential:ghi789"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "ghi789"
+        ],
+        [
+          "status",
+          "revoked"
+        ],
+        [
+          "reason",
+          "compromised"
+        ],
+        [
+          "effective",
+          "1704067200"
+        ]
       ],
-      "content": ""
+      "content": "",
+      "validFrom": null
     },
     "valid": true
   },
@@ -255,10 +465,22 @@
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "created_at": 1700000000,
       "tags": [
-        ["d", "vouch:def456"],
-        ["type", "vouch"],
-        ["p", "def456"],
-        ["expiration", "1735689600"]
+        [
+          "d",
+          "vouch:def456"
+        ],
+        [
+          "type",
+          "vouch"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "expiration",
+          "1735689600"
+        ]
       ],
       "content": "",
       "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -276,12 +498,25 @@
       "revoked": false,
       "reason": null,
       "tags": [
-        ["d", "vouch:def456"],
-        ["type", "vouch"],
-        ["p", "def456"],
-        ["expiration", "1735689600"]
+        [
+          "d",
+          "vouch:def456"
+        ],
+        [
+          "type",
+          "vouch"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "expiration",
+          "1735689600"
+        ]
       ],
-      "content": ""
+      "content": "",
+      "validFrom": null
     },
     "valid": true
   },
@@ -293,11 +528,27 @@
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "created_at": 1700000000,
       "tags": [
-        ["d", "credential:def456"],
-        ["type", "credential"],
-        ["p", "def456"],
-        ["L", "example.com/identity"],
-        ["l", "verified", "example.com/identity"]
+        [
+          "d",
+          "credential:def456"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "L",
+          "example.com/identity"
+        ],
+        [
+          "l",
+          "verified",
+          "example.com/identity"
+        ]
       ],
       "content": "",
       "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -315,13 +566,30 @@
       "revoked": false,
       "reason": null,
       "tags": [
-        ["d", "credential:def456"],
-        ["type", "credential"],
-        ["p", "def456"],
-        ["L", "example.com/identity"],
-        ["l", "verified", "example.com/identity"]
+        [
+          "d",
+          "credential:def456"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "L",
+          "example.com/identity"
+        ],
+        [
+          "l",
+          "verified",
+          "example.com/identity"
+        ]
       ],
-      "content": ""
+      "content": "",
+      "validFrom": null
     },
     "valid": true
   },
@@ -333,8 +601,14 @@
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "created_at": 1700000000,
       "tags": [
-        ["d", "credential"],
-        ["type", "credential"]
+        [
+          "d",
+          "credential"
+        ],
+        [
+          "type",
+          "credential"
+        ]
       ],
       "content": "",
       "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -352,10 +626,17 @@
       "revoked": false,
       "reason": null,
       "tags": [
-        ["d", "credential"],
-        ["type", "credential"]
+        [
+          "d",
+          "credential"
+        ],
+        [
+          "type",
+          "credential"
+        ]
       ],
-      "content": ""
+      "content": "",
+      "validFrom": null
     },
     "valid": true
   },
@@ -367,9 +648,18 @@
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "created_at": 1700000000,
       "tags": [
-        ["d", "credential:def456"],
-        ["type", "credential"],
-        ["p", "def456"]
+        [
+          "d",
+          "credential:def456"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "def456"
+        ]
       ],
       "content": "{\"signatures\":[{\"type\":\"schnorr\",\"value\":\"deadbeef\"}],\"merkle_root\":\"cafebabe\"}",
       "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -387,11 +677,21 @@
       "revoked": false,
       "reason": null,
       "tags": [
-        ["d", "credential:def456"],
-        ["type", "credential"],
-        ["p", "def456"]
+        [
+          "d",
+          "credential:def456"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "def456"
+        ]
       ],
-      "content": "{\"signatures\":[{\"type\":\"schnorr\",\"value\":\"deadbeef\"}],\"merkle_root\":\"cafebabe\"}"
+      "content": "{\"signatures\":[{\"type\":\"schnorr\",\"value\":\"deadbeef\"}],\"merkle_root\":\"cafebabe\"}",
+      "validFrom": null
     },
     "valid": true
   }

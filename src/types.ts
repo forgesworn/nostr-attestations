@@ -29,6 +29,8 @@ export interface AttestationParams {
   summary?: string
   /** Unix timestamp for attestation expiry (NIP-40). */
   expiration?: number
+  /** Unix timestamp for deferred activation (valid_from). */
+  validFrom?: number
   /** Additional application-specific tags. */
   tags?: string[][]
   /** Event content: empty string, human-readable text, or JSON. */
@@ -63,6 +65,8 @@ export interface Attestation {
   subject: string | null
   summary: string | null
   expiration: number | null
+  /** Earliest time the attestation is valid (deferred activation). */
+  validFrom: number | null
   revoked: boolean
   reason: string | null
   /** All tags from the original event (for application-specific access). */

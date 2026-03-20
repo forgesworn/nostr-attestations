@@ -35,6 +35,11 @@ export function createAttestation(params: AttestationParams): EventTemplate {
     tags.push(['expiration', String(params.expiration)])
   }
 
+  if (params.validFrom != null) {
+    if (!Number.isFinite(params.validFrom)) throw new Error('validFrom must be a finite number')
+    tags.push(['valid_from', String(params.validFrom)])
+  }
+
   if (params.tags) {
     for (const tag of params.tags) {
       tags.push(tag)

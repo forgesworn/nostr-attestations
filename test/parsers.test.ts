@@ -55,6 +55,23 @@ describe('parseAttestation', () => {
     expect(result!.summary).toBe('Identity verification service')
   })
 
+  it('parses valid_from', () => {
+    const event = makeEvent({
+      tags: [
+        ['d', 'credential:sub'],
+        ['type', 'credential'],
+        ['valid_from', '1700000000'],
+      ],
+    })
+    const result = parseAttestation(event)
+    expect(result!.validFrom).toBe(1700000000)
+  })
+
+  it('returns null validFrom when tag absent', () => {
+    const result = parseAttestation(makeEvent())
+    expect(result!.validFrom).toBeNull()
+  })
+
   it('parses expiration', () => {
     const event = makeEvent({
       tags: [

@@ -17,6 +17,7 @@ export function parseAttestation(event: NostrEvent): Attestation | null {
   const parsed = dTag ? parseDTag(dTag) : null
 
   const expirationStr = findTag(event.tags, 'expiration')
+  const validFromStr = findTag(event.tags, 'valid_from')
 
   return {
     kind: ATTESTATION_KIND as 31000,
@@ -27,6 +28,7 @@ export function parseAttestation(event: NostrEvent): Attestation | null {
     subject: findTag(event.tags, 'p'),
     summary: findTag(event.tags, 'summary'),
     expiration: expirationStr ? Number(expirationStr) : null,
+    validFrom: validFromStr ? Number(validFromStr) : null,
     revoked: findTag(event.tags, 'status') === 'revoked',
     reason: findTag(event.tags, 'reason'),
     tags: event.tags,
