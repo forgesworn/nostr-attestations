@@ -61,6 +61,7 @@ At least one of `type` or an assertion reference (`e`/`a` tag with `"assertion"`
 | ------------ | ------------------------ | ------------------------------------------------------------------------ |
 | `valid_from` | `<unix-timestamp>`       | Earliest time the attestation is valid (deferred activation)             |
 | `valid_to`   | `<unix-timestamp>`       | Latest time the attestation's claim is valid (validity window end)       |
+| `occurred_at`| `<unix-timestamp>`       | When the attested event occurred (distinct from `created_at`)            |
 | `request`    | `<opaque-string>`        | Reference to the event that prompted this attestation                    |
 | `schema`     | `<uri>`                  | Machine-readable schema reference for regulatory mapping or profile ID   |
 | `e`          | `<event-id>`, `<relay>`, `"assertion"` | Reference to a first-person assertion event being attested       |
@@ -187,6 +188,7 @@ sequenceDiagram
     Client->>Client: check status ≠ revoked
     Client->>Client: check expiration not passed
     Client->>Client: check valid_from (if present)
+    Client->>Client: check valid_to (if present)
     Client->>Client: evaluate publisher trust
     Client->>Client: parse application-specific tags
 ```
@@ -456,31 +458,81 @@ A separate proposal defines kinds `31871`, `31872`, `31873`, and `11871` for att
 Security Considerations
 -----------------------
 
-### Attestation Forgery
+### Cryptographic Threats
 
-Attestation events are signed by their publisher's Nostr keypair. Forgery requires compromising the publisher's private key. Clients SHOULD evaluate attestations in the context of the publisher's reputation and trust level, not treat any attestation as inherently authoritative.
+#### Attestation Forgery
 
-### Replay Across Contexts
+Attestation events are signed by their publisher's Nostr keypair. Forgery requires compromising the publisher's private key. Key compromise invalidates all outstanding attestations from the affected pubkey; key management and recovery are outside the scope of this NIP. Clients SHOULD evaluate attestations in the context of the publisher's reputation and trust level, not treat any attestation as inherently authoritative.
+
+#### Replay Across Contexts
 
 The `type` and `d` tag structure binds each attestation to a specific context. An attestation of type `credential` cannot be misinterpreted as an `endorsement` because the type is explicit and the `d` tag includes it. Applications that require additional context binding SHOULD add application-specific tags.
 
-### Privacy
+### Adversarial Reputation
+
+#### Sybil Attestation Farming
+
+An attacker generates many keypairs and has them attest to each other, creating an illusion of independent endorsements for a target pubkey. Because Nostr keypairs are free to generate, the marginal cost of a sybil attestation is near zero.
+
+Defence: web-of-trust filtering. Attestations from pubkeys outside the verifier's social graph (per [NIP-02](02.md) follow lists) carry no weight by default. The protocol deliberately does not define reputation aggregation -- this is a client concern. Clients SHOULD weight attestations by social distance, not by count. A single attestation from a pubkey the user follows is worth more than a thousand from unknown keys. [NIP-85](85.md) providers performing aggregate scoring SHOULD apply graph-distance weighting.
+
+#### Collusion
+
+Two real parties exchange fabricated positive attestations to inflate each other's standing. Unlike sybil attacks, colluding parties are real identities with genuine social graph presence, making detection harder.
+
+Defence: graph analysis by downstream consumers (e.g. [NIP-85](85.md) providers) can detect mutual-attestation cliques with no independent external connections. Economic evidence -- zap receipts ([NIP-57](57.md)) or transaction references via the `request` tag -- provides additional signal that an attested interaction actually occurred. The protocol cannot prevent collusion but provides the data for clients to detect it.
+
+#### Reputation Laundering
+
+An attacker builds attestation history on throwaway keys, then binds one to a real-world identity (via [NIP-05](05.md), DNS, or social profile) after the fact. The history appears legitimate because the attestations are real signed events with valid timestamps.
+
+Defence: clients SHOULD consider identity age and continuity alongside attestation count. A pubkey with many attestations but no follow graph, no note history, and a recently-added NIP-05 is suspicious. Temporal clustering -- all attestations arriving in a short window -- is another detection signal. For high-stakes verifications (professional licensing, financial trust), clients SHOULD require attestations from known, long-lived verifier pubkeys rather than accepting arbitrary attestors.
+
+#### Selective Self-Revocation
+
+An attestee pressures attestors to revoke unfavourable attestations, or an attestor revokes their own negative attestations to curate a misleadingly positive public record.
+
+Defence: the protocol preserves the fact that a revocation occurred -- the latest event carries `["status", "revoked"]` even though the original content is replaced by addressable event semantics. Clients MAY treat high revocation frequency as a signal worth surfacing. Relay implementations that archive prior versions of addressable events provide an additional audit trail, though this is not required by [NIP-01](01.md). Applications building reputation systems SHOULD consider revocation patterns alongside active attestations.
+
+### Infrastructure Threats
+
+#### Privacy
 
 The `p` tag reveals which pubkey is the subject of an attestation. For attestations that require privacy (e.g. medical credentials, sensitive endorsements), publishers SHOULD use [NIP-59](59.md) gift wrapping to deliver attestations privately rather than publishing them to public relays.
 
-### Third-party Revocation
+#### Relay Censorship and Withholding
+
+A relay can selectively hide revocations while continuing to serve the original attestation, making a revoked credential appear valid. Conversely, a relay can withhold positive attestations to damage a subject's reputation.
+
+Defence: clients SHOULD query multiple relays and treat an attestation as revoked if *any* queried relay returns the revocation. For critical verifications, clients MUST NOT rely on a single relay. Publishers SHOULD distribute attestations and revocations across multiple relays to reduce single-relay dependence. The relay hint in assertion reference tags and the `p` tag relay hint (per [NIP-01](01.md)) aid cross-relay discovery.
+
+#### Attestation Spam
+
+An attacker floods a subject's `p` tag with large numbers of worthless or defamatory attestations from throwaway keys. The subject cannot prevent publication and cannot delete others' events.
+
+Defence: clients SHOULD filter by web-of-trust before displaying attestations, rendering spam from unknown pubkeys invisible to the user. Relays MAY apply rate limiting, [NIP-13](13.md) proof-of-work requirements, or payment-based access control as anti-spam measures. The protocol does not define spam policy -- this is a relay and client concern.
+
+### Semantic Threats
+
+#### Type Squatting
+
+An attacker publishes attestations using well-known type values (e.g. `credential`) with misleading semantics, potentially confusing clients that interpret types generically.
+
+Defence: the `schema` tag provides machine-readable disambiguation. Clients that interpret attestation semantics SHOULD require a recognised `schema` value, not rely on the `type` tag alone. Applications SHOULD document their type and schema conventions so that clients can distinguish legitimate attestations from squatted types.
+
+#### Third-party Revocation
 
 The `status: revoked` mechanism is for **self-revocation** -- the original publisher withdraws their own attestation by re-publishing with the `status` tag. Third-party revocation -- where a party other than the original publisher asserts that an attestation should no longer be trusted -- is modeled as a separate attestation event (e.g. a new attestation with a type such as `challenge-result`), not as a replacement of the original event. Only the original publisher can replace their own addressable event.
 
-### Revocation Timing
+#### Revocation Timing
 
 Clients MUST always fetch the latest version of an addressable event. For revocations, the `effective` tag (if present) indicates when the revocation takes effect, which may differ from the event's `created_at`. Clients SHOULD treat an attestation as invalid if a revocation with a matching `d` tag exists, even if the revocation's `created_at` is only slightly newer.
 
-### Expiration and Revocation Precedence
+#### Expiration and Revocation Precedence
 
 An attestation that carries a `["status", "revoked"]` tag MUST be treated as invalid regardless of its `expiration` timestamp. Revocation is authoritative -- an attestation whose expiration date is still in the future but which has been revoked is not valid.
 
-### Attestation Chain Depth
+#### Attestation Chain Depth
 
 Applications that build chains of attestations (e.g. delegated credentials) SHOULD enforce a maximum chain depth and detect cycles to prevent denial-of-service through recursive verification.
 
@@ -500,4 +552,4 @@ The pattern described in this NIP emerged from practical implementation across f
 4. **Trust networks** -- provider endorsement attestations enabling bilateral trust relationships between service participants.
 5. **Product provenance** -- authenticity attestations tracking product verification and chain-of-custody claims.
 
-A reference implementation is available as [`nostr-attestations`](https://github.com/forgesworn/nostr-attestations) -- a zero-dependency TypeScript library with builders, parsers, validators, and 16 frozen conformance test vectors.
+A reference implementation is available as [`nostr-attestations`](https://github.com/forgesworn/nostr-attestations) -- a zero-dependency TypeScript library with builders, parsers, validators, and 17 frozen conformance test vectors.
