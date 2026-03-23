@@ -274,6 +274,26 @@ A certifier attests to the authenticity of a product:
 }
 ```
 
+### Assertion-first attestation
+
+A verifier attests to the validity of a subject's own claim, without specifying a type (it is inferred from the referenced assertion):
+
+```json
+{
+  "kind": 31000,
+  "pubkey": "<verifier-pubkey>",
+  "tags": [
+    ["d", "assertion:<assertion-event-id>"],
+    ["e", "<assertion-event-id>", "wss://relay.example.com", "assertion"],
+    ["p", "<subject-pubkey>"],
+    ["summary", "Identity claim verified in person"]
+  ],
+  "content": ""
+}
+```
+
+The `"assertion"` marker on the `e` tag distinguishes this from a generic event reference. The type is determined by the referenced assertion event.
+
 Application Profiles
 --------------------
 
@@ -429,6 +449,7 @@ A separate proposal defines kinds `31871`, `31872`, `31873`, and `11871` for att
 
 - **One kind, many types.** The four concepts in that proposal -- attestation, request, recommendation, proficiency -- map to four `type` values on a single kind. New attestation types require no protocol changes and no new kind numbers.
 - **Both identity and event attestations.** Kind `31000` is not limited to identity claims. The `e` and `a` tags allow attestations about events (e.g. fact-checking, content verification) alongside attestations about pubkeys (credentials, endorsements). The `type` tag distinguishes the use case.
+- **Both direct and assertion-first patterns.** The attestor can define the type directly, or reference a first-person assertion event via `e`/`a` tags with the `"assertion"` marker. This covers the assertion-first philosophy (individual at the centre) without requiring separate event kinds.
 - **No state machine.** Addressable event semantics handle updates and revocations natively. Request/response workflows, payment integration, and multi-step state machines are application-level concerns that can be built on top of the attestation primitive without protocol-level kinds.
 - **Application profiles over protocol roles.** Rather than defining attestor/requestor/recommender as protocol-level concepts with dedicated kinds, this NIP lets applications define their own roles through type conventions.
 
@@ -479,4 +500,4 @@ The pattern described in this NIP emerged from practical implementation across f
 4. **Trust networks** -- provider endorsement attestations enabling bilateral trust relationships between service participants.
 5. **Product provenance** -- authenticity attestations tracking product verification and chain-of-custody claims.
 
-A reference implementation is available as [`nostr-attestations`](https://github.com/forgesworn/nostr-attestations) -- a zero-dependency TypeScript library with builders, parsers, validators, and 10 frozen conformance test vectors.
+A reference implementation is available as [`nostr-attestations`](https://github.com/forgesworn/nostr-attestations) -- a zero-dependency TypeScript library with builders, parsers, validators, and 16 frozen conformance test vectors.
