@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/forgesworn/nostr-attestations/compare/v2.0.0...v2.1.0) (2026-03-23)
+
+
+### Features
+
+* add NIP-32 labels and occurred_at temporal context ([17f0aec](https://github.com/forgesworn/nostr-attestations/commit/17f0aec29eed60ce19bb77e2dd74e31afa4b3963))
+
 # [2.0.0](https://github.com/forgesworn/nostr-attestations/compare/v1.0.1...v2.0.0) (2026-03-23)
 
 
