@@ -1,3 +1,31 @@
+# [2.0.0](https://github.com/forgesworn/nostr-attestations/compare/v1.0.1...v2.0.0) (2026-03-23)
+
+
+* feat!: assertion-first pattern, validity windows, schema tags ([9a69f7d](https://github.com/forgesworn/nostr-attestations/commit/9a69f7d4e3a11b42e1e9d1312ca3b9bb8b318737))
+
+
+### BREAKING CHANGES
+
+* Attestation.type is now string | null (was string).
+Null when type is inferred from a referenced assertion event.
+
+- Support assertion-first attestation pattern via e/a tags with
+  "assertion" marker — the subject makes a claim, the attestor
+  attests to it
+- type tag conditionally required: must have type OR assertion ref
+- d-tag uses assertion: prefix for assertion-only attestations
+- Add valid_to tag for validity window end (distinct from expiration)
+- Add request tag linking to prompting event
+- Add schema tag for machine-readable schema URIs (eIDAS, W3C VC)
+- Add assertionRelay to parsed Attestation interface
+- Extend createRevocation for assertion-only attestations
+- Add buildAssertionDTag and extend parseDTag for assertion: prefix
+- Add schema filter to attestationFilter
+- Extend revocationFilter with assertion-only overload
+- Add /types subpath export for zero-runtime type imports
+- 6 new conformance test vectors (16 total)
+- 129 tests passing
+
 ## [1.0.1](https://github.com/forgesworn/nostr-attestations/compare/v1.0.0...v1.0.1) (2026-03-20)
 
 
