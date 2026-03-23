@@ -1,4 +1,4 @@
-import { ATTESTATION_KIND } from './constants.js'
+import { ATTESTATION_KIND, TYPES } from './constants.js'
 import { findTag } from './helpers.js'
 import { parseDTag } from './filters.js'
 import type { NostrEvent, Attestation } from './types.js'
@@ -35,7 +35,7 @@ export function parseAttestation(event: NostrEvent): Attestation | null {
 
   return {
     kind: ATTESTATION_KIND as 31000,
-    type,
+    type: type ?? TYPES.ASSERTION,
     pubkey: event.pubkey,
     createdAt: event.created_at,
     identifier: parsed?.identifier ?? null,

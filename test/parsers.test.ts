@@ -126,7 +126,7 @@ describe('parseAttestation', () => {
     })
     const result = parseAttestation(event)
     expect(result).not.toBeNull()
-    expect(result!.type).toBeNull()
+    expect(result!.type).toBe('assertion')
     expect(result!.assertionId).toBe('evt999')
     expect(result!.assertionAddress).toBeNull()
     expect(result!.assertionRelay).toBe('wss://relay.example.com')
@@ -140,7 +140,7 @@ describe('parseAttestation', () => {
       ],
     })
     const result = parseAttestation(event)
-    expect(result!.type).toBeNull()
+    expect(result!.type).toBe('assertion')
     expect(result!.assertionId).toBeNull()
     expect(result!.assertionAddress).toBe('30023:def456:claim')
     expect(result!.assertionRelay).toBe('wss://relay.example.com')

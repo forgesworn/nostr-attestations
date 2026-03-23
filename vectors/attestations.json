@@ -784,7 +784,7 @@
     },
     "expected": {
       "kind": 31000,
-      "type": null,
+      "type": "assertion",
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "createdAt": 1700000000,
       "identifier": "evt999",
@@ -845,7 +845,7 @@
     },
     "expected": {
       "kind": 31000,
-      "type": null,
+      "type": "assertion",
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "createdAt": 1700000000,
       "identifier": "30023:def456:my-claim",

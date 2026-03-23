@@ -42,16 +42,16 @@ describe('parseDTag', () => {
     })
   })
 
-  it('returns type: null for assertion: prefix', () => {
+  it('returns type: "assertion" for assertion: prefix', () => {
     expect(parseDTag('assertion:evt999')).toEqual({
-      type: null,
+      type: 'assertion',
       identifier: 'evt999',
     })
   })
 
-  it('returns type: null for assertion: with complex identifier', () => {
+  it('returns type: "assertion" for assertion: with complex identifier', () => {
     expect(parseDTag('assertion:30023:def456:claim')).toEqual({
-      type: null,
+      type: 'assertion',
       identifier: '30023:def456:claim',
     })
   })

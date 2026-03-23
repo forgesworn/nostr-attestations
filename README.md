@@ -86,7 +86,7 @@ import { parseAttestation } from 'nostr-attestations'
 const attestation = parseAttestation(event)
 // {
 //   kind: 31000,
-//   type: 'credential',          // null for assertion-only attestations
+//   type: 'credential',          // "assertion" for assertion-only attestations
 //   pubkey: '<attestor-pubkey>',
 //   createdAt: 1700000000,
 //   identifier: '<subject-pubkey>',
@@ -137,7 +137,7 @@ const attestation = parseAttestation(event)
 | `revocationFilter` | `(type, identifier)` or `({ assertionId \| assertionAddress })` | Revocation check filter |
 | `buildDTag` | `(type: string, identifier: string) => string` | `"type:identifier"` string |
 | `buildAssertionDTag` | `(ref: string) => string` | `"assertion:ref"` string |
-| `parseDTag` | `(dTag: string) => { type: string \| null; identifier: string } \| null` | Parsed d-tag (type is null for assertion-only) |
+| `parseDTag` | `(dTag: string) => { type: string; identifier: string } \| null` | Parsed d-tag (type is `"assertion"` for assertion-only) |
 
 ### Constants
 

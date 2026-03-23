@@ -76,8 +76,8 @@ export interface RevocationParams {
 /** Parsed attestation data extracted from a NostrEvent. */
 export interface Attestation {
   kind: 31000
-  /** Attestation type. Null when the type is defined by a referenced assertion. */
-  type: string | null
+  /** Attestation type. Value is "assertion" when the type is defined by a referenced assertion event. */
+  type: string
   /** Attestor's pubkey (from outer event). */
   pubkey: string
   /** Event timestamp (from outer event). */

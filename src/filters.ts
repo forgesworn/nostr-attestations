@@ -28,14 +28,11 @@ export function buildAssertionDTag(ref: string): string {
  * Returns null if the d-tag does not contain a colon.
  * For assertion-only attestations (prefix `assertion:`), returns type as null.
  */
-export function parseDTag(dTag: string): { type: string | null; identifier: string } | null {
+export function parseDTag(dTag: string): { type: string; identifier: string } | null {
   const idx = dTag.indexOf(':')
   if (idx <= 0) return null
   const prefix = dTag.slice(0, idx)
   const rest = dTag.slice(idx + 1)
-  if (prefix === ASSERTION_PREFIX) {
-    return { type: null, identifier: rest }
-  }
   return { type: prefix, identifier: rest }
 }
 
