@@ -1,6 +1,6 @@
 # nostr-attestations
 
-One Nostr event kind for all attestations — credentials, endorsements, vouches, provenance, licensing, and trust.
+One Nostr event kind for all attestations — credentials, endorsements, vouches, provenance, licensing, and trust. Supports both direct attestation and assertion-first patterns within a single kind.
 
 **Nostr:** [`npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2`](https://njump.me/npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2)
 
@@ -31,11 +31,33 @@ const event = createAttestation({
 
 No relay client, no signing library, no crypto. Bring your own. Works with nostr-tools, any Nostr SDK, or bare WebSocket code.
 
+### Assertion-First Pattern
+
+Attest to someone else's claim — the individual makes an assertion, you verify it:
+
+```typescript
+import { createAttestation } from 'nostr-attestations'
+
+// Attest to a first-person assertion event
+const event = createAttestation({
+  assertion: { id: '<assertion-event-id>', relay: 'wss://relay.example.com' },
+  subject: '<subject-pubkey>',
+  content: 'Identity verified in person',
+})
+// type is inferred from the referenced assertion — no type tag needed
+```
+
 ## Why This?
 
 Nostr has several ways to label or badge identities, but none designed for verifiable attestations. [NIP-58](https://github.com/nostr-protocol/nips/blob/master/58.md) badges are display-only — no expiry, no revocation, no structured claims. [NIP-85](https://github.com/nostr-protocol/nips/blob/master/85.md) covers social graph metrics, not arbitrary claims. [NIP-32](https://github.com/nostr-protocol/nips/blob/master/32.md) labels are lightweight but not individually replaceable per subject.
 
 nostr-attestations uses **one kind (31000) with a `type` tag** instead of inventing a new event kind for every attestation use case. Credentials, endorsements, vouches, licensing, provenance, and revocations all share the same event structure. New attestation types need zero protocol changes — just define a new `type` value.
+
+It supports two attestation patterns within the same kind:
+- **Direct attestation** — the attestor defines the type and makes a claim about a subject
+- **Assertion-first** — the subject makes their own claim, and the attestor references and verifies it
+
+The base layer is **semantically neutral** — it carries attestations but does not interpret them. Application profiles (identity verification, professional licensing, service reputation) are built downstream, not in the library.
 
 ## Revocation
 
@@ -64,13 +86,20 @@ import { parseAttestation } from 'nostr-attestations'
 const attestation = parseAttestation(event)
 // {
 //   kind: 31000,
-//   type: 'credential',
+//   type: 'credential',          // null for assertion-only attestations
 //   pubkey: '<attestor-pubkey>',
 //   createdAt: 1700000000,
 //   identifier: '<subject-pubkey>',
 //   subject: '<subject-pubkey>',
+//   assertionId: null,            // event ID if assertion-first
+//   assertionAddress: null,       // addressable coord if assertion-first
+//   assertionRelay: null,         // relay hint for assertion
 //   summary: 'Professional credential verified',
 //   expiration: 1735689600,
+//   validFrom: null,
+//   validTo: null,                // validity window end
+//   request: null,                // what prompted this attestation
+//   schema: null,                 // machine-readable schema URI
 //   revoked: false,
 //   reason: null,
 //   tags: [...],
@@ -105,9 +134,10 @@ const attestation = parseAttestation(event)
 | Function | Signature | Returns |
 |----------|-----------|---------|
 | `attestationFilter` | `(params: FilterParams) => NostrFilter` | Relay query filter |
-| `revocationFilter` | `(type: string, identifier: string) => NostrFilter` | Revocation check filter |
+| `revocationFilter` | `(type, identifier)` or `({ assertionId \| assertionAddress })` | Revocation check filter |
 | `buildDTag` | `(type: string, identifier: string) => string` | `"type:identifier"` string |
-| `parseDTag` | `(dTag: string) => { type: string; identifier: string } \| null` | Parsed d-tag |
+| `buildAssertionDTag` | `(ref: string) => string` | `"assertion:ref"` string |
+| `parseDTag` | `(dTag: string) => { type: string \| null; identifier: string } \| null` | Parsed d-tag (type is null for assertion-only) |
 
 ### Constants
 
@@ -118,11 +148,11 @@ const attestation = parseAttestation(event)
 
 ### Types
 
-`AttestationParams`, `RevocationParams`, `Attestation`, `ValidationResult`, `FilterParams`, `NostrFilter`, `NostrEvent`, `EventTemplate` — all exported from the package root.
+`AssertionRef`, `AttestationParams`, `RevocationParams`, `Attestation`, `ValidationResult`, `FilterParams`, `NostrFilter`, `NostrEvent`, `EventTemplate` — all exported from the package root and from `nostr-attestations/types` (zero-runtime import).
 
 ## Test Vectors
 
-`vectors/attestations.json` contains 10 frozen conformance test vectors covering the full range of attestation types (credential, endorsement, vouch, verifier, provenance) and states (active, revoked, self-attestation). Any conformant implementation must produce identical parse results from these inputs. The vectors are pinned — if tests against them fail, the implementation is broken, not the vector.
+`vectors/attestations.json` contains 16 frozen conformance test vectors covering the full range of attestation types (credential, endorsement, vouch, verifier, provenance) and states (active, revoked, self-attestation). Any conformant implementation must produce identical parse results from these inputs. The vectors are pinned — if tests against them fail, the implementation is broken, not the vector.
 
 ## Attested on Nostr
 
