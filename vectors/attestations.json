@@ -88,7 +88,8 @@
       "assertionRelay": null,
       "validTo": null,
       "request": null,
-      "schema": null
+      "schema": null,
+      "occurredAt": null
     },
     "valid": true
   },
@@ -149,7 +150,8 @@
       "assertionRelay": null,
       "validTo": null,
       "request": null,
-      "schema": null
+      "schema": null,
+      "occurredAt": null
     },
     "valid": true
   },
@@ -234,7 +236,8 @@
       "assertionRelay": null,
       "validTo": null,
       "request": null,
-      "schema": null
+      "schema": null,
+      "occurredAt": null
     },
     "valid": true
   },
@@ -319,7 +322,8 @@
       "assertionRelay": null,
       "validTo": null,
       "request": null,
-      "schema": null
+      "schema": null,
+      "occurredAt": null
     },
     "valid": true
   },
@@ -404,7 +408,8 @@
       "assertionRelay": null,
       "validTo": null,
       "request": null,
-      "schema": null
+      "schema": null,
+      "occurredAt": null
     },
     "valid": true
   },
@@ -489,7 +494,8 @@
       "assertionRelay": null,
       "validTo": null,
       "request": null,
-      "schema": null
+      "schema": null,
+      "occurredAt": null
     },
     "valid": true
   },
@@ -558,7 +564,8 @@
       "assertionRelay": null,
       "validTo": null,
       "request": null,
-      "schema": null
+      "schema": null,
+      "occurredAt": null
     },
     "valid": true
   },
@@ -637,7 +644,8 @@
       "assertionRelay": null,
       "validTo": null,
       "request": null,
-      "schema": null
+      "schema": null,
+      "occurredAt": null
     },
     "valid": true
   },
@@ -690,7 +698,8 @@
       "assertionRelay": null,
       "validTo": null,
       "request": null,
-      "schema": null
+      "schema": null,
+      "occurredAt": null
     },
     "valid": true
   },
@@ -751,7 +760,8 @@
       "assertionRelay": null,
       "validTo": null,
       "request": null,
-      "schema": null
+      "schema": null,
+      "occurredAt": null
     },
     "valid": true
   },
@@ -816,7 +826,8 @@
           "def456"
         ]
       ],
-      "content": "I attest to this claim"
+      "content": "I attest to this claim",
+      "occurredAt": null
     },
     "valid": true
   },
@@ -873,7 +884,8 @@
           "assertion"
         ]
       ],
-      "content": ""
+      "content": "",
+      "occurredAt": null
     },
     "valid": true
   },
@@ -946,7 +958,8 @@
           "assertion"
         ]
       ],
-      "content": ""
+      "content": "",
+      "occurredAt": null
     },
     "valid": true
   },
@@ -1023,7 +1036,8 @@
           "1735689600"
         ]
       ],
-      "content": ""
+      "content": "",
+      "occurredAt": null
     },
     "valid": true
   },
@@ -1092,7 +1106,8 @@
           "https://signet.dev/schemas/credential-v1"
         ]
       ],
-      "content": ""
+      "content": "",
+      "occurredAt": null
     },
     "valid": true
   },
@@ -1160,6 +1175,55 @@
           "request",
           "31872:abc123:my-request"
         ]
+      ],
+      "content": "",
+      "occurredAt": null
+    },
+    "valid": true
+  },
+  {
+    "name": "attestation-with-occurred-at",
+    "description": "Service attestation with occurred_at timestamp distinct from created_at",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1711000000,
+      "tags": [
+        ["d", "endorsement:def456"],
+        ["type", "endorsement"],
+        ["p", "def456"],
+        ["occurred_at", "1710900000"],
+        ["summary", "Completed frontend work ahead of schedule"]
+      ],
+      "content": "",
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sig": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "endorsement",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1711000000,
+      "identifier": "def456",
+      "subject": "def456",
+      "assertionId": null,
+      "assertionAddress": null,
+      "assertionRelay": null,
+      "summary": "Completed frontend work ahead of schedule",
+      "expiration": null,
+      "validFrom": null,
+      "validTo": null,
+      "request": null,
+      "schema": null,
+      "occurredAt": 1710900000,
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        ["d", "endorsement:def456"],
+        ["type", "endorsement"],
+        ["p", "def456"],
+        ["occurred_at", "1710900000"],
+        ["summary", "Completed frontend work ahead of schedule"]
       ],
       "content": ""
     },

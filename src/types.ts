@@ -49,6 +49,8 @@ export interface AttestationParams {
   request?: string
   /** Machine-readable schema URI for regulatory mapping or application-profile identification. */
   schema?: string
+  /** Unix timestamp for when the attested event occurred (distinct from created_at). */
+  occurredAt?: number
   /** Additional application-specific tags. */
   tags?: string[][]
   /** Event content: empty string, human-readable text, or JSON. */
@@ -102,6 +104,8 @@ export interface Attestation {
   request: string | null
   /** Machine-readable schema URI. */
   schema: string | null
+  /** When the attested event occurred (distinct from createdAt). */
+  occurredAt: number | null
   revoked: boolean
   reason: string | null
   /** All tags from the original event (for application-specific access). */

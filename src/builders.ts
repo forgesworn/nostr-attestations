@@ -102,6 +102,17 @@ export function createAttestation(params: AttestationParams): EventTemplate {
     tags.push(['schema', params.schema])
   }
 
+  if (params.occurredAt != null) {
+    if (!Number.isFinite(params.occurredAt)) throw new Error('occurredAt must be a finite number')
+    tags.push(['occurred_at', String(params.occurredAt)])
+  }
+
+  // NIP-32 labels from type (not for assertion-only attestations)
+  if (hasType) {
+    tags.push(['L', 'nip-va.type'])
+    tags.push(['l', params.type!, 'nip-va.type'])
+  }
+
   if (params.tags) {
     for (const tag of params.tags) {
       tags.push(tag)

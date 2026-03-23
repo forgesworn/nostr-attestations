@@ -203,6 +203,23 @@ describe('parseAttestation', () => {
     expect(result!.schema).toBe('https://signet.dev/schemas/v1')
   })
 
+  it('parses occurred_at', () => {
+    const event = makeEvent({
+      tags: [
+        ['d', 'credential:sub'],
+        ['type', 'credential'],
+        ['occurred_at', '1710900000'],
+      ],
+    })
+    const result = parseAttestation(event)
+    expect(result!.occurredAt).toBe(1710900000)
+  })
+
+  it('returns null occurredAt when tag absent', () => {
+    const result = parseAttestation(makeEvent())
+    expect(result!.occurredAt).toBeNull()
+  })
+
   it('ignores e-tags without assertion marker', () => {
     const event = makeEvent({
       tags: [

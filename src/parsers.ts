@@ -32,6 +32,7 @@ export function parseAttestation(event: NostrEvent): Attestation | null {
   const expirationStr = findTag(event.tags, 'expiration')
   const validFromStr = findTag(event.tags, 'valid_from')
   const validToStr = findTag(event.tags, 'valid_to')
+  const occurredAtStr = findTag(event.tags, 'occurred_at')
 
   return {
     kind: ATTESTATION_KIND as 31000,
@@ -49,6 +50,7 @@ export function parseAttestation(event: NostrEvent): Attestation | null {
     validTo: validToStr ? Number(validToStr) : null,
     request: findTag(event.tags, 'request'),
     schema: findTag(event.tags, 'schema'),
+    occurredAt: occurredAtStr ? Number(occurredAtStr) : null,
     revoked: findTag(event.tags, 'status') === 'revoked',
     reason: findTag(event.tags, 'reason'),
     tags: event.tags,

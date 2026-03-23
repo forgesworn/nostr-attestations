@@ -47,6 +47,31 @@ const event = createAttestation({
 // type is inferred from the referenced assertion — no type tag needed
 ```
 
+### Temporal Context
+
+Record when the attested event actually happened, separate from when the attestation was published:
+
+```typescript
+const event = createAttestation({
+  type: TYPES.ENDORSEMENT,
+  subject: '<service-provider-pubkey>',
+  occurredAt: 1710900000,  // service completed last Tuesday
+  summary: 'Completed frontend work ahead of schedule',
+})
+// created_at = when attestation published, occurred_at = when it happened
+```
+
+### NIP-32 Labels
+
+Typed attestations automatically include [NIP-32](https://github.com/nostr-protocol/nips/blob/master/32.md) namespace labels for relay-side discoverability:
+
+```json
+["L", "nip-va.type"]
+["l", "credential", "nip-va.type"]
+```
+
+This enables queries like `{"#l": ["credential"]}` across NIP-32-aware clients and relays.
+
 ## Why This?
 
 Nostr has several ways to label or badge identities, but none designed for verifiable attestations. [NIP-58](https://github.com/nostr-protocol/nips/blob/master/58.md) badges are display-only — no expiry, no revocation, no structured claims. [NIP-85](https://github.com/nostr-protocol/nips/blob/master/85.md) covers social graph metrics, not arbitrary claims. [NIP-32](https://github.com/nostr-protocol/nips/blob/master/32.md) labels are lightweight but not individually replaceable per subject.
@@ -100,6 +125,7 @@ const attestation = parseAttestation(event)
 //   validTo: null,                // validity window end
 //   request: null,                // what prompted this attestation
 //   schema: null,                 // machine-readable schema URI
+//   occurredAt: null,             // when the attested event happened
 //   revoked: false,
 //   reason: null,
 //   tags: [...],
@@ -152,7 +178,7 @@ const attestation = parseAttestation(event)
 
 ## Test Vectors
 
-`vectors/attestations.json` contains 16 frozen conformance test vectors covering the full range of attestation types (credential, endorsement, vouch, verifier, provenance) and states (active, revoked, self-attestation). Any conformant implementation must produce identical parse results from these inputs. The vectors are pinned — if tests against them fail, the implementation is broken, not the vector.
+`vectors/attestations.json` contains 17 frozen conformance test vectors covering the full range of attestation types (credential, endorsement, vouch, verifier, provenance) and states (active, revoked, self-attestation). Any conformant implementation must produce identical parse results from these inputs. The vectors are pinned — if tests against them fail, the implementation is broken, not the vector.
 
 ## Attested on Nostr
 

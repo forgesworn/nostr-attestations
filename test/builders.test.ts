@@ -148,6 +148,31 @@ describe('createAttestation', () => {
   it('throws if schema is empty string', () => {
     expect(() => createAttestation({ type: 'credential', schema: '  ' })).toThrow('schema must not be empty')
   })
+
+  it('adds NIP-32 L and l tags from type', () => {
+    const event = createAttestation({ type: 'credential', identifier: 'abc' })
+    expect(event.tags).toContainEqual(['L', 'nip-va.type'])
+    expect(event.tags).toContainEqual(['l', 'credential', 'nip-va.type'])
+  })
+
+  it('omits NIP-32 labels for assertion-only attestations', () => {
+    const event = createAttestation({ assertion: { id: 'evt999' } })
+    const lTags = event.tags.filter(t => t[0] === 'L' || t[0] === 'l')
+    expect(lTags).toHaveLength(0)
+  })
+
+  it('adds occurred_at tag', () => {
+    const event = createAttestation({ type: 'credential', occurredAt: 1710900000 })
+    expect(event.tags).toContainEqual(['occurred_at', '1710900000'])
+  })
+
+  it('throws if occurredAt is NaN', () => {
+    expect(() => createAttestation({ type: 'credential', occurredAt: NaN })).toThrow('occurredAt must be a finite number')
+  })
+
+  it('throws if occurredAt is Infinity', () => {
+    expect(() => createAttestation({ type: 'credential', occurredAt: Infinity })).toThrow('occurredAt must be a finite number')
+  })
 })
 
 describe('createRevocation', () => {

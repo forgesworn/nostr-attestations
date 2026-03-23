@@ -98,6 +98,15 @@ export function validateAttestation(event: NostrEvent): ValidationResult {
     }
   }
 
+  // occurred_at validation
+  const occurredAtStr = findTag(event.tags, 'occurred_at')
+  if (occurredAtStr != null) {
+    const occurredAt = Number(occurredAtStr)
+    if (!Number.isFinite(occurredAt)) {
+      errors.push('occurred_at must be a valid timestamp')
+    }
+  }
+
   // schema validation
   const schema = findTag(event.tags, 'schema')
   if (schema != null && !schema.trim()) {

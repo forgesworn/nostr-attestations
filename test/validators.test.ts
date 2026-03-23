@@ -158,6 +158,25 @@ describe('validateAttestation', () => {
     expect(result.valid).toBe(true)
   })
 
+  it('fails when occurred_at is not a valid timestamp', () => {
+    const result = validateAttestation(makeEvent([
+      ['d', 'credential:abc'],
+      ['type', 'credential'],
+      ['occurred_at', 'not-a-number'],
+    ]))
+    expect(result.valid).toBe(false)
+    expect(result.errors).toContain('occurred_at must be a valid timestamp')
+  })
+
+  it('passes when occurred_at is a valid timestamp', () => {
+    const result = validateAttestation(makeEvent([
+      ['d', 'credential:abc'],
+      ['type', 'credential'],
+      ['occurred_at', '1710900000'],
+    ]))
+    expect(result.valid).toBe(true)
+  })
+
   it('fails when schema is empty', () => {
     const result = validateAttestation(makeEvent([
       ['d', 'credential:abc'],
