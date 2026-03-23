@@ -34,8 +34,13 @@ Kind `31000` (Verifiable Attestation) -- an addressable event per [NIP-01](01.md
 
 | Tag    | Value                         | Description                                                        |
 | ------ | ----------------------------- | ------------------------------------------------------------------ |
-| `d`    | `<type>:<subject-or-context>` | Addressable identifier (see [d-tag convention](#d-tag-convention))  |
-| `type` | `<attestation-type>`          | Application-defined attestation type                               |
+| `d`    | `<type>:<identifier>` or `assertion:<ref>` | Addressable identifier (see [d-tag convention](#d-tag-convention))  |
+
+At least one of `type` or an assertion reference (`e`/`a` tag with `"assertion"` marker) MUST be present:
+
+| Tag    | Value                  | Condition                                                          |
+| ------ | ---------------------- | ------------------------------------------------------------------ |
+| `type` | `<attestation-type>`   | REQUIRED when no assertion reference is present. OPTIONAL when an assertion reference is present (type can be inferred from the referenced event). |
 
 #### Conditionally Required
 
@@ -55,12 +60,17 @@ Kind `31000` (Verifiable Attestation) -- an addressable event per [NIP-01](01.md
 | Tag          | Value                    | Description                                                              |
 | ------------ | ------------------------ | ------------------------------------------------------------------------ |
 | `valid_from` | `<unix-timestamp>`       | Earliest time the attestation is valid (deferred activation)             |
+| `valid_to`   | `<unix-timestamp>`       | Latest time the attestation's claim is valid (validity window end)       |
+| `request`    | `<opaque-string>`        | Reference to the event that prompted this attestation                    |
+| `schema`     | `<uri>`                  | Machine-readable schema reference for regulatory mapping or profile ID   |
+| `e`          | `<event-id>`, `<relay>`, `"assertion"` | Reference to a first-person assertion event being attested       |
+| `a`          | `<coordinate>`, `<relay>`, `"assertion"` | Reference to an addressable assertion event being attested     |
 | `L`          | `<namespace>`            | Label namespace per [NIP-32](32.md)                                      |
 | `l`          | `<label>`, `<namespace>` | Label value per [NIP-32](32.md)                                          |
-| `e`          | `<event-id>`             | Reference to a related event                                             |
-| `a`          | `<kind>:<pubkey>:<d-tag>`| Reference to a related addressable event                                 |
 
-When `valid_from` is present, clients SHOULD treat the attestation as inactive before that timestamp. Combined with `expiration`, this defines a validity window: the attestation is valid from `valid_from` until `expiration`.
+**Validity window:** When `valid_from` is present, clients SHOULD treat the attestation as inactive before that timestamp. When `valid_to` is present, clients SHOULD treat the attestation's claim as no longer valid after that timestamp. Note that `valid_to` is distinct from `expiration` (NIP-40): `expiration` tells relays when to garbage-collect the event, while `valid_to` tells applications when the claim stops being valid. An attestation can remain on relays after `valid_to` for historical reference.
+
+**Assertion references:** An attestation MAY reference a first-person assertion event -- the subject's own claim that the attestor is verifying. At most one `e` or `a` tag with the `"assertion"` marker is allowed per attestation (never both). When present, the attestation means "I attest to the validity of this claim." When the `type` tag is absent, the type is inferred from the referenced assertion event.
 
 Applications MAY define additional tags specific to their attestation types. Such tags are carried on the event alongside the tags defined here.
 
@@ -76,10 +86,15 @@ Clients that do not understand a particular attestation type SHOULD fall back to
 
 ### d-tag Convention
 
-The `d` tag MUST follow the format `<type>:<identifier>`:
+The `d` tag follows one of two formats:
 
+**Typed attestation:** `<type>:<identifier>`
 - `<type>` matches the value of the `type` tag. Type values MUST NOT contain colons. The first colon in the `d` tag is the delimiter.
 - `<identifier>` is a context string relevant to the attestation -- typically the subject's hex pubkey for third-party attestations, or an application-defined context string for self-attestations.
+
+**Assertion-only attestation:** `assertion:<ref>`
+- Used when no `type` tag is present (assertion-first pattern).
+- `<ref>` is the event ID (for `e`-tag assertions) or addressable coordinate (for `a`-tag assertions).
 
 This convention ensures:
 

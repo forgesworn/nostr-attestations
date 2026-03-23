@@ -6,9 +6,10 @@ export { parseAttestation, isRevoked } from './parsers.js'
 
 export { validateAttestation } from './validators.js'
 
-export { buildDTag, parseDTag, attestationFilter, revocationFilter } from './filters.js'
+export { buildDTag, buildAssertionDTag, parseDTag, attestationFilter, revocationFilter } from './filters.js'
 
 export type {
+  AssertionRef,
   AttestationParams,
   RevocationParams,
   Attestation,

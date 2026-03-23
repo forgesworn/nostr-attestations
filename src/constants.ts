@@ -11,4 +11,6 @@ export const TYPES = {
   VOUCH: 'vouch',
   VERIFIER: 'verifier',
   PROVENANCE: 'provenance',
+  /** Synthetic type for assertion-only attestations (no explicit type tag). */
+  ASSERTION: 'assertion',
 } as const

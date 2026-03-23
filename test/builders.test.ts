@@ -55,8 +55,12 @@ describe('createAttestation', () => {
     expect(event.content).toBe('{"proof":"..."}')
   })
 
-  it('throws if type is empty', () => {
-    expect(() => createAttestation({ type: '' })).toThrow('type must not be empty')
+  it('throws if neither type nor assertion provided', () => {
+    expect(() => createAttestation({})).toThrow('at least one of type or assertion must be provided')
+  })
+
+  it('throws if type is empty string without assertion', () => {
+    expect(() => createAttestation({ type: '' })).toThrow('at least one of type or assertion must be provided')
   })
 
   it('throws if type contains colons', () => {
@@ -83,6 +87,66 @@ describe('createAttestation', () => {
   it('defaults identifier to subject when subject provided but no identifier', () => {
     const event = createAttestation({ type: 'credential', subject: 'deadbeef' })
     expect(event.tags).toContainEqual(['d', 'credential:deadbeef'])
+  })
+
+  it('creates assertion-only attestation with e-tag', () => {
+    const event = createAttestation({ assertion: { id: 'evt999', relay: 'wss://relay.example.com' } })
+    expect(event.tags).toContainEqual(['d', 'assertion:evt999'])
+    expect(event.tags).toContainEqual(['e', 'evt999', 'wss://relay.example.com', 'assertion'])
+    const typeTags = event.tags.filter(t => t[0] === 'type')
+    expect(typeTags).toHaveLength(0)
+  })
+
+  it('creates assertion-only attestation with a-tag', () => {
+    const event = createAttestation({ assertion: { address: '30023:abc:my-claim' } })
+    expect(event.tags).toContainEqual(['d', 'assertion:30023:abc:my-claim'])
+    expect(event.tags).toContainEqual(['a', '30023:abc:my-claim', '', 'assertion'])
+  })
+
+  it('creates attestation with both type and assertion', () => {
+    const event = createAttestation({
+      type: 'credential',
+      subject: 'def456',
+      assertion: { id: 'evt999' },
+    })
+    expect(event.tags).toContainEqual(['d', 'credential:def456'])
+    expect(event.tags).toContainEqual(['type', 'credential'])
+    expect(event.tags).toContainEqual(['e', 'evt999', '', 'assertion'])
+  })
+
+  it('throws if assertion has both id and address', () => {
+    expect(() => createAttestation({ assertion: { id: 'a', address: 'b' } })).toThrow('not both')
+  })
+
+  it('throws if assertion has neither id nor address', () => {
+    expect(() => createAttestation({ assertion: {} })).toThrow('must have id or address')
+  })
+
+  it('adds valid_to tag', () => {
+    const event = createAttestation({ type: 'credential', validTo: 1735689600 })
+    expect(event.tags).toContainEqual(['valid_to', '1735689600'])
+  })
+
+  it('throws if validTo is not finite', () => {
+    expect(() => createAttestation({ type: 'credential', validTo: NaN })).toThrow('validTo must be a finite number')
+  })
+
+  it('throws if validTo <= validFrom', () => {
+    expect(() => createAttestation({ type: 'credential', validFrom: 1700000000, validTo: 1700000000 })).toThrow('validTo must be greater than validFrom')
+  })
+
+  it('adds request tag', () => {
+    const event = createAttestation({ type: 'credential', request: '31872:abc:req1' })
+    expect(event.tags).toContainEqual(['request', '31872:abc:req1'])
+  })
+
+  it('adds schema tag', () => {
+    const event = createAttestation({ type: 'credential', schema: 'https://signet.dev/schemas/v1' })
+    expect(event.tags).toContainEqual(['schema', 'https://signet.dev/schemas/v1'])
+  })
+
+  it('throws if schema is empty string', () => {
+    expect(() => createAttestation({ type: 'credential', schema: '  ' })).toThrow('schema must not be empty')
   })
 })
 
@@ -124,5 +188,27 @@ describe('createRevocation', () => {
       subject: 'abc123',
     })
     expect(event.tags).toContainEqual(['p', 'abc123'])
+  })
+
+  it('creates revocation for assertion-only attestation by event id', () => {
+    const event = createRevocation({ assertionId: 'evt999' })
+    expect(event.tags).toContainEqual(['d', 'assertion:evt999'])
+    expect(event.tags).toContainEqual(['status', 'revoked'])
+    const typeTags = event.tags.filter(t => t[0] === 'type')
+    expect(typeTags).toHaveLength(0)
+  })
+
+  it('creates revocation for assertion-only attestation by address', () => {
+    const event = createRevocation({ assertionAddress: '30023:abc:claim' })
+    expect(event.tags).toContainEqual(['d', 'assertion:30023:abc:claim'])
+    expect(event.tags).toContainEqual(['status', 'revoked'])
+  })
+
+  it('throws if neither typed nor assertion revocation params', () => {
+    expect(() => createRevocation({})).toThrow('provide (type + identifier) or (assertionId | assertionAddress)')
+  })
+
+  it('throws if both assertionId and assertionAddress provided', () => {
+    expect(() => createRevocation({ assertionId: 'a', assertionAddress: 'b' })).toThrow('not both')
   })
 })

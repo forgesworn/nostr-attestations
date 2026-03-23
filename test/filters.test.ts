@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { buildDTag, parseDTag, attestationFilter, revocationFilter } from '../src/filters.js'
+import { buildDTag, buildAssertionDTag, parseDTag, attestationFilter, revocationFilter } from '../src/filters.js'
 
 describe('buildDTag', () => {
   it('joins type and identifier with colon', () => {
@@ -41,6 +41,34 @@ describe('parseDTag', () => {
       identifier: 'some:complex:id',
     })
   })
+
+  it('returns type: "assertion" for assertion: prefix', () => {
+    expect(parseDTag('assertion:evt999')).toEqual({
+      type: 'assertion',
+      identifier: 'evt999',
+    })
+  })
+
+  it('returns type: "assertion" for assertion: with complex identifier', () => {
+    expect(parseDTag('assertion:30023:def456:claim')).toEqual({
+      type: 'assertion',
+      identifier: '30023:def456:claim',
+    })
+  })
+})
+
+describe('buildAssertionDTag', () => {
+  it('builds assertion: prefixed d-tag', () => {
+    expect(buildAssertionDTag('evt999')).toBe('assertion:evt999')
+  })
+
+  it('handles complex assertion references', () => {
+    expect(buildAssertionDTag('30023:abc:claim')).toBe('assertion:30023:abc:claim')
+  })
+
+  it('throws for empty ref', () => {
+    expect(() => buildAssertionDTag('')).toThrow('must not be empty')
+  })
 })
 
 describe('attestationFilter', () => {
@@ -63,6 +91,11 @@ describe('attestationFilter', () => {
     const filter = attestationFilter({ type: 'credential' })
     expect(filter['#type']).toEqual(['credential'])
   })
+
+  it('adds #schema when schema provided', () => {
+    const filter = attestationFilter({ schema: 'https://signet.dev/schemas/v1' })
+    expect(filter['#schema']).toEqual(['https://signet.dev/schemas/v1'])
+  })
 })
 
 describe('revocationFilter', () => {
@@ -70,5 +103,15 @@ describe('revocationFilter', () => {
     const filter = revocationFilter('credential', 'abc123')
     expect(filter.kinds).toEqual([31000])
     expect(filter['#d']).toEqual(['credential:abc123'])
+  })
+
+  it('builds filter for assertion-only by event id', () => {
+    const filter = revocationFilter({ assertionId: 'evt999' })
+    expect(filter['#d']).toEqual(['assertion:evt999'])
+  })
+
+  it('builds filter for assertion-only by address', () => {
+    const filter = revocationFilter({ assertionAddress: '30023:abc:claim' })
+    expect(filter['#d']).toEqual(['assertion:30023:abc:claim'])
   })
 })

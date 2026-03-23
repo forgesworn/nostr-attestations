@@ -37,7 +37,7 @@ describe('parseAttestation', () => {
     expect(parseAttestation(makeEvent({ kind: 1 }))).toBeNull()
   })
 
-  it('returns null when type tag is missing', () => {
+  it('returns null when neither type nor assertion present', () => {
     expect(parseAttestation(makeEvent({ tags: [['d', 'test']] }))).toBeNull()
   })
 
@@ -114,6 +114,105 @@ describe('parseAttestation', () => {
     })
     const result = parseAttestation(event)
     expect(result!.tags).toContainEqual(['profession', 'attorney'])
+  })
+
+  it('parses assertion-only attestation with e-tag', () => {
+    const event = makeEvent({
+      tags: [
+        ['d', 'assertion:evt999'],
+        ['e', 'evt999', 'wss://relay.example.com', 'assertion'],
+        ['p', 'subject123'],
+      ],
+    })
+    const result = parseAttestation(event)
+    expect(result).not.toBeNull()
+    expect(result!.type).toBe('assertion')
+    expect(result!.assertionId).toBe('evt999')
+    expect(result!.assertionAddress).toBeNull()
+    expect(result!.assertionRelay).toBe('wss://relay.example.com')
+  })
+
+  it('parses assertion-only attestation with a-tag', () => {
+    const event = makeEvent({
+      tags: [
+        ['d', 'assertion:30023:def456:claim'],
+        ['a', '30023:def456:claim', 'wss://relay.example.com', 'assertion'],
+      ],
+    })
+    const result = parseAttestation(event)
+    expect(result!.type).toBe('assertion')
+    expect(result!.assertionId).toBeNull()
+    expect(result!.assertionAddress).toBe('30023:def456:claim')
+    expect(result!.assertionRelay).toBe('wss://relay.example.com')
+  })
+
+  it('parses attestation with both type and assertion', () => {
+    const event = makeEvent({
+      tags: [
+        ['d', 'credential:sub'],
+        ['type', 'credential'],
+        ['e', 'evt999', '', 'assertion'],
+      ],
+    })
+    const result = parseAttestation(event)
+    expect(result!.type).toBe('credential')
+    expect(result!.assertionId).toBe('evt999')
+    expect(result!.assertionRelay).toBeNull()
+  })
+
+  it('returns null assertion fields when no assertion reference', () => {
+    const result = parseAttestation(makeEvent())
+    expect(result!.assertionId).toBeNull()
+    expect(result!.assertionAddress).toBeNull()
+    expect(result!.assertionRelay).toBeNull()
+  })
+
+  it('parses valid_to', () => {
+    const event = makeEvent({
+      tags: [
+        ['d', 'credential:sub'],
+        ['type', 'credential'],
+        ['valid_to', '1735689600'],
+      ],
+    })
+    const result = parseAttestation(event)
+    expect(result!.validTo).toBe(1735689600)
+  })
+
+  it('parses request tag', () => {
+    const event = makeEvent({
+      tags: [
+        ['d', 'credential:sub'],
+        ['type', 'credential'],
+        ['request', '31872:abc:req1'],
+      ],
+    })
+    const result = parseAttestation(event)
+    expect(result!.request).toBe('31872:abc:req1')
+  })
+
+  it('parses schema tag', () => {
+    const event = makeEvent({
+      tags: [
+        ['d', 'credential:sub'],
+        ['type', 'credential'],
+        ['schema', 'https://signet.dev/schemas/v1'],
+      ],
+    })
+    const result = parseAttestation(event)
+    expect(result!.schema).toBe('https://signet.dev/schemas/v1')
+  })
+
+  it('ignores e-tags without assertion marker', () => {
+    const event = makeEvent({
+      tags: [
+        ['d', 'credential:sub'],
+        ['type', 'credential'],
+        ['e', 'evt999'],
+      ],
+    })
+    const result = parseAttestation(event)
+    expect(result!.assertionId).toBeNull()
   })
 })
 

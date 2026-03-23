@@ -1,29 +1,79 @@
 import { ATTESTATION_KIND } from './constants.js'
-import { buildDTag } from './filters.js'
+import { buildDTag, buildAssertionDTag } from './filters.js'
 import type { AttestationParams, RevocationParams, EventTemplate } from './types.js'
 
 /**
  * Create an unsigned attestation event template.
  * The caller is responsible for signing (adding pubkey, id, sig, created_at).
+ *
+ * At least one of `type` or `assertion` must be provided.
  */
 export function createAttestation(params: AttestationParams): EventTemplate {
-  if (!params.type) throw new Error('type must not be empty')
-  if (params.type.includes(':')) throw new Error('type must not contain colons')
+  const hasType = !!params.type
+  const hasAssertion = !!params.assertion
+
+  if (!hasType && !hasAssertion) {
+    throw new Error('at least one of type or assertion must be provided')
+  }
+
+  if (hasType) {
+    if (params.type!.includes(':')) throw new Error('type must not contain colons')
+  }
+
+  if (hasAssertion) {
+    const a = params.assertion!
+    if (a.id && a.address) throw new Error('assertion must have id or address, not both')
+    if (!a.id && !a.address) throw new Error('assertion must have id or address')
+  }
+
+  if (params.validTo != null) {
+    if (!Number.isFinite(params.validTo)) throw new Error('validTo must be a finite number')
+    if (params.validFrom != null && params.validTo <= params.validFrom) {
+      throw new Error('validTo must be greater than validFrom')
+    }
+  }
+
+  if (params.schema != null && !params.schema.trim()) {
+    throw new Error('schema must not be empty')
+  }
 
   const tags: string[][] = []
 
-  // d-tag: type:identifier, or type:subject if no identifier, or just type
-  const identifier = params.identifier ?? params.subject
-  if (identifier) {
-    tags.push(['d', buildDTag(params.type, identifier)])
+  // d-tag construction
+  if (hasType) {
+    const identifier = params.identifier ?? params.subject
+    if (identifier) {
+      tags.push(['d', buildDTag(params.type!, identifier)])
+    } else {
+      tags.push(['d', params.type!])
+    }
+    tags.push(['type', params.type!])
   } else {
-    tags.push(['d', params.type])
+    // assertion-only: d-tag uses assertion: prefix
+    const ref = params.assertion!.id ?? params.assertion!.address!
+    tags.push(['d', buildAssertionDTag(ref)])
   }
-
-  tags.push(['type', params.type])
 
   if (params.subject) {
     tags.push(['p', params.subject])
+  }
+
+  // Assertion reference tags
+  if (hasAssertion) {
+    const a = params.assertion!
+    if (a.id) {
+      const eTag = ['e', a.id]
+      if (a.relay) eTag.push(a.relay)
+      else eTag.push('')
+      eTag.push('assertion')
+      tags.push(eTag)
+    } else if (a.address) {
+      const aTag = ['a', a.address]
+      if (a.relay) aTag.push(a.relay)
+      else aTag.push('')
+      aTag.push('assertion')
+      tags.push(aTag)
+    }
   }
 
   if (params.summary) {
@@ -38,6 +88,18 @@ export function createAttestation(params: AttestationParams): EventTemplate {
   if (params.validFrom != null) {
     if (!Number.isFinite(params.validFrom)) throw new Error('validFrom must be a finite number')
     tags.push(['valid_from', String(params.validFrom)])
+  }
+
+  if (params.validTo != null) {
+    tags.push(['valid_to', String(params.validTo)])
+  }
+
+  if (params.request) {
+    tags.push(['request', params.request])
+  }
+
+  if (params.schema) {
+    tags.push(['schema', params.schema])
   }
 
   if (params.tags) {
@@ -56,13 +118,33 @@ export function createAttestation(params: AttestationParams): EventTemplate {
 /**
  * Create an unsigned revocation event template.
  * When published, this replaces the original attestation via addressable event semantics.
+ *
+ * For typed attestations: provide `type` + `identifier`.
+ * For assertion-only attestations: provide `assertionId` or `assertionAddress`.
  */
 export function createRevocation(params: RevocationParams): EventTemplate {
-  const tags: string[][] = [
-    ['d', buildDTag(params.type, params.identifier)],
-    ['type', params.type],
-    ['status', 'revoked'],
-  ]
+  const hasTyped = !!params.type && params.identifier != null
+  const hasAssertion = !!params.assertionId || !!params.assertionAddress
+
+  if (!hasTyped && !hasAssertion) {
+    throw new Error('provide (type + identifier) or (assertionId | assertionAddress)')
+  }
+
+  if (params.assertionId && params.assertionAddress) {
+    throw new Error('provide assertionId or assertionAddress, not both')
+  }
+
+  const tags: string[][] = []
+
+  if (hasTyped) {
+    tags.push(['d', buildDTag(params.type!, params.identifier!)])
+    tags.push(['type', params.type!])
+  } else {
+    const ref = (params.assertionId ?? params.assertionAddress)!
+    tags.push(['d', buildAssertionDTag(ref)])
+  }
+
+  tags.push(['status', 'revoked'])
 
   if (params.subject) {
     tags.push(['p', params.subject])
