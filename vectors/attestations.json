@@ -82,7 +82,13 @@
         ]
       ],
       "content": "{\"proof\":\"ring-sig-abc\"}",
-      "validFrom": null
+      "validFrom": null,
+      "assertionId": null,
+      "assertionAddress": null,
+      "assertionRelay": null,
+      "validTo": null,
+      "request": null,
+      "schema": null
     },
     "valid": true
   },
@@ -137,7 +143,13 @@
         ]
       ],
       "content": "",
-      "validFrom": null
+      "validFrom": null,
+      "assertionId": null,
+      "assertionAddress": null,
+      "assertionRelay": null,
+      "validTo": null,
+      "request": null,
+      "schema": null
     },
     "valid": true
   },
@@ -216,7 +228,13 @@
         ]
       ],
       "content": "",
-      "validFrom": null
+      "validFrom": null,
+      "assertionId": null,
+      "assertionAddress": null,
+      "assertionRelay": null,
+      "validTo": null,
+      "request": null,
+      "schema": null
     },
     "valid": true
   },
@@ -295,7 +313,13 @@
         ]
       ],
       "content": "{\"chain_of_custody\":[\"maker\",\"distributor\",\"retailer\"]}",
-      "validFrom": null
+      "validFrom": null,
+      "assertionId": null,
+      "assertionAddress": null,
+      "assertionRelay": null,
+      "validTo": null,
+      "request": null,
+      "schema": null
     },
     "valid": true
   },
@@ -374,7 +398,13 @@
         ]
       ],
       "content": "",
-      "validFrom": null
+      "validFrom": null,
+      "assertionId": null,
+      "assertionAddress": null,
+      "assertionRelay": null,
+      "validTo": null,
+      "request": null,
+      "schema": null
     },
     "valid": true
   },
@@ -453,7 +483,13 @@
         ]
       ],
       "content": "",
-      "validFrom": null
+      "validFrom": null,
+      "assertionId": null,
+      "assertionAddress": null,
+      "assertionRelay": null,
+      "validTo": null,
+      "request": null,
+      "schema": null
     },
     "valid": true
   },
@@ -516,7 +552,13 @@
         ]
       ],
       "content": "",
-      "validFrom": null
+      "validFrom": null,
+      "assertionId": null,
+      "assertionAddress": null,
+      "assertionRelay": null,
+      "validTo": null,
+      "request": null,
+      "schema": null
     },
     "valid": true
   },
@@ -589,7 +631,13 @@
         ]
       ],
       "content": "",
-      "validFrom": null
+      "validFrom": null,
+      "assertionId": null,
+      "assertionAddress": null,
+      "assertionRelay": null,
+      "validTo": null,
+      "request": null,
+      "schema": null
     },
     "valid": true
   },
@@ -636,7 +684,13 @@
         ]
       ],
       "content": "",
-      "validFrom": null
+      "validFrom": null,
+      "assertionId": null,
+      "assertionAddress": null,
+      "assertionRelay": null,
+      "validTo": null,
+      "request": null,
+      "schema": null
     },
     "valid": true
   },
@@ -691,7 +745,423 @@
         ]
       ],
       "content": "{\"signatures\":[{\"type\":\"schnorr\",\"value\":\"deadbeef\"}],\"merkle_root\":\"cafebabe\"}",
-      "validFrom": null
+      "validFrom": null,
+      "assertionId": null,
+      "assertionAddress": null,
+      "assertionRelay": null,
+      "validTo": null,
+      "request": null,
+      "schema": null
+    },
+    "valid": true
+  },
+  {
+    "name": "assertion-ref-by-event-id",
+    "description": "Attestation referencing a first-person assertion via e-tag",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        [
+          "d",
+          "assertion:evt999"
+        ],
+        [
+          "e",
+          "evt999",
+          "wss://relay.example.com",
+          "assertion"
+        ],
+        [
+          "p",
+          "def456"
+        ]
+      ],
+      "content": "I attest to this claim",
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sig": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": null,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "evt999",
+      "subject": "def456",
+      "assertionId": "evt999",
+      "assertionAddress": null,
+      "assertionRelay": "wss://relay.example.com",
+      "summary": null,
+      "expiration": null,
+      "validFrom": null,
+      "validTo": null,
+      "request": null,
+      "schema": null,
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        [
+          "d",
+          "assertion:evt999"
+        ],
+        [
+          "e",
+          "evt999",
+          "wss://relay.example.com",
+          "assertion"
+        ],
+        [
+          "p",
+          "def456"
+        ]
+      ],
+      "content": "I attest to this claim"
+    },
+    "valid": true
+  },
+  {
+    "name": "assertion-ref-by-address",
+    "description": "Attestation referencing an assertion via a-tag (addressable event)",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        [
+          "d",
+          "assertion:30023:def456:my-claim"
+        ],
+        [
+          "a",
+          "30023:def456:my-claim",
+          "wss://relay.example.com",
+          "assertion"
+        ]
+      ],
+      "content": "",
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sig": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": null,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "30023:def456:my-claim",
+      "subject": null,
+      "assertionId": null,
+      "assertionAddress": "30023:def456:my-claim",
+      "assertionRelay": "wss://relay.example.com",
+      "summary": null,
+      "expiration": null,
+      "validFrom": null,
+      "validTo": null,
+      "request": null,
+      "schema": null,
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        [
+          "d",
+          "assertion:30023:def456:my-claim"
+        ],
+        [
+          "a",
+          "30023:def456:my-claim",
+          "wss://relay.example.com",
+          "assertion"
+        ]
+      ],
+      "content": ""
+    },
+    "valid": true
+  },
+  {
+    "name": "assertion-with-type",
+    "description": "Attestation with both assertion reference AND explicit type",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        [
+          "d",
+          "credential:def456"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "e",
+          "evt999",
+          "wss://relay.example.com",
+          "assertion"
+        ]
+      ],
+      "content": "",
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sig": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "credential",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "def456",
+      "subject": "def456",
+      "assertionId": "evt999",
+      "assertionAddress": null,
+      "assertionRelay": "wss://relay.example.com",
+      "summary": null,
+      "expiration": null,
+      "validFrom": null,
+      "validTo": null,
+      "request": null,
+      "schema": null,
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        [
+          "d",
+          "credential:def456"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "e",
+          "evt999",
+          "wss://relay.example.com",
+          "assertion"
+        ]
+      ],
+      "content": ""
+    },
+    "valid": true
+  },
+  {
+    "name": "attestation-with-valid-to",
+    "description": "Validity window with both valid_from and valid_to",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        [
+          "d",
+          "credential:def456"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "valid_from",
+          "1700000000"
+        ],
+        [
+          "valid_to",
+          "1735689600"
+        ]
+      ],
+      "content": "",
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sig": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "credential",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "def456",
+      "subject": "def456",
+      "assertionId": null,
+      "assertionAddress": null,
+      "assertionRelay": null,
+      "summary": null,
+      "expiration": null,
+      "validFrom": 1700000000,
+      "validTo": 1735689600,
+      "request": null,
+      "schema": null,
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        [
+          "d",
+          "credential:def456"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "valid_from",
+          "1700000000"
+        ],
+        [
+          "valid_to",
+          "1735689600"
+        ]
+      ],
+      "content": ""
+    },
+    "valid": true
+  },
+  {
+    "name": "attestation-with-schema",
+    "description": "Schema URI tag present",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        [
+          "d",
+          "credential:def456"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "schema",
+          "https://signet.dev/schemas/credential-v1"
+        ]
+      ],
+      "content": "",
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sig": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "credential",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "def456",
+      "subject": "def456",
+      "assertionId": null,
+      "assertionAddress": null,
+      "assertionRelay": null,
+      "summary": null,
+      "expiration": null,
+      "validFrom": null,
+      "validTo": null,
+      "request": null,
+      "schema": "https://signet.dev/schemas/credential-v1",
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        [
+          "d",
+          "credential:def456"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "schema",
+          "https://signet.dev/schemas/credential-v1"
+        ]
+      ],
+      "content": ""
+    },
+    "valid": true
+  },
+  {
+    "name": "attestation-with-request",
+    "description": "Request reference linking to prompting event",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        [
+          "d",
+          "credential:def456"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "request",
+          "31872:abc123:my-request"
+        ]
+      ],
+      "content": "",
+      "id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "sig": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "credential",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "def456",
+      "subject": "def456",
+      "assertionId": null,
+      "assertionAddress": null,
+      "assertionRelay": null,
+      "summary": null,
+      "expiration": null,
+      "validFrom": null,
+      "validTo": null,
+      "request": "31872:abc123:my-request",
+      "schema": null,
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        [
+          "d",
+          "credential:def456"
+        ],
+        [
+          "type",
+          "credential"
+        ],
+        [
+          "p",
+          "def456"
+        ],
+        [
+          "request",
+          "31872:abc123:my-request"
+        ]
+      ],
+      "content": ""
     },
     "valid": true
   }
