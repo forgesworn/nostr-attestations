@@ -17,7 +17,8 @@ Existing NIPs partially address this space but leave significant gaps:
 
 - [NIP-58](58.md) (Badges) is display-oriented. Badges carry no structured claims, no expiration, no revocation mechanism, and no support for cryptographic proofs. They are designed for profile decoration, not verifiable assertions.
 - [NIP-85](85.md) (Trusted Assertions) covers social graph metrics (follower counts, rankings, zap volumes). It is not designed for arbitrary typed claims between identities.
-- [NIP-32](32.md) (Labeling) provides lightweight, non-addressable labels. Labels lack built-in expiration, are not individually replaceable per subject, and carry no convention for structured attestation data.
+- [NIP-56](56.md) (Reporting) handles abuse flags but provides no structured attestation lifecycle, typed claims, or verifiable evidence payloads.
+- [NIP-32](32.md) (Labeling) provides lightweight, non-addressable labels. NIP-32 labels (kind 1985) are regular events with no mechanism to revoke a specific label without deleting the entire event. NIP-VA attestations are addressable per publisher, type, and subject, supporting targeted replacement, revocation, and expiration.
 
 A single generic attestation kind allows identity verification protocols, professional licensing systems, product provenance tracking, peer endorsement networks, and trust management systems to share a common event structure while defining their own application-specific semantics through the `type` tag.
 
@@ -83,7 +84,7 @@ The `content` field is application-defined. It MAY be:
 - Human-readable text (a written statement or summary)
 - Structured data such as JSON (cryptographic proofs, evidence payloads, or other machine-readable content)
 
-Clients that do not understand a particular attestation type SHOULD fall back to displaying the `summary` tag if present.
+When `content` contains structured data, it MUST be valid JSON. Clients that do not understand the content MUST fall back to the `summary` tag for display.
 
 ### d-tag Convention
 
@@ -442,6 +443,17 @@ Well-known type values (informational, not normative):
 | `verifier`    | Self-declaration of verification service status    |
 | `provenance`  | Authenticity or chain-of-custody claim             |
 
+### Type Namespacing
+
+The well-known types listed above are short names controlled by this NIP. Applications defining custom types SHOULD use reverse-domain notation to avoid collisions:
+
+| Pattern | Example | When to use |
+| ------- | ------- | ----------- |
+| Short name | `credential` | Well-known types defined in this NIP |
+| Reverse-domain | `com.example.custom-type` | Application-specific types |
+
+Type values MUST NOT contain colons (the colon is reserved as the `d` tag delimiter). The `schema` tag is RECOMMENDED for any type not in the well-known table, providing machine-readable disambiguation that prevents type squatting.
+
 Applications are encouraged to document their type conventions so that other clients can interoperate.
 
 Relationship to Kind 31871
@@ -553,3 +565,5 @@ The pattern described in this NIP emerged from practical implementation across f
 5. **Product provenance** -- authenticity attestations tracking product verification and chain-of-custody claims.
 
 A reference implementation is available as [`nostr-attestations`](https://github.com/forgesworn/nostr-attestations) -- a zero-dependency TypeScript library with builders, parsers, validators, and 17 frozen conformance test vectors.
+
+Independent implementations outside this ecosystem are encouraged; the kind and tag conventions are designed for any Nostr application requiring structured attestations.
