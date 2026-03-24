@@ -456,16 +456,70 @@ Type values MUST NOT contain colons (the colon is reserved as the `d` tag delimi
 
 Applications are encouraged to document their type conventions so that other clients can interoperate.
 
-Relationship to Kind 31871
---------------------------
+Relationship to Existing Attestation and Trust Proposals
+---------------------------------------------------------
 
-A separate proposal defines kinds `31871`, `31872`, `31873`, and `11871` for attestations with a built-in request/payment workflow and state machine. This NIP covers the same problem space with a different philosophy:
+Several community proposals address overlapping problem spaces. This section explains how NIP-VA relates to each and why kind `31000` exists alongside them.
+
+### Kind 31871 — Attestations
+
+A [community NIP](https://nostrhub.io) defines kinds `31871`, `31872`, `31873`, and `11871` for attestations with a built-in request/payment workflow, state machine, and attestor discovery ecosystem.
+
+NIP-VA covers the same problem space with a different philosophy:
 
 - **One kind, many types.** The four concepts in that proposal -- attestation, request, recommendation, proficiency -- map to four `type` values on a single kind. New attestation types require no protocol changes and no new kind numbers.
 - **Both identity and event attestations.** Kind `31000` is not limited to identity claims. The `e` and `a` tags allow attestations about events (e.g. fact-checking, content verification) alongside attestations about pubkeys (credentials, endorsements). The `type` tag distinguishes the use case.
 - **Both direct and assertion-first patterns.** The attestor can define the type directly, or reference a first-person assertion event via `e`/`a` tags with the `"assertion"` marker. This covers the assertion-first philosophy (individual at the centre) without requiring separate event kinds.
 - **No state machine.** Addressable event semantics handle updates and revocations natively. Request/response workflows, payment integration, and multi-step state machines are application-level concerns that can be built on top of the attestation primitive without protocol-level kinds.
 - **Application profiles over protocol roles.** Rather than defining attestor/requestor/recommender as protocol-level concepts with dedicated kinds, this NIP lets applications define their own roles through type conventions.
+
+**Complementary, not competing.** Kind `31871` excels at event-validity stamping with a rich lifecycle (accepted → verifying → verified → revoked). NIP-VA excels at typed claims (credentials, endorsements, provenance) where the attestation itself carries structured meaning. Applications MAY use both: `31871` for verification workflow orchestration, `31000` for the resulting credential or endorsement record. The attestor recommendation (kind `31873`) and proficiency declaration (`11871`) kinds provide discovery features that NIP-VA delegates to [NIP-32](32.md) labels and application profiles.
+
+### Kinds 38383/38384 — Service Attestations
+
+A [community NIP](https://nostrhub.io) defines kind `38383` for bilateral service attestations between parties (with ratings, service categories, and an optional Namecoin identity anchor) and kind `38384` for attestation sets (curated lists of active endorsements).
+
+NIP-VA and Service Attestations address different layers:
+
+- **Service Attestations are domain-specific.** They define a fixed schema: `service` tag (category), `rating` tag (score/max), `completed_at`, and an optional `nmc` tag for Namecoin temporal anchoring. This is purpose-built for marketplace reputation.
+- **NIP-VA is domain-agnostic.** The same kind `31000` handles credentials, endorsements, vouches, provenance, and any future type. A service review could be expressed as a NIP-VA `endorsement` with application-specific `service` and `rating` tags, but Service Attestations provide a more opinionated, ready-to-use schema for that specific use case.
+- **Namecoin anchoring** is unique to Service Attestations and provides temporal proof of identity binding that NIP-VA does not address. This is valuable for high-assurance marketplace contexts where backdating reputation is a threat.
+- **Attestation Sets** (kind `38384`) provide a curation mechanism (which attestations does the attester currently stand behind?) that NIP-VA handles through addressable event replacement and revocation.
+
+**Complementary.** Service Attestations serve bilateral marketplace reputation; NIP-VA serves general-purpose attestation infrastructure. A marketplace could use Service Attestations for ratings and NIP-VA for the underlying credential that proves a provider is qualified to offer the service.
+
+### Kinds 30382–30385 — NIP-85 Trusted Assertions
+
+[NIP-85](85.md) defines kinds `30382`–`30385` for computed assertions published by trusted service providers. A provider ingests network data, runs algorithms (follower counts, WoT rankings, engagement metrics), and publishes results as addressable events keyed by subject.
+
+NIP-VA and NIP-85 operate at different layers:
+
+- **NIP-85 outputs computed metrics.** A NIP-85 event says "according to my algorithm, this pubkey has rank 89 and 1,234 followers." The assertion is algorithmic, not human.
+- **NIP-VA records human claims.** A NIP-VA event says "I, as a licensed authority, attest that this person holds qualification X." The assertion is a human judgement, signed by a specific identity.
+- **NIP-85 is downstream of NIP-VA.** A NIP-85 provider could ingest NIP-VA attestations as input data — counting how many credentials a pubkey holds, computing trust scores based on endorsement graphs — and publish the results as NIP-85 assertions. The two are designed to compose.
+
+**Complementary.** NIP-85 computes; NIP-VA attests. First-party attestation data (NIP-VA) feeds into computed reputation scores (NIP-85). Clients consume both: NIP-VA for "who specifically endorsed this person?" and NIP-85 for "what's the aggregate trust score?"
+
+### Kinds 37574–37576 — TSM Assertion Services
+
+The [Trust Service Machines](https://nostrhub.io) framework defines a request/response pattern for trust computation services, with assertion-specific kinds `37574` (assertions set), `37575` (subject assertions), and `37576` (network assertions).
+
+TSM and NIP-VA address fundamentally different concerns:
+
+- **TSM is infrastructure for computing trust metrics.** It defines how a client requests computation from a provider, how providers declare capabilities, and how results are formatted. TSM assertions are machine-computed outputs (follower counts, engagement rates, ranking scores).
+- **NIP-VA is a primitive for recording human claims.** It defines how an identity makes a signed statement about another identity or event. NIP-VA attestations are human-authored, individually meaningful records.
+- **TSM extends NIP-85.** The TSM framework provides the query/response layer that NIP-85 lacks — service discovery, request routing, pagination. Both deal with computed metrics, not human attestation.
+
+**Complementary.** TSM providers could consume NIP-VA attestations as input (e.g. "count all `credential` attestations for this pubkey from issuers within 2 hops of my follow graph") and output the results as TSM assertion events. NIP-VA provides the raw attestation data; TSM provides the computation layer.
+
+### Summary
+
+| Proposal | Layer | What it does | Relationship to NIP-VA |
+| -------- | ----- | ------------ | --------------------- |
+| Kind 31871 | Attestation + workflow | Event validity with lifecycle | Overlapping — different philosophy, composable |
+| Kinds 38383/38384 | Domain-specific attestation | Bilateral service ratings | Complementary — marketplace layer on top |
+| Kinds 30382–30385 (NIP-85) | Computed metrics | Algorithmic trust scores | Complementary — downstream consumer |
+| Kinds 37574–37576 (TSM) | Computation infrastructure | Trust computation services | Complementary — computation layer |
 
 Security Considerations
 -----------------------
