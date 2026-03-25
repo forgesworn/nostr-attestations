@@ -18,6 +18,7 @@ export function createAttestation(params: AttestationParams): EventTemplate {
 
   if (hasType) {
     if (params.type!.includes(':')) throw new Error('type must not contain colons')
+    if (params.type! === 'assertion') throw new Error('type value "assertion" is reserved')
   }
 
   if (hasAssertion) {
@@ -39,19 +40,22 @@ export function createAttestation(params: AttestationParams): EventTemplate {
 
   const tags: string[][] = []
 
-  // d-tag construction
-  if (hasType) {
+  // d-tag construction: assertion-first takes precedence
+  if (hasAssertion) {
+    const ref = params.assertion!.id ?? params.assertion!.address!
+    tags.push(['d', buildAssertionDTag(ref)])
+  } else if (hasType) {
     const identifier = params.identifier ?? params.subject
     if (identifier) {
       tags.push(['d', buildDTag(params.type!, identifier)])
     } else {
       tags.push(['d', params.type!])
     }
+  }
+
+  // type tag (present for both direct claims and hybrid attestations)
+  if (hasType) {
     tags.push(['type', params.type!])
-  } else {
-    // assertion-only: d-tag uses assertion: prefix
-    const ref = params.assertion!.id ?? params.assertion!.address!
-    tags.push(['d', buildAssertionDTag(ref)])
   }
 
   if (params.subject) {

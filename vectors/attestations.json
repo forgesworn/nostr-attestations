@@ -891,7 +891,7 @@
   },
   {
     "name": "assertion-with-type",
-    "description": "Attestation with both assertion reference AND explicit type",
+    "description": "Hybrid attestation: assertion reference AND explicit type; d-tag uses assertion: prefix",
     "event": {
       "kind": 31000,
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -899,7 +899,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "assertion:evt999"
         ],
         [
           "type",
@@ -925,7 +925,7 @@
       "type": "credential",
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "createdAt": 1700000000,
-      "identifier": "def456",
+      "identifier": "evt999",
       "subject": "def456",
       "assertionId": "evt999",
       "assertionAddress": null,
@@ -941,7 +941,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "assertion:evt999"
         ],
         [
           "type",
@@ -1175,6 +1175,140 @@
           "request",
           "31872:abc123:my-request"
         ]
+      ],
+      "content": "",
+      "occurredAt": null
+    },
+    "valid": true
+  },
+  {
+    "name": "hybrid-assertion-with-type",
+    "description": "Hybrid: assertion e-tag reference AND explicit type tag; d-tag uses assertion: prefix; relay slot is empty string",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        ["d", "assertion:evt999"],
+        ["type", "credential"],
+        ["e", "evt999", "", "assertion"],
+        ["p", "5555555555555555555555555555555555555555555555555555555555555555"],
+        ["summary", "Professional licence verified"]
+      ],
+      "content": "",
+      "id": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "sig": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "credential",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "evt999",
+      "subject": "5555555555555555555555555555555555555555555555555555555555555555",
+      "assertionId": "evt999",
+      "assertionAddress": null,
+      "assertionRelay": null,
+      "summary": "Professional licence verified",
+      "expiration": null,
+      "validFrom": null,
+      "validTo": null,
+      "request": null,
+      "schema": null,
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        ["d", "assertion:evt999"],
+        ["type", "credential"],
+        ["e", "evt999", "", "assertion"],
+        ["p", "5555555555555555555555555555555555555555555555555555555555555555"],
+        ["summary", "Professional licence verified"]
+      ],
+      "content": "",
+      "occurredAt": null
+    },
+    "valid": true
+  },
+  {
+    "name": "reserved-type-assertion-invalid",
+    "description": "Type tag set to the reserved value 'assertion' — validator must reject",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        ["d", "assertion:some-ref"],
+        ["type", "assertion"],
+        ["p", "5555555555555555555555555555555555555555555555555555555555555555"]
+      ],
+      "content": "",
+      "id": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "sig": "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "assertion",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "some-ref",
+      "subject": "5555555555555555555555555555555555555555555555555555555555555555",
+      "assertionId": null,
+      "assertionAddress": null,
+      "assertionRelay": null,
+      "summary": null,
+      "expiration": null,
+      "validFrom": null,
+      "validTo": null,
+      "request": null,
+      "schema": null,
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        ["d", "assertion:some-ref"],
+        ["type", "assertion"],
+        ["p", "5555555555555555555555555555555555555555555555555555555555555555"]
+      ],
+      "content": "",
+      "occurredAt": null
+    },
+    "valid": false
+  },
+  {
+    "name": "self-attestation-with-pubkey-identifier",
+    "description": "Self-declaration: publisher uses own pubkey as identifier, no p-tag",
+    "event": {
+      "kind": 31000,
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "created_at": 1700000000,
+      "tags": [
+        ["d", "verifier:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"],
+        ["type", "verifier"]
+      ],
+      "content": "",
+      "id": "2222222222222222222222222222222222222222222222222222222222222222",
+      "sig": "33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333"
+    },
+    "expected": {
+      "kind": 31000,
+      "type": "verifier",
+      "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "createdAt": 1700000000,
+      "identifier": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "subject": null,
+      "assertionId": null,
+      "assertionAddress": null,
+      "assertionRelay": null,
+      "summary": null,
+      "expiration": null,
+      "validFrom": null,
+      "validTo": null,
+      "request": null,
+      "schema": null,
+      "revoked": false,
+      "reason": null,
+      "tags": [
+        ["d", "verifier:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"],
+        ["type", "verifier"]
       ],
       "content": "",
       "occurredAt": null

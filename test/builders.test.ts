@@ -109,9 +109,30 @@ describe('createAttestation', () => {
       subject: 'def456',
       assertion: { id: 'evt999' },
     })
-    expect(event.tags).toContainEqual(['d', 'credential:def456'])
+    expect(event.tags).toContainEqual(['d', 'assertion:evt999'])
     expect(event.tags).toContainEqual(['type', 'credential'])
     expect(event.tags).toContainEqual(['e', 'evt999', '', 'assertion'])
+  })
+
+  it('uses assertion: d-tag when both type and assertion ref are present (hybrid)', () => {
+    const result = createAttestation({
+      type: 'credential',
+      assertion: { id: 'evt999' },
+      subject: 'def456',
+      summary: 'Hybrid attestation',
+    })
+    const dTag = result.tags.find(t => t[0] === 'd')
+    expect(dTag![1]).toBe('assertion:evt999')
+    // type tag should still be present
+    const typeTag = result.tags.find(t => t[0] === 'type')
+    expect(typeTag![1]).toBe('credential')
+  })
+
+  it('rejects reserved type "assertion" in builder', () => {
+    expect(() => createAttestation({
+      type: 'assertion',
+      subject: 'abc123',
+    })).toThrow('type value "assertion" is reserved')
   })
 
   it('throws if assertion has both id and address', () => {

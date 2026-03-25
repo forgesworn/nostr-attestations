@@ -52,21 +52,25 @@ export function validateAttestation(event: NostrEvent): ValidationResult {
   if (type != null) {
     if (!type.trim()) {
       errors.push('type tag must not be empty')
+    } else if (type === 'assertion') {
+      errors.push('type value "assertion" is reserved')
     } else if (type.includes(':')) {
       errors.push('type must not contain colons')
     }
   }
 
   // d-tag consistency
-  if (dTag && type && !type.includes(':')) {
-    // Typed attestation: d-tag must start with type value
-    if (dTag !== type && !dTag.startsWith(`${type}:`)) {
-      errors.push(`d tag must start with type value "${type}"`)
-    }
-  } else if (dTag && !type && hasAssertion) {
-    // Assertion-only: d-tag must start with assertion: prefix
-    if (!dTag.startsWith('assertion:')) {
-      errors.push('d tag must start with "assertion:" prefix for assertion-only attestations')
+  if (dTag) {
+    if (hasAssertion) {
+      // Assertion takes precedence: d-tag must use assertion: prefix
+      if (!dTag.startsWith('assertion:')) {
+        errors.push('d tag must start with "assertion:" prefix when assertion reference is present')
+      }
+    } else if (type && !type.includes(':')) {
+      // Direct claim: d-tag must start with type value
+      if (dTag !== type && !dTag.startsWith(`${type}:`)) {
+        errors.push(`d tag must start with type value "${type}"`)
+      }
     }
   }
 
