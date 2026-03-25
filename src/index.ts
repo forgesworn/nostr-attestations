@@ -8,6 +8,9 @@ export { validateAttestation } from './validators.js'
 
 export { buildDTag, buildAssertionDTag, parseDTag, attestationFilter, revocationFilter } from './filters.js'
 
+export { isValid } from './validity.js'
+export type { ValidityResult } from './validity.js'
+
 export type {
   AssertionRef,
   AttestationParams,
