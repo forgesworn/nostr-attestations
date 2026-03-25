@@ -1,0 +1,518 @@
+# nostr-attestations — Full API Reference
+
+> Zero-dependency TypeScript library for NIP-VA (kind 31000) Verifiable Attestation events on Nostr. One event kind for all attestations — credentials, endorsements, vouches, provenance, licensing, and trust. Differentiated by a `type` tag, not by inventing new event kinds.
+
+GitHub: https://github.com/forgesworn/nostr-attestations
+npm: https://www.npmjs.com/package/nostr-attestations
+Version: 2.1.0
+
+## Install
+
+```bash
+npm install nostr-attestations
+```
+
+ESM-only. Zero runtime dependencies. Works with nostr-tools, any Nostr SDK, or bare WebSocket code.
+
+---
+
+## Constants
+
+### `ATTESTATION_KIND`
+
+```typescript
+const ATTESTATION_KIND = 31000 as const
+```
+
+The NIP-VA event kind. Kind 31000 is an addressable (replaceable) event — the latest version per `(pubkey, kind, d-tag)` triple is canonical.
+
+---
+
+### `TYPES`
+
+```typescript
+const TYPES = {
+  CREDENTIAL:  'credential',
+  ENDORSEMENT: 'endorsement',
+  VOUCH:       'vouch',
+  VERIFIER:    'verifier',
+  PROVENANCE:  'provenance',
+  ASSERTION:   'assertion',   // synthetic — used when only an assertion reference is present
+} as const
+```
+
+Well-known attestation type constants. Applications may define their own types beyond these. Type values must not contain colons (`:`) — the first colon in the d-tag is the delimiter between `type` and `identifier`.
+
+---
+
+## Types
+
+### `EventTemplate`
+
+```typescript
+interface EventTemplate {
+  kind: number
+  tags: string[][]
+  content: string
+  created_at?: number
+}
+```
+
+Unsigned event returned by builders. Pass to your signing library (`nostr-tools`, NDK, etc.) to add `pubkey`, `id`, `sig`, and `created_at`.
+
+---
+
+### `NostrEvent`
+
+```typescript
+interface NostrEvent {
+  kind: number
+  pubkey: string
+  created_at: number
+  tags: string[][]
+  content: string
+  id: string
+  sig: string
+}
+```
+
+Signed Nostr event consumed by parsers and validators.
+
+---
+
+### `AssertionRef`
+
+```typescript
+interface AssertionRef {
+  id?: string       // Event ID of the assertion (produces an e-tag with "assertion" marker)
+  address?: string  // Addressable event coordinate kind:pubkey:d-tag (produces an a-tag)
+  relay?: string    // Relay hint for fetching the referenced event
+}
+```
+
+Reference to a first-person assertion event being confirmed by a third party. Exactly one of `id` or `address` must be present.
+
+---
+
+### `AttestationParams`
+
+```typescript
+interface AttestationParams {
+  type?: string          // Application-defined type (must not contain colons). Optional when assertion is provided.
+  identifier?: string    // D-tag second segment: hex pubkey or context string
+  subject?: string       // P-tag: hex pubkey of the subject (third-party attestations)
+  assertion?: AssertionRef  // Reference to a first-person assertion event
+  summary?: string       // Human-readable fallback for clients that don't understand the type
+  expiration?: number    // Unix timestamp for attestation expiry (NIP-40)
+  validFrom?: number     // Unix timestamp for deferred activation
+  validTo?: number       // Unix timestamp for validity window end
+  request?: string       // Reference to the event that prompted this attestation
+  schema?: string        // Machine-readable schema URI for regulatory mapping
+  occurredAt?: number    // When the attested event occurred (distinct from created_at)
+  tags?: string[][]      // Additional application-specific tags
+  content?: string       // Empty string, human-readable text, or JSON
+}
+```
+
+At least one of `type` or `assertion` must be provided.
+
+---
+
+### `RevocationParams`
+
+```typescript
+interface RevocationParams {
+  type?: string            // Type of the attestation being revoked. Required for typed attestations.
+  identifier?: string      // D-tag second segment — must match the original. Required for typed attestations.
+  subject?: string         // P-tag — include if the original had one
+  assertionId?: string     // Event ID of the referenced assertion (for assertion-only revocations)
+  assertionAddress?: string  // Addressable coordinate of the referenced assertion
+  reason?: string          // Human-readable revocation reason
+  effective?: number       // Unix timestamp for when the revocation takes effect
+}
+```
+
+For typed attestations provide `type` + `identifier`. For assertion-only attestations provide `assertionId` or `assertionAddress`.
+
+---
+
+### `Attestation`
+
+```typescript
+interface Attestation {
+  kind: 31000
+  type: string              // Attestation type. "assertion" when type comes from a referenced event.
+  pubkey: string            // Attestor's pubkey (from outer event)
+  createdAt: number         // Event timestamp (from outer event)
+  identifier: string | null // D-tag second segment (pubkey or context string)
+  subject: string | null    // P-tag value (hex pubkey of subject, if present)
+  assertionId: string | null       // Referenced assertion event ID (e-tag with "assertion" marker)
+  assertionAddress: string | null  // Referenced assertion address (a-tag with "assertion" marker)
+  assertionRelay: string | null    // Relay hint from the assertion reference tag
+  summary: string | null
+  expiration: number | null
+  validFrom: number | null  // Earliest time the attestation is valid
+  validTo: number | null    // Latest time the attestation is valid
+  request: string | null    // Reference to the prompting event
+  schema: string | null     // Machine-readable schema URI
+  occurredAt: number | null // When the attested event occurred
+  revoked: boolean
+  reason: string | null
+  tags: string[][]          // All tags from the original event
+  content: string
+}
+```
+
+Parsed attestation data extracted from a `NostrEvent` by `parseAttestation()`.
+
+---
+
+### `ValidationResult`
+
+```typescript
+interface ValidationResult {
+  valid: boolean
+  errors: string[]
+}
+```
+
+Result of structural validation. `errors` is empty when `valid` is `true`.
+
+---
+
+### `FilterParams`
+
+```typescript
+interface FilterParams {
+  type?: string      // Filter by attestation type (uses #type tag index)
+  subject?: string   // Filter by subject pubkey (p-tag)
+  authors?: string[] // Filter by attestor pubkeys
+  schema?: string    // Filter by schema URI
+}
+```
+
+---
+
+### `NostrFilter`
+
+```typescript
+interface NostrFilter {
+  kinds: number[]
+  authors?: string[]
+  '#p'?: string[]
+  '#d'?: string[]
+  '#type'?: string[]
+  '#schema'?: string[]
+}
+```
+
+Nostr relay filter object returned by `attestationFilter()` and `revocationFilter()`.
+
+---
+
+### `ValidityResult`
+
+```typescript
+interface ValidityResult {
+  valid: boolean
+  reason?: string   // present when valid is false
+}
+```
+
+Result of validity window checking by `isValid()`.
+
+---
+
+## Builders
+
+### `createAttestation(params: AttestationParams): EventTemplate`
+
+Create an unsigned attestation event template. The caller is responsible for signing (adding `pubkey`, `id`, `sig`, `created_at`).
+
+At least one of `type` or `assertion` must be provided.
+
+**D-tag construction rules:**
+- When `assertion` is present: `assertion:<ref>` (assertion takes precedence)
+- When `type` and `identifier` are present: `<type>:<identifier>`
+- When only `type` is present: `<type>` (no colon)
+
+**Tags produced (in order):**
+- `d` — addressable identifier
+- `type` — the type value (NIP-32 `l` label tag also added)
+- `p` — subject pubkey (if `subject` provided)
+- `e` or `a` — assertion reference with `"assertion"` marker (if `assertion` provided)
+- `summary` — human-readable summary (if provided)
+- `expiration` — NIP-40 expiry timestamp (if provided)
+- `valid_from` — deferred activation timestamp (if provided)
+- `valid_to` — validity window end (if provided)
+- `request` — prompting event reference (if provided)
+- `schema` — schema URI (if provided)
+- `occurred_at` — event occurrence timestamp (if provided)
+- `L`, `l` — NIP-32 labels from type (for typed attestations)
+- Additional application tags from `params.tags`
+
+**Throws** `Error` when:
+- Neither `type` nor `assertion` is provided
+- `type` contains a colon
+- `type` is the reserved value `"assertion"`
+- `assertion` has both `id` and `address`
+- `assertion` has neither `id` nor `address`
+- `expiration` is not finite
+- `validTo` is not greater than `validFrom`
+- `schema` is empty or whitespace
+- `occurredAt` is not finite
+
+```typescript
+import { createAttestation, TYPES, ATTESTATION_KIND } from 'nostr-attestations'
+
+// Basic typed attestation
+const event = createAttestation({
+  type: TYPES.CREDENTIAL,
+  identifier: 'abc123pubkey',
+  subject: 'abc123pubkey',
+  summary: 'Professional credential verified',
+  expiration: Math.floor(Date.now() / 1000) + 31536000,
+  tags: [['profession', 'attorney'], ['jurisdiction', 'US-NY']],
+  content: JSON.stringify({ proof: '...' }),
+})
+// => { kind: 31000, tags: [['d', 'credential:abc123pubkey'], ['type', 'credential'], ...], content: '...' }
+
+// Assertion-only attestation (confirm a third-party claim)
+const assertionEvent = createAttestation({
+  assertion: { id: 'some-event-id', relay: 'wss://relay.example.com' },
+  summary: 'Confirmed',
+})
+```
+
+---
+
+### `createRevocation(params: RevocationParams): EventTemplate`
+
+Create an unsigned revocation event template. When published, this replaces the original attestation via addressable event semantics (same `pubkey`, `kind`, and `d-tag`).
+
+**Tags produced:**
+- `d` — matching the original attestation
+- `type` — for typed attestations
+- `status` with value `"revoked"`
+- `p` — subject pubkey (if provided)
+- `reason` — revocation reason (if provided)
+- `effective` — effective timestamp (if provided)
+
+**Throws** `Error` when:
+- Neither `(type + identifier)` nor `(assertionId | assertionAddress)` is provided
+- Both `assertionId` and `assertionAddress` are provided
+- `effective` is not finite
+
+```typescript
+import { createRevocation } from 'nostr-attestations'
+
+// Revoke a typed attestation
+const revocation = createRevocation({
+  type: 'credential',
+  identifier: 'abc123pubkey',
+  subject: 'abc123pubkey',
+  reason: 'Licence expired',
+  effective: Math.floor(Date.now() / 1000),
+})
+
+// Revoke an assertion-only attestation
+const assertionRevocation = createRevocation({
+  assertionId: 'some-event-id',
+  reason: 'Withdrawn by subject',
+})
+```
+
+---
+
+## Parsers
+
+### `parseAttestation(event: NostrEvent): Attestation | null`
+
+Parse a `NostrEvent` into a typed `Attestation`. Returns `null` if the event is not kind 31000, or if it has neither a `type` tag nor an assertion reference.
+
+Does not verify signatures. Always verify the event signature before trusting parsed data.
+
+```typescript
+import { parseAttestation } from 'nostr-attestations'
+
+const attestation = parseAttestation(signedEvent)
+if (attestation === null) {
+  console.log('Not a valid attestation event')
+} else {
+  console.log(attestation.type)       // e.g. "credential"
+  console.log(attestation.subject)    // hex pubkey or null
+  console.log(attestation.revoked)    // boolean
+  console.log(attestation.expiration) // unix timestamp or null
+}
+```
+
+---
+
+### `isRevoked(event: NostrEvent): boolean`
+
+Check whether a `NostrEvent` is a revoked attestation. Returns `false` for non-attestation events.
+
+```typescript
+import { isRevoked } from 'nostr-attestations'
+
+if (isRevoked(event)) {
+  console.log('This attestation has been revoked')
+}
+```
+
+---
+
+## Validators
+
+### `validateAttestation(event: NostrEvent): ValidationResult`
+
+Validate structural correctness of a Nostr event as a kind 31000 attestation. Does not verify signatures or query relay state.
+
+Checks:
+- `kind` is 31000
+- `d` tag is present
+- At least one of `type` tag or assertion reference exists
+- `type` is non-empty and does not contain colons
+- D-tag format is consistent with the attestation pattern
+- At most one assertion reference (no mixing `e` and `a` assertion tags)
+- `valid_to` is greater than `valid_from` (when both are present)
+- `occurred_at` is a valid finite number (when present)
+- `schema` is non-empty (when present)
+
+```typescript
+import { validateAttestation } from 'nostr-attestations'
+
+const result = validateAttestation(event)
+if (!result.valid) {
+  console.log(result.errors) // ['missing required d tag', ...]
+}
+```
+
+---
+
+## Validity
+
+### `isValid(attestation: Attestation, now?: number): ValidityResult`
+
+Check whether an attestation is currently valid based on its temporal properties. Accounts for `expiration`, `validFrom`, and `validTo`. Does not check revocation — call `isRevoked()` separately.
+
+```typescript
+import { isValid } from 'nostr-attestations'
+
+const result = isValid(attestation)
+if (!result.valid) {
+  console.log(result.reason) // e.g. "attestation has expired"
+}
+```
+
+---
+
+## Filters
+
+### `buildDTag(type: string, identifier: string): string`
+
+Build a d-tag from type and identifier. Format: `<type>:<identifier>`.
+
+```typescript
+import { buildDTag } from 'nostr-attestations'
+
+buildDTag('credential', 'abc123')  // => "credential:abc123"
+```
+
+**Throws** when `type` is empty or contains colons.
+
+---
+
+### `buildAssertionDTag(ref: string): string`
+
+Build a d-tag for an assertion-only attestation. Format: `assertion:<ref>`.
+
+```typescript
+buildAssertionDTag('some-event-id')  // => "assertion:some-event-id"
+```
+
+---
+
+### `parseDTag(dTag: string): { type: string; identifier: string } | null`
+
+Parse a d-tag into type and identifier. Returns `null` if the d-tag contains no colon (simple type-only d-tag).
+
+```typescript
+import { parseDTag } from 'nostr-attestations'
+
+parseDTag('credential:abc123')  // => { type: 'credential', identifier: 'abc123' }
+parseDTag('credential')         // => null
+parseDTag('assertion:eventid')  // => { type: 'assertion', identifier: 'eventid' }
+```
+
+---
+
+### `attestationFilter(params: FilterParams): NostrFilter`
+
+Build a Nostr relay filter for querying attestation events (kind 31000).
+
+```typescript
+import { attestationFilter } from 'nostr-attestations'
+
+const filter = attestationFilter({
+  type: 'credential',
+  subject: 'abc123pubkey',
+  authors: ['attestor-pubkey-hex'],
+})
+// => { kinds: [31000], authors: [...], '#p': [...], '#type': ['credential'] }
+```
+
+---
+
+### `revocationFilter(type: string, identifier: string): NostrFilter`
+### `revocationFilter(options: { assertionId?: string; assertionAddress?: string }): NostrFilter`
+
+Build a Nostr relay filter to fetch the latest version of a specific attestation (for revocation checking). Queries by `#d` tag, which returns the most recent addressable event.
+
+```typescript
+import { revocationFilter } from 'nostr-attestations'
+
+// Check revocation of a typed attestation
+const filter = revocationFilter('credential', 'abc123pubkey')
+// => { kinds: [31000], '#d': ['credential:abc123pubkey'] }
+
+// Check revocation of an assertion-only attestation
+const filter2 = revocationFilter({ assertionId: 'some-event-id' })
+// => { kinds: [31000], '#d': ['assertion:some-event-id'] }
+```
+
+---
+
+## Wire Format & Protocol Notes
+
+**D-tag convention:** `<type>:<identifier>` — ensures one attestation per publisher per type per subject. The colon is the delimiter; type values must not contain colons.
+
+**Revocation:** Re-publishing with `["status", "revoked"]` replaces the original via Nostr addressable event semantics. No separate revocation kind is needed.
+
+**NIP-32 labels:** `createAttestation()` automatically adds `["L", "nip-va.type"]` and `["l", "<type>", "nip-va.type"]` tags, making attestation types searchable via standard NIP-32 label queries.
+
+**Assertion-only attestations:** When a third party confirms a first-person claim without adding their own type, they use an `e` or `a` tag with the `"assertion"` marker. The synthetic type `"assertion"` is used internally.
+
+**Validity windows:** `valid_from` defers activation; `expiration` (NIP-40) and `valid_to` end it. `expiration` triggers relay-side deletion; `valid_to` is application-enforced.
+
+**Conformance vectors:** 17 frozen test vectors in `vectors/attestations.json` define canonical serialisation.
+
+---
+
+## Use Cases
+
+- **Identity verification** — credentials, vouches, verifier registration
+- **Professional licensing** — regulatory credentials with `jurisdiction` + `schema` tags
+- **Product provenance** — authenticity attestations with chain-of-custody
+- **Peer endorsement** — bilateral trust relationships between Nostr users
+- **Service reputation** — provider endorsements across marketplaces
+- **Delegated verification** — third-party confirmation of first-person claims (assertion pattern)
+- **Age verification** — combine with `@forgesworn/range-proof` for zero-knowledge age proofs
+
+---
+
+## Related Packages
+
+- `@forgesworn/range-proof` — Pedersen commitment range proofs (age verification without revealing exact age)
+- `ring-sig` — ring signatures for anonymous group membership proofs
+- `nostr-attestations` — this package
