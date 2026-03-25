@@ -11,7 +11,7 @@ This NIP defines kind `31000`, an addressable event for attestations between Nos
 Motivation
 ----------
 
-Several independent protocols on Nostr have converged on the same structural pattern: an addressable event where one pubkey makes a signed claim about another pubkey (or about itself). Each protocol invents its own event kind, leading to kind proliferation and missed interoperability. At least two independent proposals — one using kind 31000 with type-tag differentiation, another using kinds 31871–31873 with an assertion-first workflow — arrived at the same conclusion from different directions. This NIP merges both approaches.
+Several independent protocols on Nostr have converged on the same structural pattern: an addressable event where one pubkey makes a signed claim about another pubkey (or about itself). Each protocol invents its own event kind, leading to kind proliferation and missed interoperability. At least two independent proposals — one using kind 31000 with type-tag differentiation, another using kinds 31871–31873 with an assertion-first workflow — arrived at the same conclusion from different directions. This NIP incorporates lessons from both.
 
 Existing NIPs partially address this space but leave significant gaps:
 
@@ -292,7 +292,7 @@ Relationship to Existing NIPs
 | [NIP-32](32.md) (Labels) | Labels are regular events — no update, no revocation per label. Attestations are addressable per publisher, per type, per subject. Labels are sticky notes; attestations are living documents. |
 | [NIP-58](58.md) (Badges) | Badges are display-oriented — no structured claims, no expiration, no revocation. Attestations carry typed, structured, revocable claims. |
 | [NIP-85](85.md) (Trusted Assertions) | NIP-85 outputs computed metrics. Attestations record human claims. NIP-85 is downstream — it can ingest attestations as input data. |
-| Kind 31871 (Community NIP) | Same problem space, complementary philosophy. 31871 excels at assertion-first verification workflows. This NIP generalises the pattern to also cover direct claims on a single kind. Co-designed with the 31871 author. |
+| Kind 31871 (Community NIP) | Same problem space, complementary philosophy. 31871 excels at assertion-first verification workflows. This NIP generalises the assertion-first pattern to also cover direct claims on a single kind. |
 
 Implementation Evidence
 -----------------------
