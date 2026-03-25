@@ -52,6 +52,8 @@ export function validateAttestation(event: NostrEvent): ValidationResult {
   if (type != null) {
     if (!type.trim()) {
       errors.push('type tag must not be empty')
+    } else if (type === 'assertion') {
+      errors.push('type value "assertion" is reserved')
     } else if (type.includes(':')) {
       errors.push('type must not contain colons')
     }
