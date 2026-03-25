@@ -34,4 +34,4 @@ npm run build      # compile to dist/
 
 ## Test Vectors
 
-The 10 vectors in `vectors/attestations.json` are frozen. Do not modify existing vectors. New vectors may be added for new features.
+The 17 vectors in `vectors/attestations.json` are frozen. Do not modify existing vectors. New vectors may be added for new features.

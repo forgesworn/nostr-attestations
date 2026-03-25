@@ -72,4 +72,4 @@ const event = createAttestation({
 
 - [NIP-VA.md](https://github.com/forgesworn/nostr-attestations/blob/main/NIP-VA.md): full NIP specification
 - [README](https://github.com/forgesworn/nostr-attestations/blob/main/README.md): full API reference
-- [vectors/](https://github.com/forgesworn/nostr-attestations/tree/main/vectors): 10 frozen conformance test vectors
+- [vectors/](https://github.com/forgesworn/nostr-attestations/tree/main/vectors): 17 frozen conformance test vectors
