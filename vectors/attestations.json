@@ -891,7 +891,7 @@
   },
   {
     "name": "assertion-with-type",
-    "description": "Attestation with both assertion reference AND explicit type",
+    "description": "Hybrid attestation: assertion reference AND explicit type; d-tag uses assertion: prefix",
     "event": {
       "kind": 31000,
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -899,7 +899,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "assertion:evt999"
         ],
         [
           "type",
@@ -925,7 +925,7 @@
       "type": "credential",
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "createdAt": 1700000000,
-      "identifier": "def456",
+      "identifier": "evt999",
       "subject": "def456",
       "assertionId": "evt999",
       "assertionAddress": null,
@@ -941,7 +941,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "assertion:evt999"
         ],
         [
           "type",

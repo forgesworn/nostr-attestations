@@ -197,4 +197,27 @@ describe('validateAttestation', () => {
     expect(result.valid).toBe(false)
     expect(result.errors).toContain('schema must not be empty')
   })
+
+  it('validates hybrid d-tag uses assertion: prefix (not type:)', () => {
+    const event = makeEvent([
+      ['d', 'assertion:evt999'],
+      ['type', 'credential'],
+      ['e', 'evt999', '', 'assertion'],
+      ['p', 'abc123'],
+    ])
+    const result = validateAttestation(event)
+    expect(result.valid).toBe(true)
+  })
+
+  it('rejects hybrid with type: d-tag instead of assertion:', () => {
+    const event = makeEvent([
+      ['d', 'credential:abc123'],
+      ['type', 'credential'],
+      ['e', 'evt999', '', 'assertion'],
+      ['p', 'abc123'],
+    ])
+    const result = validateAttestation(event)
+    expect(result.valid).toBe(false)
+    expect(result.errors.some(e => e.includes('assertion:'))).toBe(true)
+  })
 })
