@@ -1,3 +1,18 @@
+# [2.2.0](https://github.com/forgesworn/nostr-attestations/compare/v2.1.0...v2.2.0) (2026-03-25)
+
+
+### Bug Fixes
+
+* assertion d-tag takes precedence in hybrid case ([0ff16bc](https://github.com/forgesworn/nostr-attestations/commit/0ff16bc0de942f01be2e006d1195d9a03c545c76))
+* reserve 'assertion' as forbidden type value ([e013aab](https://github.com/forgesworn/nostr-attestations/commit/e013aab58a55feea9e9266690c38d53319ad5a4a))
+* validator enforces assertion: d-tag when assertion ref present ([7071427](https://github.com/forgesworn/nostr-attestations/commit/7071427756f22b9683f4f51c98425ca79bf5743b))
+
+
+### Features
+
+* add isValid() convenience helper for attestation validity checks ([b87e79c](https://github.com/forgesworn/nostr-attestations/commit/b87e79cbc2de2983277bfe8460637d4c79fa2d3b))
+* merged attestation NIP — assertion-first, hybrid d-tag, isValid helper, 20 vectors ([863d3e3](https://github.com/forgesworn/nostr-attestations/commit/863d3e370efe76156b33f58a9c088f461362d890))
+
 # [2.1.0](https://github.com/forgesworn/nostr-attestations/compare/v2.0.0...v2.1.0) (2026-03-23)
 
 
