@@ -3,15 +3,18 @@ import { parseAttestation, isRevoked } from '../src/parsers.js'
 import { ATTESTATION_KIND } from '../src/constants.js'
 import type { NostrEvent } from '../src/types.js'
 
+const PK = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+const SUBJ = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+
 function makeEvent(overrides: Partial<NostrEvent> = {}): NostrEvent {
   return {
     kind: ATTESTATION_KIND,
-    pubkey: 'aabbccdd',
+    pubkey: PK,
     created_at: 1700000000,
     tags: [
-      ['d', 'credential:subject123'],
+      ['d', `credential:${SUBJ}`],
       ['type', 'credential'],
-      ['p', 'subject123'],
+      ['p', SUBJ],
     ],
     content: '',
     id: 'event-id',
@@ -26,10 +29,10 @@ describe('parseAttestation', () => {
     expect(result).not.toBeNull()
     expect(result!.kind).toBe(31000)
     expect(result!.type).toBe('credential')
-    expect(result!.pubkey).toBe('aabbccdd')
+    expect(result!.pubkey).toBe(PK)
     expect(result!.createdAt).toBe(1700000000)
-    expect(result!.identifier).toBe('subject123')
-    expect(result!.subject).toBe('subject123')
+    expect(result!.identifier).toBe(SUBJ)
+    expect(result!.subject).toBe(SUBJ)
     expect(result!.revoked).toBe(false)
   })
 
@@ -121,7 +124,7 @@ describe('parseAttestation', () => {
       tags: [
         ['d', 'assertion:evt999'],
         ['e', 'evt999', 'wss://relay.example.com', 'assertion'],
-        ['p', 'subject123'],
+        ['p', SUBJ],
       ],
     })
     const result = parseAttestation(event)

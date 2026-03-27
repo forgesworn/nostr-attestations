@@ -1,5 +1,5 @@
 import { ATTESTATION_KIND } from './constants.js'
-import { findTag } from './helpers.js'
+import { findTag, isHex64 } from './helpers.js'
 import type { NostrEvent, ValidationResult } from './types.js'
 
 /**
@@ -109,6 +109,17 @@ export function validateAttestation(event: NostrEvent): ValidationResult {
     if (!Number.isFinite(occurredAt)) {
       errors.push('occurred_at must be a valid timestamp')
     }
+  }
+
+  // p-tag hex validation
+  const subject = findTag(event.tags, 'p')
+  if (subject != null && !isHex64(subject)) {
+    errors.push('p tag must be a 64-character lowercase hex pubkey')
+  }
+
+  // pubkey hex validation
+  if (!isHex64(event.pubkey)) {
+    errors.push('pubkey must be a 64-character lowercase hex string')
   }
 
   // schema validation

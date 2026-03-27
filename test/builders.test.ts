@@ -2,6 +2,11 @@ import { describe, it, expect } from 'vitest'
 import { createAttestation, createRevocation } from '../src/builders.js'
 import { ATTESTATION_KIND } from '../src/constants.js'
 
+// Valid 64-char hex strings for use in tests
+const PK1 = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+const PK2 = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+const EVT1 = 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc'
+
 describe('createAttestation', () => {
   it('creates minimal attestation with required tags only', () => {
     const event = createAttestation({ type: 'credential' })
@@ -21,8 +26,8 @@ describe('createAttestation', () => {
   })
 
   it('adds p tag when subject provided', () => {
-    const event = createAttestation({ type: 'credential', subject: 'abc123' })
-    expect(event.tags).toContainEqual(['p', 'abc123'])
+    const event = createAttestation({ type: 'credential', subject: PK1 })
+    expect(event.tags).toContainEqual(['p', PK1])
   })
 
   it('omits p tag when no subject', () => {
@@ -85,14 +90,14 @@ describe('createAttestation', () => {
   })
 
   it('defaults identifier to subject when subject provided but no identifier', () => {
-    const event = createAttestation({ type: 'credential', subject: 'deadbeef' })
-    expect(event.tags).toContainEqual(['d', 'credential:deadbeef'])
+    const event = createAttestation({ type: 'credential', subject: PK1 })
+    expect(event.tags).toContainEqual(['d', `credential:${PK1}`])
   })
 
   it('creates assertion-only attestation with e-tag', () => {
-    const event = createAttestation({ assertion: { id: 'evt999', relay: 'wss://relay.example.com' } })
-    expect(event.tags).toContainEqual(['d', 'assertion:evt999'])
-    expect(event.tags).toContainEqual(['e', 'evt999', 'wss://relay.example.com', 'assertion'])
+    const event = createAttestation({ assertion: { id: EVT1, relay: 'wss://relay.example.com' } })
+    expect(event.tags).toContainEqual(['d', `assertion:${EVT1}`])
+    expect(event.tags).toContainEqual(['e', EVT1, 'wss://relay.example.com', 'assertion'])
     const typeTags = event.tags.filter(t => t[0] === 'type')
     expect(typeTags).toHaveLength(0)
   })
@@ -106,23 +111,23 @@ describe('createAttestation', () => {
   it('creates attestation with both type and assertion', () => {
     const event = createAttestation({
       type: 'credential',
-      subject: 'def456',
-      assertion: { id: 'evt999' },
+      subject: PK2,
+      assertion: { id: EVT1 },
     })
-    expect(event.tags).toContainEqual(['d', 'assertion:evt999'])
+    expect(event.tags).toContainEqual(['d', `assertion:${EVT1}`])
     expect(event.tags).toContainEqual(['type', 'credential'])
-    expect(event.tags).toContainEqual(['e', 'evt999', '', 'assertion'])
+    expect(event.tags).toContainEqual(['e', EVT1, '', 'assertion'])
   })
 
   it('uses assertion: d-tag when both type and assertion ref are present (hybrid)', () => {
     const result = createAttestation({
       type: 'credential',
-      assertion: { id: 'evt999' },
-      subject: 'def456',
+      assertion: { id: EVT1 },
+      subject: PK2,
       summary: 'Hybrid attestation',
     })
     const dTag = result.tags.find(t => t[0] === 'd')
-    expect(dTag![1]).toBe('assertion:evt999')
+    expect(dTag![1]).toBe(`assertion:${EVT1}`)
     // type tag should still be present
     const typeTag = result.tags.find(t => t[0] === 'type')
     expect(typeTag![1]).toBe('credential')
@@ -131,12 +136,12 @@ describe('createAttestation', () => {
   it('rejects reserved type "assertion" in builder', () => {
     expect(() => createAttestation({
       type: 'assertion',
-      subject: 'abc123',
+      subject: PK1,
     })).toThrow('type value "assertion" is reserved')
   })
 
   it('throws if assertion has both id and address', () => {
-    expect(() => createAttestation({ assertion: { id: 'a', address: 'b' } })).toThrow('not both')
+    expect(() => createAttestation({ assertion: { id: EVT1, address: '30023:abc:claim' } })).toThrow('not both')
   })
 
   it('throws if assertion has neither id nor address', () => {
@@ -177,7 +182,7 @@ describe('createAttestation', () => {
   })
 
   it('adds NIP-32 L namespace but no l tag for assertion-only attestations', () => {
-    const event = createAttestation({ assertion: { id: 'evt999' } })
+    const event = createAttestation({ assertion: { id: EVT1 } })
     expect(event.tags).toContainEqual(['L', 'nip-va'])
     const lTags = event.tags.filter(t => t[0] === 'l')
     expect(lTags).toHaveLength(0)
@@ -194,6 +199,28 @@ describe('createAttestation', () => {
 
   it('throws if occurredAt is Infinity', () => {
     expect(() => createAttestation({ type: 'credential', occurredAt: Infinity })).toThrow('occurredAt must be a finite number')
+  })
+
+  it('throws if subject is not a valid hex pubkey', () => {
+    expect(() => createAttestation({ type: 'credential', subject: 'not-hex' })).toThrow('subject must be a 64-character lowercase hex pubkey')
+  })
+
+  it('throws if assertion id is not a valid hex event ID', () => {
+    expect(() => createAttestation({ assertion: { id: 'short' } })).toThrow('assertion id must be a 64-character lowercase hex event ID')
+  })
+
+  it('rejects custom tags that override reserved tag names', () => {
+    expect(() => createAttestation({
+      type: 'credential',
+      tags: [['d', 'injected']],
+    })).toThrow('custom tags must not override reserved tag "d"')
+  })
+
+  it('rejects custom tags that inject status tag', () => {
+    expect(() => createAttestation({
+      type: 'credential',
+      tags: [['status', 'revoked']],
+    })).toThrow('custom tags must not override reserved tag "status"')
   })
 })
 
@@ -231,10 +258,10 @@ describe('createRevocation', () => {
   it('adds p tag when subject provided', () => {
     const event = createRevocation({
       type: 'credential',
-      identifier: 'abc123',
-      subject: 'abc123',
+      identifier: PK1,
+      subject: PK1,
     })
-    expect(event.tags).toContainEqual(['p', 'abc123'])
+    expect(event.tags).toContainEqual(['p', PK1])
   })
 
   it('creates revocation for assertion-only attestation by event id', () => {
@@ -257,5 +284,13 @@ describe('createRevocation', () => {
 
   it('throws if both assertionId and assertionAddress provided', () => {
     expect(() => createRevocation({ assertionId: 'a', assertionAddress: 'b' })).toThrow('not both')
+  })
+
+  it('rejects reserved type "assertion" in revocation', () => {
+    expect(() => createRevocation({ type: 'assertion', identifier: 'test' })).toThrow('type value "assertion" is reserved')
+  })
+
+  it('throws if subject is not a valid hex pubkey', () => {
+    expect(() => createRevocation({ type: 'credential', identifier: 'abc', subject: 'not-hex' })).toThrow('subject must be a 64-character lowercase hex pubkey')
   })
 })

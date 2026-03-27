@@ -3,10 +3,13 @@ import { validateAttestation } from '../src/validators.js'
 import { ATTESTATION_KIND } from '../src/constants.js'
 import type { NostrEvent } from '../src/types.js'
 
+const PK = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+const PK2 = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+
 function makeEvent(tags: string[][] = [], kind: number = ATTESTATION_KIND): NostrEvent {
   return {
     kind,
-    pubkey: 'aabb',
+    pubkey: PK,
     created_at: 1700000000,
     tags,
     content: '',
@@ -63,7 +66,7 @@ describe('validateAttestation', () => {
     const event = makeEvent([
       ['d', 'assertion:some-ref'],
       ['type', 'assertion'],
-      ['p', 'abc123'],
+      ['p', PK2],
     ])
     const result = validateAttestation(event)
     expect(result.valid).toBe(false)
@@ -203,7 +206,7 @@ describe('validateAttestation', () => {
       ['d', 'assertion:evt999'],
       ['type', 'credential'],
       ['e', 'evt999', '', 'assertion'],
-      ['p', 'abc123'],
+      ['p', PK2],
     ])
     const result = validateAttestation(event)
     expect(result.valid).toBe(true)
@@ -211,13 +214,33 @@ describe('validateAttestation', () => {
 
   it('rejects hybrid with type: d-tag instead of assertion:', () => {
     const event = makeEvent([
-      ['d', 'credential:abc123'],
+      ['d', `credential:${PK2}`],
       ['type', 'credential'],
       ['e', 'evt999', '', 'assertion'],
-      ['p', 'abc123'],
+      ['p', PK2],
     ])
     const result = validateAttestation(event)
     expect(result.valid).toBe(false)
     expect(result.errors.some(e => e.includes('assertion:'))).toBe(true)
+  })
+
+  it('fails when p tag is not a valid hex pubkey', () => {
+    const result = validateAttestation(makeEvent([
+      ['d', 'credential:abc'],
+      ['type', 'credential'],
+      ['p', 'not-a-valid-hex'],
+    ]))
+    expect(result.valid).toBe(false)
+    expect(result.errors).toContain('p tag must be a 64-character lowercase hex pubkey')
+  })
+
+  it('fails when event pubkey is not valid hex', () => {
+    const event = { ...makeEvent([
+      ['d', 'credential:abc'],
+      ['type', 'credential'],
+    ]), pubkey: 'short' }
+    const result = validateAttestation(event)
+    expect(result.valid).toBe(false)
+    expect(result.errors).toContain('pubkey must be a 64-character lowercase hex string')
   })
 })
