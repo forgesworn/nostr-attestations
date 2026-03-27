@@ -1,0 +1,13 @@
+graph LR
+    subgraph "Assertion-first"
+        AF1["d: assertion:abc123"]
+        AF2["d: assertion:30023:def456:my-claim"]
+    end
+
+    subgraph "Direct claim"
+        DC1["d: endorsement:&lt;subject-pubkey&gt;"]
+        DC2["d: verifier:notary"]
+    end
+
+    AF1 -.- |"ref = event ID\nor coordinate"| AF2
+    DC1 -.- |"type:identifier"| DC2

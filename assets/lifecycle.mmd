@@ -1,0 +1,10 @@
+stateDiagram-v2
+    [*] --> Active : publisher signs & publishes
+    Active --> Active : publisher updates (same d-tag)
+    Active --> Revoked : publisher adds ["status", "revoked"]
+    Active --> Expired : expiration timestamp passes
+    Revoked --> [*]
+    Expired --> [*]
+
+    note right of Active : addressable event —\nlatest version wins
+    note right of Revoked : revocation supersedes\nexpiration
