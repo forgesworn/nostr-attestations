@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 /**
  * Build Attestation Example
  *
@@ -91,12 +93,8 @@ async function main() {
     let secretKey: Uint8Array
 
     if (nsecRaw.startsWith('nsec1')) {
-      const decoded = nip19.decode(nsecRaw)
-      if (decoded.type !== 'nsec') {
-        console.error('Error: NSEC value decoded to unexpected type:', decoded.type)
-        process.exit(1)
-      }
-      secretKey = decoded.data as Uint8Array
+      const { data } = nip19.decode(nsecRaw)
+      secretKey = data as unknown as Uint8Array
     } else {
       // Assume raw hex
       if (!/^[0-9a-fA-F]{64}$/.test(nsecRaw)) {
@@ -112,13 +110,11 @@ async function main() {
     // --- NIP-46 bunker signing ---
     const bunkerParams = await parseBunkerInput(bunkerUrl!)
     if (!bunkerParams) {
-      console.error('Error: could not parse BUNKER_URL — expected bunker://<pubkey>?relay=<relay>&secret=<secret>')
-      process.exit(1)
+      throw new Error('Could not parse BUNKER_URL — expected bunker://<pubkey>?relay=<relay>&secret=<secret>')
     }
 
     if (!bunkerParams.relays || bunkerParams.relays.length === 0) {
-      console.error('Error: BUNKER_URL must include at least one relay= parameter')
-      process.exit(1)
+      throw new Error('BUNKER_URL must include at least one relay= parameter')
     }
 
     const clientSecretKey = generateSecretKey()
