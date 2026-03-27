@@ -19,10 +19,9 @@
  */
 
 import { createAttestation, TYPES } from 'nostr-attestations'
-import { finalizeEvent, getPublicKey } from 'nostr-tools/pure'
+import { finalizeEvent, generateSecretKey, getPublicKey } from 'nostr-tools/pure'
 import { SimplePool } from 'nostr-tools/pool'
 import * as nip19 from 'nostr-tools/nip19'
-import { generateSecretKey } from 'nostr-tools/pure'
 import { BunkerSigner, parseBunkerInput } from 'nostr-tools/nip46'
 
 // ---------------------------------------------------------------------------
