@@ -57,6 +57,8 @@ const event = createAttestation({
 - `parseDTag(dTag)` — parse d-tag into type and identifier
 - `attestationFilter(params)` — build relay query filter
 - `revocationFilter(type, identifier)` — build revocation check filter
+- `isValid(event, now?)` — check validity (revocation, expiration, validity windows)
+- `buildAssertionDTag(ref)` — construct assertion d-tag string
 - `ATTESTATION_KIND` — 31000
 - `TYPES` — well-known type constants (credential, endorsement, vouch, verifier, provenance)
 
@@ -72,4 +74,4 @@ const event = createAttestation({
 
 - [NIP-VA.md](https://github.com/forgesworn/nostr-attestations/blob/main/NIP-VA.md): full NIP specification
 - [README](https://github.com/forgesworn/nostr-attestations/blob/main/README.md): full API reference
-- [vectors/](https://github.com/forgesworn/nostr-attestations/tree/main/vectors): 17 frozen conformance test vectors
+- [vectors/](https://github.com/forgesworn/nostr-attestations/tree/main/vectors): 20 frozen conformance test vectors

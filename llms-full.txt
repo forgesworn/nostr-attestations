@@ -4,7 +4,7 @@
 
 GitHub: https://github.com/forgesworn/nostr-attestations
 npm: https://www.npmjs.com/package/nostr-attestations
-Version: 2.1.0
+Version: 2.2.0
 
 ## Install
 
@@ -392,16 +392,16 @@ if (!result.valid) {
 
 ## Validity
 
-### `isValid(attestation: Attestation, now?: number): ValidityResult`
+### `isValid(event: NostrEvent, now?: number): ValidityResult`
 
-Check whether an attestation is currently valid based on its temporal properties. Accounts for `expiration`, `validFrom`, and `validTo`. Does not check revocation — call `isRevoked()` separately.
+Check whether an attestation event is currently valid. Checks revocation status, NIP-40 expiration, `valid_from` (deferred activation), and `valid_to` (claim expiry). Revocation always takes precedence.
 
 ```typescript
 import { isValid } from 'nostr-attestations'
 
-const result = isValid(attestation)
+const result = isValid(signedEvent)
 if (!result.valid) {
-  console.log(result.reason) // e.g. "attestation has expired"
+  console.log(result.reason) // "revoked" | "expired" | "not-yet-active" | "claim-expired"
 }
 ```
 
@@ -495,7 +495,7 @@ const filter2 = revocationFilter({ assertionId: 'some-event-id' })
 
 **Validity windows:** `valid_from` defers activation; `expiration` (NIP-40) and `valid_to` end it. `expiration` triggers relay-side deletion; `valid_to` is application-enforced.
 
-**Conformance vectors:** 17 frozen test vectors in `vectors/attestations.json` define canonical serialisation.
+**Conformance vectors:** 20 frozen test vectors in `vectors/attestations.json` define canonical serialisation.
 
 ---
 

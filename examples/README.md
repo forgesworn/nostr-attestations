@@ -82,4 +82,4 @@ const confirmation = createAttestation({
 
 - [llms-full.txt](../llms-full.txt) — complete API reference for AI tools
 - [NIP-VA.md](../NIP-VA.md) — full protocol specification
-- [vectors/](../vectors/) — 17 frozen conformance test vectors
+- [vectors/](../vectors/) — 20 frozen conformance test vectors
