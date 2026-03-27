@@ -1,3 +1,10 @@
+# [2.5.0](https://github.com/forgesworn/nostr-attestations/compare/v2.4.0...v2.5.0) (2026-03-27)
+
+
+### Features
+
+* add CLIENT_KEY_FILE support for NIP-46 bunker auth ([4d9dd86](https://github.com/forgesworn/nostr-attestations/commit/4d9dd86ed3032c8173322c221cf202bd71eae8d3))
+
 # [2.4.0](https://github.com/forgesworn/nostr-attestations/compare/v2.3.1...v2.4.0) (2026-03-27)
 
 
