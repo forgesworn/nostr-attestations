@@ -9,7 +9,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "credential:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -17,7 +17,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "expiration",
@@ -45,8 +45,8 @@
       "type": "credential",
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "createdAt": 1700000000,
-      "identifier": "def456",
-      "subject": "def456",
+      "identifier": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "subject": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
       "summary": "Professional credential verified",
       "expiration": 1735689600,
       "revoked": false,
@@ -54,7 +54,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "credential:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -62,7 +62,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "expiration",
@@ -165,7 +165,7 @@
       "tags": [
         [
           "d",
-          "endorsement:def456"
+          "endorsement:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -173,7 +173,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "summary",
@@ -197,8 +197,8 @@
       "type": "endorsement",
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "createdAt": 1700000000,
-      "identifier": "def456",
-      "subject": "def456",
+      "identifier": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "subject": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
       "summary": "Reliable provider",
       "expiration": null,
       "revoked": false,
@@ -206,7 +206,7 @@
       "tags": [
         [
           "d",
-          "endorsement:def456"
+          "endorsement:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -214,7 +214,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "summary",
@@ -337,7 +337,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "credential:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -345,7 +345,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "status",
@@ -369,8 +369,8 @@
       "type": "credential",
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "createdAt": 1700000000,
-      "identifier": "def456",
-      "subject": "def456",
+      "identifier": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "subject": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
       "summary": "Credential revoked",
       "expiration": null,
       "revoked": true,
@@ -378,7 +378,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "credential:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -386,7 +386,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "status",
@@ -423,7 +423,7 @@
       "tags": [
         [
           "d",
-          "credential:ghi789"
+          "credential:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         ],
         [
           "type",
@@ -431,7 +431,7 @@
         ],
         [
           "p",
-          "ghi789"
+          "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         ],
         [
           "status",
@@ -455,8 +455,8 @@
       "type": "credential",
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "createdAt": 1700000000,
-      "identifier": "ghi789",
-      "subject": "ghi789",
+      "identifier": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "subject": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
       "summary": null,
       "expiration": null,
       "revoked": true,
@@ -464,7 +464,7 @@
       "tags": [
         [
           "d",
-          "credential:ghi789"
+          "credential:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         ],
         [
           "type",
@@ -472,7 +472,7 @@
         ],
         [
           "p",
-          "ghi789"
+          "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
         ],
         [
           "status",
@@ -509,7 +509,7 @@
       "tags": [
         [
           "d",
-          "vouch:def456"
+          "vouch:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -517,7 +517,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "expiration",
@@ -533,8 +533,8 @@
       "type": "vouch",
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "createdAt": 1700000000,
-      "identifier": "def456",
-      "subject": "def456",
+      "identifier": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "subject": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
       "summary": null,
       "expiration": 1735689600,
       "revoked": false,
@@ -542,7 +542,7 @@
       "tags": [
         [
           "d",
-          "vouch:def456"
+          "vouch:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -550,7 +550,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "expiration",
@@ -579,7 +579,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "credential:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -587,7 +587,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "L",
@@ -608,8 +608,8 @@
       "type": "credential",
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "createdAt": 1700000000,
-      "identifier": "def456",
-      "subject": "def456",
+      "identifier": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "subject": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
       "summary": null,
       "expiration": null,
       "revoked": false,
@@ -617,7 +617,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "credential:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -625,7 +625,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "L",
@@ -713,7 +713,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "credential:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -721,7 +721,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ]
       ],
       "content": "{\"signatures\":[{\"type\":\"schnorr\",\"value\":\"deadbeef\"}],\"merkle_root\":\"cafebabe\"}",
@@ -733,8 +733,8 @@
       "type": "credential",
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "createdAt": 1700000000,
-      "identifier": "def456",
-      "subject": "def456",
+      "identifier": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "subject": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
       "summary": null,
       "expiration": null,
       "revoked": false,
@@ -742,7 +742,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "credential:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -750,7 +750,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ]
       ],
       "content": "{\"signatures\":[{\"type\":\"schnorr\",\"value\":\"deadbeef\"}],\"merkle_root\":\"cafebabe\"}",
@@ -785,7 +785,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ]
       ],
       "content": "I attest to this claim",
@@ -798,7 +798,7 @@
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "createdAt": 1700000000,
       "identifier": "evt999",
-      "subject": "def456",
+      "subject": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
       "assertionId": "evt999",
       "assertionAddress": null,
       "assertionRelay": "wss://relay.example.com",
@@ -823,7 +823,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ]
       ],
       "content": "I attest to this claim",
@@ -907,7 +907,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "e",
@@ -926,7 +926,7 @@
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "createdAt": 1700000000,
       "identifier": "evt999",
-      "subject": "def456",
+      "subject": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
       "assertionId": "evt999",
       "assertionAddress": null,
       "assertionRelay": "wss://relay.example.com",
@@ -949,7 +949,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "e",
@@ -973,7 +973,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "credential:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -981,7 +981,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "valid_from",
@@ -1001,8 +1001,8 @@
       "type": "credential",
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "createdAt": 1700000000,
-      "identifier": "def456",
-      "subject": "def456",
+      "identifier": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "subject": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
       "assertionId": null,
       "assertionAddress": null,
       "assertionRelay": null,
@@ -1017,7 +1017,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "credential:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -1025,7 +1025,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "valid_from",
@@ -1051,7 +1051,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "credential:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -1059,7 +1059,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "schema",
@@ -1075,8 +1075,8 @@
       "type": "credential",
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "createdAt": 1700000000,
-      "identifier": "def456",
-      "subject": "def456",
+      "identifier": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "subject": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
       "assertionId": null,
       "assertionAddress": null,
       "assertionRelay": null,
@@ -1091,7 +1091,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "credential:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -1099,7 +1099,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "schema",
@@ -1121,7 +1121,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "credential:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -1129,7 +1129,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "request",
@@ -1145,8 +1145,8 @@
       "type": "credential",
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "createdAt": 1700000000,
-      "identifier": "def456",
-      "subject": "def456",
+      "identifier": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "subject": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
       "assertionId": null,
       "assertionAddress": null,
       "assertionRelay": null,
@@ -1161,7 +1161,7 @@
       "tags": [
         [
           "d",
-          "credential:def456"
+          "credential:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "type",
@@ -1169,7 +1169,7 @@
         ],
         [
           "p",
-          "def456"
+          "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
         ],
         [
           "request",
@@ -1323,9 +1323,9 @@
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "created_at": 1711000000,
       "tags": [
-        ["d", "endorsement:def456"],
+        ["d", "endorsement:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"],
         ["type", "endorsement"],
-        ["p", "def456"],
+        ["p", "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"],
         ["occurred_at", "1710900000"],
         ["summary", "Completed frontend work ahead of schedule"]
       ],
@@ -1338,8 +1338,8 @@
       "type": "endorsement",
       "pubkey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "createdAt": 1711000000,
-      "identifier": "def456",
-      "subject": "def456",
+      "identifier": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "subject": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
       "assertionId": null,
       "assertionAddress": null,
       "assertionRelay": null,
@@ -1353,9 +1353,9 @@
       "revoked": false,
       "reason": null,
       "tags": [
-        ["d", "endorsement:def456"],
+        ["d", "endorsement:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"],
         ["type", "endorsement"],
-        ["p", "def456"],
+        ["p", "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"],
         ["occurred_at", "1710900000"],
         ["summary", "Completed frontend work ahead of schedule"]
       ],

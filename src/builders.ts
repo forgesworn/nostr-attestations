@@ -1,5 +1,6 @@
 import { ATTESTATION_KIND } from './constants.js'
 import { buildDTag, buildAssertionDTag } from './filters.js'
+import { isHex64 } from './helpers.js'
 import type { AttestationParams, RevocationParams, EventTemplate } from './types.js'
 
 /**
@@ -21,10 +22,15 @@ export function createAttestation(params: AttestationParams): EventTemplate {
     if (params.type! === 'assertion') throw new Error('type value "assertion" is reserved')
   }
 
+  if (params.subject != null && !isHex64(params.subject)) {
+    throw new Error('subject must be a 64-character lowercase hex pubkey')
+  }
+
   if (hasAssertion) {
     const a = params.assertion!
     if (a.id && a.address) throw new Error('assertion must have id or address, not both')
     if (!a.id && !a.address) throw new Error('assertion must have id or address')
+    if (a.id && !isHex64(a.id)) throw new Error('assertion id must be a 64-character lowercase hex event ID')
   }
 
   if (params.validTo != null) {
@@ -118,7 +124,12 @@ export function createAttestation(params: AttestationParams): EventTemplate {
   }
 
   if (params.tags) {
+    // Reserved tag names that the library manages — reject user overrides
+    const reserved = new Set(['d', 'type', 'status', 'L', 'l'])
     for (const tag of params.tags) {
+      if (reserved.has(tag[0]!)) {
+        throw new Error(`custom tags must not override reserved tag "${tag[0]}"`)
+      }
       tags.push(tag)
     }
   }
@@ -147,6 +158,14 @@ export function createRevocation(params: RevocationParams): EventTemplate {
 
   if (params.assertionId && params.assertionAddress) {
     throw new Error('provide assertionId or assertionAddress, not both')
+  }
+
+  if (hasTyped && params.type === 'assertion') {
+    throw new Error('type value "assertion" is reserved')
+  }
+
+  if (params.subject != null && !isHex64(params.subject)) {
+    throw new Error('subject must be a 64-character lowercase hex pubkey')
   }
 
   const tags: string[][] = []

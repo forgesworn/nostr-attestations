@@ -26,7 +26,7 @@ export function buildAssertionDTag(ref: string): string {
 /**
  * Parse a d-tag into type and identifier.
  * Returns null if the d-tag does not contain a colon.
- * For assertion-only attestations (prefix `assertion:`), returns type as null.
+ * For assertion-only attestations (prefix `assertion:`), type is the string "assertion".
  */
 export function parseDTag(dTag: string): { type: string; identifier: string } | null {
   const idx = dTag.indexOf(':')
