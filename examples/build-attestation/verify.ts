@@ -2,7 +2,7 @@
 
 import { SimplePool } from 'nostr-tools/pool'
 import * as nip19 from 'nostr-tools/nip19'
-import { parseAttestation, isValid, attestationFilter, TYPES } from 'nostr-attestations'
+import { parseAttestation, isValid, TYPES, ATTESTATION_KIND } from 'nostr-attestations'
 import type { NostrEvent } from 'nostr-attestations'
 
 // --- env var resolution ---
@@ -47,16 +47,13 @@ try {
 async function main() {
   const pool = new SimplePool()
 
-  const filter = attestationFilter({
-    type: TYPES.PROVENANCE,
-    authors: [hexPubkey],
-  })
+  // Query by kind + author only. Most relays don't index custom tags like #type,
+  // so we filter by type and image name client-side after fetching.
+  const filter = { kinds: [ATTESTATION_KIND], authors: [hexPubkey] }
 
   let events: NostrEvent[]
   try {
-    // nostr-attestations' NostrFilter and nostr-tools' Filter have compatible shapes
-    // but incompatible index signatures
-    events = await pool.querySync([RELAY_URL], filter as unknown as Parameters<typeof pool.querySync>[1]) as unknown as NostrEvent[]
+    events = await pool.querySync([RELAY_URL], filter) as unknown as NostrEvent[]
   } catch (err) {
     console.error(`Error fetching from relay: ${(err as Error).message}`)
     process.exit(1)
@@ -64,10 +61,10 @@ async function main() {
     pool.close([RELAY_URL])
   }
 
-  // Parse and filter by image name
+  // Parse and filter by type + image name client-side
   const matches = events
     .map((event: NostrEvent) => ({ event, parsed: parseAttestation(event) }))
-    .filter(({ parsed }) => parsed !== null && parsed.identifier === IMAGE_NAME)
+    .filter(({ parsed }) => parsed !== null && parsed.type === TYPES.PROVENANCE && parsed.identifier === IMAGE_NAME)
 
   if (matches.length === 0) {
     console.log(`No build attestations found for "${IMAGE_NAME}" from ${nip19.npubEncode(hexPubkey)}`)
