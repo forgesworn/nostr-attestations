@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/forgesworn/nostr-attestations/compare/v2.3.0...v2.3.1) (2026-03-27)
+
+
+### Bug Fixes
+
+* harden input validation — reserved tag injection, hex checks, assertion type guard ([83a944a](https://github.com/forgesworn/nostr-attestations/commit/83a944a9b3e26bbc906788f0c76d671dde466995))
+
 # [2.3.0](https://github.com/forgesworn/nostr-attestations/compare/v2.2.0...v2.3.0) (2026-03-27)
 
 
