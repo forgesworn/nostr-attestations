@@ -18,6 +18,7 @@
  *   BUILD_TIMESTAMP     — ISO 8601, defaults to current time
  */
 
+import { readFileSync } from 'node:fs'
 import { createAttestation, TYPES } from 'nostr-attestations'
 import { finalizeEvent, generateSecretKey, getPublicKey } from 'nostr-tools/pure'
 import { SimplePool } from 'nostr-tools/pool'
@@ -116,7 +117,17 @@ async function main() {
       throw new Error('BUNKER_URL must include at least one relay= parameter')
     }
 
-    const clientSecretKey = generateSecretKey()
+    // Use a known client key if provided (must be in bunker's authorized-keys list),
+    // otherwise generate an ephemeral one (only works with unrestricted bunkers)
+    let clientSecretKey: Uint8Array
+    const clientKeyFile = process.env['CLIENT_KEY_FILE']
+    if (clientKeyFile) {
+      const hex = readFileSync(clientKeyFile, 'utf8').trim()
+      clientSecretKey = Uint8Array.from(Buffer.from(hex, 'hex'))
+    } else {
+      clientSecretKey = generateSecretKey()
+    }
+
     const signer = BunkerSigner.fromBunker(clientSecretKey, bunkerParams)
 
     attestorPubkeyHex = await signer.getPublicKey()
