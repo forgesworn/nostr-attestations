@@ -1,3 +1,18 @@
+# [2.4.0](https://github.com/forgesworn/nostr-attestations/compare/v2.3.1...v2.4.0) (2026-03-27)
+
+
+### Bug Fixes
+
+* use simple relay filter, fix type issues in verify.ts ([123b70b](https://github.com/forgesworn/nostr-attestations/commit/123b70bb28804076535e1f197acafaa88e8ce565))
+
+
+### Features
+
+* add attest.ts — provenance attestation script for Docker image builds ([3a52fb7](https://github.com/forgesworn/nostr-attestations/commit/3a52fb77e77b2421da804c44a58e7722ef87d916))
+* add attest.ts and verify.ts build attestation scripts ([a08a072](https://github.com/forgesworn/nostr-attestations/commit/a08a07255ac5bfcd9aec90fafa5574ec23c42dd1))
+* add verify.ts to build-attestation example ([9f89183](https://github.com/forgesworn/nostr-attestations/commit/9f891838a2221a11b7f9fa075a305b847f9b577f))
+* scaffold build-attestation example directory ([420d47e](https://github.com/forgesworn/nostr-attestations/commit/420d47ea5d541fcc642b4ad883a8a699056c8a91))
+
 ## [2.3.1](https://github.com/forgesworn/nostr-attestations/compare/v2.3.0...v2.3.1) (2026-03-27)
 
 
