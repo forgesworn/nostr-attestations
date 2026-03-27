@@ -47,7 +47,7 @@ At least one of `type` or an assertion reference MUST be present:
 | Tag | Value | Condition |
 |-----|-------|-----------|
 | `type` | `<string>` | REQUIRED when no assertion reference is present. OPTIONAL when an assertion reference is present. MUST NOT contain colons. The value `assertion` is reserved and MUST NOT be used as a type value. |
-| `e` | `<event-id>`, `<relay>`, `"assertion"` | Reference to the subject's assertion event. The `"assertion"` marker is a new marker value introduced by this NIP alongside [NIP-10](10.md)'s `reply`/`root`/`mention`. |
+| `e` | `<event-id>`, `<relay>`, `"assertion"` | Reference to the subject's assertion event (see [Assertion Marker](#assertion-marker)). |
 | `a` | `<kind>:<pubkey>:<d-tag>`, `<relay>`, `"assertion"` | Reference to an addressable assertion event. |
 
 At most one `e` or `a` tag with the `"assertion"` marker per event (never both). Plain `e`/`a` tags without the `"assertion"` marker are permitted for general event references and do not trigger assertion-first semantics.
@@ -79,6 +79,21 @@ The `status` tag is used for lifecycle state. The only protocol-level value is `
 #### Custom Tags
 
 Applications MAY define additional tags specific to their attestation types. Such tags are carried alongside the tags defined here. Validity windows, schema URIs, request references, and other domain-specific metadata are application concerns — not part of the base protocol.
+
+#### Assertion Marker
+
+This NIP introduces `"assertion"` as a new marker value for `e` and `a` tags, following the same positional convention as [NIP-10](10.md)'s `reply`, `root`, and `mention` markers. Using the existing `e`/`a` tag structure (rather than a new tag name) ensures that relay implementations already index these references — no relay changes are needed. The single new value is intentionally narrow: it marks exactly one referenced event as the subject's first-person claim being attested.
+
+#### Discoverability Labels
+
+Attestation publishers SHOULD include [NIP-32](32.md) labels for relay-side discoverability:
+
+| Tag | Value | Condition |
+|-----|-------|-----------|
+| `L` | `nip-va` | Always |
+| `l` | `<type-value>`, `nip-va` | When a `type` tag is present |
+
+These labels allow clients to discover attestations via `{"#L": ["nip-va"]}` or filter by type via `{"#l": ["endorsement"]}` without relying on `d`-tag prefix matching.
 
 ### Content
 
@@ -122,6 +137,8 @@ Guarantees:
 
 To revoke, the publisher replaces the original event with an updated version including `["status", "revoked"]`. Addressable event semantics mean the revocation supersedes the original.
 
+Revocation uses status replacement rather than [NIP-09](09.md) deletion because deletion removes evidence that an attestation ever existed. A revoked attestation is a verifiable state — clients can display "this credential was revoked" with the publisher's reason, which is materially different from "no credential found." Deletion is also a request, not a guarantee; relays MAY ignore it. Status replacement is deterministic: the latest version of the addressable event is authoritative.
+
 Clients MUST check for `status: revoked` before treating any attestation as valid.
 
 ```mermaid
@@ -154,13 +171,21 @@ stateDiagram-v2
 
 ### Self-attestation Discovery
 
-Self-attestations have no `p` tag. To discover them:
+Self-attestations have no `p` tag. To discover them, clients SHOULD use NIP-32 labels:
+
+```json
+{"kinds": [31000], "authors": ["<pubkey>"], "#L": ["nip-va"]}
+```
+
+This returns all attestations by the pubkey. Clients filter client-side by `type` tag or d-tag prefix for specific attestation types.
+
+Where a relay supports `d`-tag prefix matching, a more precise query is possible:
 
 ```json
 {"kinds": [31000], "authors": ["<pubkey>"], "#d": ["verifier:"]}
 ```
 
-Note: `d`-tag prefix queries depend on relay support for prefix matching.
+Clients MUST NOT rely on prefix matching alone, as relay support varies.
 
 Examples
 --------
@@ -171,15 +196,19 @@ A verifier attests to the validity of a subject's own claim:
 
 ```json
 {
+  "id": "<32-bytes-hex>",
   "kind": 31000,
   "pubkey": "<verifier-pubkey>",
+  "created_at": 1711500000,
   "tags": [
     ["d", "assertion:<subject-event-id>"],
     ["e", "<subject-event-id>", "wss://relay.example.com", "assertion"],
     ["p", "<subject-pubkey>"],
+    ["L", "nip-va"],
     ["summary", "Identity claim verified in person"]
   ],
-  "content": ""
+  "content": "",
+  "sig": "<64-bytes-hex>"
 }
 ```
 
@@ -191,15 +220,20 @@ One identity endorses another based on direct experience:
 
 ```json
 {
+  "id": "<32-bytes-hex>",
   "kind": 31000,
   "pubkey": "<endorser-pubkey>",
+  "created_at": 1711500000,
   "tags": [
     ["d", "endorsement:<subject-pubkey>"],
     ["type", "endorsement"],
     ["p", "<subject-pubkey>"],
+    ["L", "nip-va"],
+    ["l", "endorsement", "nip-va"],
     ["summary", "Reliable provider, completed 12 transactions"]
   ],
-  "content": ""
+  "content": "",
+  "sig": "<64-bytes-hex>"
 }
 ```
 
@@ -209,16 +243,21 @@ The original publisher withdraws a previously issued endorsement:
 
 ```json
 {
+  "id": "<32-bytes-hex>",
   "kind": 31000,
   "pubkey": "<endorser-pubkey>",
+  "created_at": 1711600000,
   "tags": [
     ["d", "endorsement:<subject-pubkey>"],
     ["type", "endorsement"],
     ["p", "<subject-pubkey>"],
+    ["L", "nip-va"],
+    ["l", "endorsement", "nip-va"],
     ["status", "revoked"],
     ["reason", "fraudulent activity detected"]
   ],
-  "content": ""
+  "content": "",
+  "sig": "<64-bytes-hex>"
 }
 ```
 
@@ -228,16 +267,21 @@ The attestor references a first-person assertion and adds an explicit type for r
 
 ```json
 {
+  "id": "<32-bytes-hex>",
   "kind": 31000,
   "pubkey": "<verifier-pubkey>",
+  "created_at": 1711500000,
   "tags": [
     ["d", "assertion:<subject-event-id>"],
     ["e", "<subject-event-id>", "wss://relay.example.com", "assertion"],
     ["type", "credential"],
     ["p", "<subject-pubkey>"],
+    ["L", "nip-va"],
+    ["l", "credential", "nip-va"],
     ["summary", "Professional licence verified"]
   ],
-  "content": ""
+  "content": "",
+  "sig": "<64-bytes-hex>"
 }
 ```
 
@@ -252,6 +296,9 @@ Relay Queries
 
 // All attestations by a specific issuer
 {"kinds": [31000], "authors": ["<issuer-pubkey>"]}
+
+// All attestations of a specific type (via NIP-32 label)
+{"kinds": [31000], "#l": ["endorsement"]}
 
 // Specific attestation (revocation check)
 {"kinds": [31000], "authors": ["<issuer-pubkey>"], "#d": ["endorsement:<subject-pubkey>"]}
@@ -289,7 +336,7 @@ Relationship to Existing NIPs
 
 | Existing | Relationship |
 |----------|-------------|
-| [NIP-32](32.md) (Labels) | Labels are regular events — no update, no revocation per label. Attestations are addressable per publisher, per type, per subject. Labels are sticky notes; attestations are living documents. |
+| [NIP-32](32.md) (Labels) | Labels (kind `1985`) are **regular** events. Attestations (kind `31000`) are **addressable** events. This creates four structural differences: (1) Labels have no "latest version wins" — a query returns every label ever published, not the current state. Attestations replace in-place: one event per publisher per d-tag. (2) Labels cannot be individually revoked — deleting a label event ([NIP-09](09.md)) removes all labels in that event, not a specific one. Attestations support granular revocation via `["status", "revoked"]` on the specific d-tag. (3) Labels have no scoped d-tag — there is no way to query "the current label from pubkey X about subject Y of type Z." Attestation d-tags (`<type>:<identifier>` or `assertion:<ref>`) give exactly this. (4) Labels carry no temporal validity — no expiration, no validity windows, no lifecycle. Attestations compose with [NIP-40](40.md) expiration and support status-based lifecycle. Labels are observations; attestations are living, updatable, revocable claims. |
 | [NIP-58](58.md) (Badges) | Badges are display-oriented — no structured claims, no expiration, no revocation. Attestations carry typed, structured, revocable claims. |
 | [NIP-85](85.md) (Trusted Assertions) | NIP-85 outputs computed metrics. Attestations record human claims. NIP-85 is downstream — it can ingest attestations as input data. |
 | Kind 31871 (Community NIP) | Same problem space, complementary philosophy. 31871 excels at assertion-first verification workflows. This NIP generalises the assertion-first pattern to also cover direct claims on a single kind. |
@@ -297,7 +344,7 @@ Relationship to Existing NIPs
 Implementation Evidence
 -----------------------
 
-This pattern emerged independently across six application domains before the NIP was drafted: identity verification (attestation types with ring signature proofs), professional licensing (regulatory credentials), service reputation (bilateral endorsements), product provenance (chain of custody), trust networks (peer endorsement graphs), and wallet verification (build reproducibility). Two independent reference implementations exist with a combined 170+ tests and 17 frozen conformance vectors.
+This pattern emerged independently across six application domains before the NIP was drafted: identity verification (attestation types with ring signature proofs), professional licensing (regulatory credentials), service reputation (bilateral endorsements), product provenance (chain of custody), trust networks (peer endorsement graphs), and wallet verification (build reproducibility). Two independent reference implementations exist with a combined 150+ tests and 20 frozen conformance vectors.
 
 Backwards Compatibility
 -----------------------

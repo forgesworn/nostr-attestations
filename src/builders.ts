@@ -111,10 +111,10 @@ export function createAttestation(params: AttestationParams): EventTemplate {
     tags.push(['occurred_at', String(params.occurredAt)])
   }
 
-  // NIP-32 labels from type (not for assertion-only attestations)
+  // NIP-32 discoverability labels (NIP-VA §Discoverability Labels)
+  tags.push(['L', 'nip-va'])
   if (hasType) {
-    tags.push(['L', 'nip-va.type'])
-    tags.push(['l', params.type!, 'nip-va.type'])
+    tags.push(['l', params.type!, 'nip-va'])
   }
 
   if (params.tags) {

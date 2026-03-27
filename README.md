@@ -63,14 +63,14 @@ const event = createAttestation({
 
 ### NIP-32 Labels
 
-Typed attestations automatically include [NIP-32](https://github.com/nostr-protocol/nips/blob/master/32.md) namespace labels for relay-side discoverability:
+All attestations include [NIP-32](https://github.com/nostr-protocol/nips/blob/master/32.md) labels for relay-side discoverability. Typed attestations also include a type label:
 
 ```json
-["L", "nip-va.type"]
-["l", "credential", "nip-va.type"]
+["L", "nip-va"]
+["l", "credential", "nip-va"]
 ```
 
-This enables queries like `{"#l": ["credential"]}` across NIP-32-aware clients and relays.
+This enables queries like `{"#L": ["nip-va"]}` (all attestations) or `{"#l": ["credential"]}` (by type).
 
 ## Why This?
 

@@ -170,15 +170,16 @@ describe('createAttestation', () => {
     expect(() => createAttestation({ type: 'credential', schema: '  ' })).toThrow('schema must not be empty')
   })
 
-  it('adds NIP-32 L and l tags from type', () => {
+  it('adds NIP-32 L namespace and l type label for typed attestations', () => {
     const event = createAttestation({ type: 'credential', identifier: 'abc' })
-    expect(event.tags).toContainEqual(['L', 'nip-va.type'])
-    expect(event.tags).toContainEqual(['l', 'credential', 'nip-va.type'])
+    expect(event.tags).toContainEqual(['L', 'nip-va'])
+    expect(event.tags).toContainEqual(['l', 'credential', 'nip-va'])
   })
 
-  it('omits NIP-32 labels for assertion-only attestations', () => {
+  it('adds NIP-32 L namespace but no l tag for assertion-only attestations', () => {
     const event = createAttestation({ assertion: { id: 'evt999' } })
-    const lTags = event.tags.filter(t => t[0] === 'L' || t[0] === 'l')
+    expect(event.tags).toContainEqual(['L', 'nip-va'])
+    const lTags = event.tags.filter(t => t[0] === 'l')
     expect(lTags).toHaveLength(0)
   })
 

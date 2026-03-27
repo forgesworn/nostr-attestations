@@ -489,7 +489,7 @@ const filter2 = revocationFilter({ assertionId: 'some-event-id' })
 
 **Revocation:** Re-publishing with `["status", "revoked"]` replaces the original via Nostr addressable event semantics. No separate revocation kind is needed.
 
-**NIP-32 labels:** `createAttestation()` automatically adds `["L", "nip-va.type"]` and `["l", "<type>", "nip-va.type"]` tags, making attestation types searchable via standard NIP-32 label queries.
+**NIP-32 labels:** `createAttestation()` automatically adds `["L", "nip-va"]` to all attestations and `["l", "<type>", "nip-va"]` when a type is present, making attestations discoverable via `{"#L": ["nip-va"]}` and type-filterable via `{"#l": ["endorsement"]}`.
 
 **Assertion-only attestations:** When a third party confirms a first-person claim without adding their own type, they use an `e` or `a` tag with the `"assertion"` marker. The synthetic type `"assertion"` is used internally.
 
