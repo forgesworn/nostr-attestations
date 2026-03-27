@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/forgesworn/nostr-attestations/compare/v2.2.0...v2.3.0) (2026-03-27)
+
+
+### Features
+
+* harden NIP-VA for upstream review ([da6d436](https://github.com/forgesworn/nostr-attestations/commit/da6d43699522362ca1d3350965f6e6b52ba8f6a4)), closes [#1](https://github.com/forgesworn/nostr-attestations/issues/1)
+
 # [2.2.0](https://github.com/forgesworn/nostr-attestations/compare/v2.1.0...v2.2.0) (2026-03-25)
 
 
