@@ -1,6 +1,9 @@
+/// <reference types="node" />
+
 import { SimplePool } from 'nostr-tools/pool'
 import * as nip19 from 'nostr-tools/nip19'
 import { parseAttestation, isValid, attestationFilter, TYPES } from 'nostr-attestations'
+import type { NostrEvent } from 'nostr-attestations'
 
 // --- env var resolution ---
 
@@ -22,16 +25,13 @@ if (!IMAGE_NAME) {
 
 function resolvePubkey(input: string): string {
   if (input.startsWith('npub1')) {
-    const decoded = nip19.decode(input)
-    if (decoded.type !== 'npub') {
-      throw new Error(`Expected npub, got ${decoded.type}`)
-    }
-    return decoded.data
+    const { data } = nip19.decode(input)
+    return data as string
   }
   if (/^[0-9a-f]{64}$/.test(input)) {
     return input
   }
-  throw new Error(`PUBKEY must be a 64-char hex pubkey or npub1... bech32 string`)
+  throw new Error('PUBKEY must be a 64-char hex pubkey or npub1... bech32 string')
 }
 
 let hexPubkey: string
@@ -52,9 +52,11 @@ async function main() {
     authors: [hexPubkey],
   })
 
-  let events
+  let events: NostrEvent[]
   try {
-    events = await pool.querySync([RELAY_URL], filter)
+    // nostr-attestations' NostrFilter and nostr-tools' Filter have compatible shapes
+    // but incompatible index signatures
+    events = await pool.querySync([RELAY_URL], filter as unknown as Parameters<typeof pool.querySync>[1]) as unknown as NostrEvent[]
   } catch (err) {
     console.error(`Error fetching from relay: ${(err as Error).message}`)
     process.exit(1)
@@ -64,7 +66,7 @@ async function main() {
 
   // Parse and filter by image name
   const matches = events
-    .map((event) => ({ event, parsed: parseAttestation(event) }))
+    .map((event: NostrEvent) => ({ event, parsed: parseAttestation(event) }))
     .filter(({ parsed }) => parsed !== null && parsed.identifier === IMAGE_NAME)
 
   if (matches.length === 0) {
@@ -85,7 +87,7 @@ async function main() {
     try {
       buildDetails = parsed.content ? JSON.parse(parsed.content) : {}
     } catch {
-      // Non-JSON content — leave buildDetails empty
+      // Non-JSON content
     }
 
     const attestedAt = new Date(event.created_at * 1000).toISOString()
@@ -103,8 +105,8 @@ async function main() {
     if (buildDetails.commit) {
       console.log(`  Commit:      ${buildDetails.commit}`)
     }
-    if (buildDetails.builtAt) {
-      console.log(`  Built:       ${buildDetails.builtAt}`)
+    if (buildDetails.built) {
+      console.log(`  Built:       ${buildDetails.built}`)
     }
     console.log(`  Attested:    ${attestedAt}`)
     console.log(`  Event ID:    ${nip19.noteEncode(event.id)}`)
