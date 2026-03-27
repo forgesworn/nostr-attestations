@@ -155,6 +155,12 @@ const attestation = parseAttestation(event)
 |----------|-----------|---------|
 | `validateAttestation` | `(event: NostrEvent) => ValidationResult` | `{ valid: boolean, errors: string[] }` |
 
+### Validity
+
+| Function | Signature | Returns |
+|----------|-----------|---------|
+| `isValid` | `(event: NostrEvent, now?: number) => ValidityResult` | `{ valid: boolean, reason?: string }` |
+
 ### Filters
 
 | Function | Signature | Returns |
@@ -174,11 +180,11 @@ const attestation = parseAttestation(event)
 
 ### Types
 
-`AssertionRef`, `AttestationParams`, `RevocationParams`, `Attestation`, `ValidationResult`, `FilterParams`, `NostrFilter`, `NostrEvent`, `EventTemplate` — all exported from the package root and from `nostr-attestations/types` (zero-runtime import).
+`AssertionRef`, `AttestationParams`, `RevocationParams`, `Attestation`, `ValidationResult`, `ValidityResult`, `FilterParams`, `NostrFilter`, `NostrEvent`, `EventTemplate` — all exported from the package root and from `nostr-attestations/types` (zero-runtime import).
 
 ## Test Vectors
 
-`vectors/attestations.json` contains 17 frozen conformance test vectors covering the full range of attestation types (credential, endorsement, vouch, verifier, provenance) and states (active, revoked, self-attestation). Any conformant implementation must produce identical parse results from these inputs. The vectors are pinned — if tests against them fail, the implementation is broken, not the vector.
+`vectors/attestations.json` contains 20 frozen conformance test vectors covering the full range of attestation types (credential, endorsement, vouch, verifier, provenance) and states (active, revoked, self-attestation). Any conformant implementation must produce identical parse results from these inputs. The vectors are pinned — if tests against them fail, the implementation is broken, not the vector.
 
 ## Attested on Nostr
 

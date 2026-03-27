@@ -23,7 +23,7 @@ Zero-dependency TypeScript library for NIP-VA (kind 31000) Verifiable Attestatio
 | `src/validators.ts` | validateAttestation — structural correctness checks |
 | `src/filters.ts` | buildDTag, parseDTag, attestationFilter, revocationFilter |
 | `src/index.ts` | Barrel exports |
-| `vectors/attestations.json` | 17 frozen test vectors (conformance suite) |
+| `vectors/attestations.json` | 20 frozen test vectors (conformance suite) |
 
 ## Conventions
 
