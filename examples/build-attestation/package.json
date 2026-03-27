@@ -1,0 +1,16 @@
+{
+  "name": "build-attestation-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "attest": "tsx attest.ts",
+    "verify": "tsx verify.ts"
+  },
+  "dependencies": {
+    "nostr-attestations": "file:../../",
+    "nostr-tools": "^2.12.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}
