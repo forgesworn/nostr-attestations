@@ -334,6 +334,57 @@ Relationship to Existing NIPs
 | Agent Reputation Attestations (PR #2285, kind 30085) | Proposes structured reputation scoring specifically for AI agents. NIP-VA provides the general attestation layer (a signed claim about a pubkey); agent-specific scoring algorithms are application logic that can be expressed as NIP-VA attestation content or application-specific tags. |
 | NIP-A1 Testimonials (PR #2198) | Proposes user endorsements via gift-wrapped signed events. NIP-VA's `endorsement` type covers the same use case with addressable semantics — endorsements are publicly discoverable, individually revocable, and queryable by relay filters, while gift-wrapped testimonials are private by default. The two serve different privacy models. |
 
+HTTP Discovery (Informational)
+------------------------------
+
+Services running with NIP-VA provenance attestations MAY advertise them over HTTP using these conventions. This section is informational — not a protocol requirement.
+
+### Response Header
+
+    X-Nostr-Attestation: <hex-event-id>
+
+Every HTTP response from an attested service includes this header. For direct attestations, the value is the attestation event ID. For assertion-first attestations, the value is the assertion event ID. The well-known endpoint disambiguates.
+
+### Well-Known Endpoint
+
+`GET /.well-known/nostr-attestation.json` returns a JSON object describing the service's attestation.
+
+**Direct pattern** — the attestation is a first-party claim by an authority:
+
+```json
+{
+  "pattern": "direct",
+  "event_id": "<hex-event-id>",
+  "relays": ["wss://relay.example.com"],
+  "verify": "https://njump.me/nevent1..."
+}
+```
+
+Verification: fetch the event by ID from a listed relay, verify the signature, parse with a NIP-VA library.
+
+**Assertion-first pattern** — the service published a self-declaration, third parties attest to it:
+
+```json
+{
+  "pattern": "assertion-first",
+  "assertion_id": "<hex-assertion-event-id>",
+  "relays": ["wss://relay.example.com"],
+  "verify": "https://njump.me/nevent1..."
+}
+```
+
+Verification: fetch the assertion event, then query for kind `31000` events with `#e` filter matching the assertion ID. Each result is a third-party attestation. Trust depends on who attested (web of trust), not how many.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `pattern` | `"direct"` \| `"assertion-first"` | Yes | Verification flow |
+| `event_id` | hex string | Direct only | Attestation event ID |
+| `assertion_id` | hex string | Assertion-first only | Self-declaration event ID |
+| `relays` | string[] | Yes | Relay URLs for fetching |
+| `verify` | URL | No | Human-readable verification link |
+
+Responses SHOULD include `Cache-Control: public, max-age=3600`. The attestation changes only on deploy.
+
 Implementation Evidence
 -----------------------
 
