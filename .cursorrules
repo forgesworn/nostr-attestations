@@ -1,0 +1,36 @@
+# Cursor Rules — nostr-attestations
+
+Zero-dependency TypeScript library for NIP-VA (kind 31000) Verifiable Attestation events on Nostr.
+
+## Commands
+
+- `npm run build` — compile TypeScript to dist/
+- `npm test` — run all tests (vitest)
+- `npm run typecheck` — type-check without emitting
+- `npm run lint` — run ESLint
+
+## Conventions
+
+- British English — colour, initialise, behaviour, licence
+- ESM-only — "type": "module" in package.json
+- Zero runtime dependencies — pure data transformation
+- TDD — write a failing test first, then implement
+- Commit messages — type: description format (feat:, fix:, docs:, chore:, refactor:). No Co-Authored-By lines.
+
+## Key Patterns
+
+- d-tag delimiter is the first colon — type values must NOT contain colons
+- `identifier` is the d-tag second segment (any string); `subject` is the p-tag (hex pubkey) — distinct concepts
+- Revocation = re-publish with `["status", "revoked"]` tag — multi-letter tag avoids single-letter indexed tag claims
+- `EventTemplate` has optional `created_at` — signing libraries set this at sign time
+- `parseDTag()` returns null for malformed d-tags, not an error — callers must handle null
+
+## Structure
+
+- `src/constants.ts` — ATTESTATION_KIND (31000), TYPES, tag name constants
+- `src/types.ts` — all type definitions
+- `src/builders.ts` — createAttestation, createRevocation (return unsigned EventTemplate)
+- `src/parsers.ts` — parseAttestation, isRevoked
+- `src/validators.ts` — validateAttestation
+- `src/filters.ts` — buildDTag, parseDTag, attestationFilter, revocationFilter
+- `vectors/attestations.json` — 20 frozen conformance test vectors

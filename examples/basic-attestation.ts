@@ -89,7 +89,7 @@ if (parsed) {
 // ---------------------------------------------------------------------------
 
 if (parsed) {
-  const validity = isValid(parsed)
+  const validity = isValid(fakeSignedEvent)
   console.log('=== Validity Window ===')
   console.log('Is valid now:', validity.valid)       // true
   console.log('Reason (if invalid):', validity.reason)

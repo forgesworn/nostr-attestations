@@ -49,7 +49,7 @@ Zero-dependency TypeScript library for NIP-VA (kind 31000) Verifiable Attestatio
 - **`identifier` vs `subject`** — `identifier` is the d-tag second segment (any string, names the attestation). `subject` is the p-tag (hex pubkey of who the attestation is about). They serve different purposes.
 - **Revocation uses a multi-letter tag** — `["status", "revoked"]` rather than claiming a single-letter indexed tag. This is intentional to avoid NIP tag-namespace collisions.
 - **`EventTemplate` has optional `created_at`** — signing libraries (nostr-tools, etc.) typically set this at sign time. Don't require it in builders.
-- **`parseDTag()` returns `undefined`** for malformed d-tags, not an error. Callers must handle the `undefined` case.
+- **`parseDTag()` returns `null`** for malformed d-tags, not an error. Callers must handle the `null` case.
 
 ## Release & Versioning
 
