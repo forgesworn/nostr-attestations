@@ -1,0 +1,10 @@
+{
+  "projectTitle": "nostr-attestations",
+  "description": "Builders, parsers, and validators for NIP-VA (kind 31000) Verifiable Attestation events on Nostr. TypeScript.",
+  "excludeFolders": ["node_modules", "dist", "coverage", "src", "test", "assets", ".github", ".changeset"],
+  "rules": [
+    "Attestations are Nostr replaceable events (kind 31000) — one attestation per subject-type pair.",
+    "Use buildAttestation() to create and parseAttestation() to read — both handle NIP-44 encryption for private attestations.",
+    "parseAttestation() returns null for malformed events — always check the return value."
+  ]
+}
