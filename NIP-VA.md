@@ -333,6 +333,8 @@ Requires key compromise. Clients SHOULD evaluate attestations by publisher trust
 
 Free keypairs mean free attestations. Defence: web-of-trust filtering per [NIP-02](02.md). Weight by social distance, not count. A single attestation from a followed pubkey is worth more than a thousand from unknown keys.
 
+Applications that compute trust scores from attestations MUST enforce per-signal-type caps to prevent vouch farming. Without caps, a small number of colluding accounts can inflate scores beyond what a professional verification provides. See [Signet §4](https://github.com/forgesworn/signet/blob/main/spec/protocol.md#4-signet-iq-identification-quotient) for RECOMMENDED weights and MUST caps.
+
 ### Replay Across Contexts
 
 The `type` and `d`-tag bind attestations to a specific context. An `endorsement` cannot be misinterpreted as a `credential`.
