@@ -1,3 +1,10 @@
+## [2.5.2](https://github.com/forgesworn/nostr-attestations/compare/v2.5.1...v2.5.2) (2026-04-08)
+
+
+### Bug Fixes
+
+* spec accuracy, filter consistency, d-tag validation, new diagrams ([6652406](https://github.com/forgesworn/nostr-attestations/commit/6652406e25bb552d878a08fa7cba0bd62d2f7331)), closes [#type](https://github.com/forgesworn/nostr-attestations/issues/type) [#l](https://github.com/forgesworn/nostr-attestations/issues/l) [#e](https://github.com/forgesworn/nostr-attestations/issues/e) [#type](https://github.com/forgesworn/nostr-attestations/issues/type) [#l](https://github.com/forgesworn/nostr-attestations/issues/l)
+
 ## [2.5.1](https://github.com/forgesworn/nostr-attestations/compare/v2.5.0...v2.5.1) (2026-04-08)
 
 
