@@ -1,27 +1,52 @@
-flowchart TD
-    Q["Query kind 31000\n#p = subject pubkey"] --> S[For each event]
-    S --> RV{status = revoked?}
-    RV -- yes --> SKIP[Skip / Discard]
-    RV -- no --> EX{NIP-40 expiration\npassed?}
-    EX -- yes --> SKIP
-    EX -- no --> AF{"assertion-first?\ne or a with\n'assertion' marker"}
-    AF -- yes --> FA["Fetch assertion event\nfrom relay hint"]
-    FA --> FX{"exists and authored\nby subject?"}
-    FX -- no --> UN["Unverifiable\nMAY display with warning"]
-    FX -- yes --> WOT
-    AF -- no --> WOT["Evaluate attestor trust\nweb-of-trust"]
-    WOT --> APP[Parse application tags]
-    APP --> VALID[Valid attestation]
+graph TD
+    subgraph QUERY["Query"]
+        Q["kind 31000\n#p = subject pubkey"]
+    end
 
-    style Q fill:#1b2d3d,stroke:#3b82f6,color:#eee,stroke-width:2px
-    style S fill:#1e293b,stroke:#3b82f6,color:#eee
-    style RV fill:#2d1b3d,stroke:#8b5cf6,color:#eee
-    style EX fill:#2d1b3d,stroke:#8b5cf6,color:#eee
-    style AF fill:#2d1b3d,stroke:#8b5cf6,color:#eee
+    subgraph CHECKS["Validity Checks"]
+        RV{status = revoked?}
+        EX{NIP-40 expiration\npassed?}
+        SKIP["Discard"]
+    end
+
+    subgraph ASSERT["Assertion-first"]
+        AF{"e or a tag\nwith 'assertion' marker?"}
+        FA["Fetch assertion event\nfrom relay hint"]
+        FX{"exists &amp; authored\nby subject?"}
+        UN["Unverifiable\nMAY display warning"]
+    end
+
+    subgraph TRUST["Trust &amp; Parse"]
+        WOT["Evaluate attestor\nweb-of-trust"]
+        APP["Parse application tags"]
+        VALID["Valid attestation"]
+    end
+
+    Q --> RV
+    RV -- yes --> SKIP
+    RV -- no --> EX
+    EX -- yes --> SKIP
+    EX -- no --> AF
+    AF -- yes --> FA
+    FA --> FX
+    FX -- no --> UN
+    FX -- yes --> WOT
+    AF -- no --> WOT
+    WOT --> APP
+    APP --> VALID
+
+    style QUERY fill:#1b2d3d,stroke:#3b82f6,color:#eee,stroke-width:2px
+    style CHECKS fill:#2d1b3d,stroke:#8b5cf6,color:#eee,stroke-width:2px
+    style ASSERT fill:#1b3d2d,stroke:#16c79a,color:#eee,stroke-width:2px
+    style TRUST fill:#0d1b2d,stroke:#3b82f6,color:#eee,stroke-width:2px
+    style Q fill:#0d1b2d,stroke:#3b82f6,color:#eee
+    style RV fill:#1a0d2d,stroke:#8b5cf6,color:#eee
+    style EX fill:#1a0d2d,stroke:#8b5cf6,color:#eee
     style SKIP fill:#3d1b1b,stroke:#ef4444,color:#eee
-    style FA fill:#1b3d2d,stroke:#16c79a,color:#eee
-    style FX fill:#2d1b3d,stroke:#8b5cf6,color:#eee
-    style UN fill:#2d2d1b,stroke:#f59e0b,color:#000
-    style WOT fill:#1e293b,stroke:#16c79a,color:#eee
-    style APP fill:#1e293b,stroke:#3b82f6,color:#eee
-    style VALID fill:#1b3d2d,stroke:#16c79a,color:#eee,stroke-width:2px
+    style AF fill:#0d2818,stroke:#16c79a,color:#eee
+    style FA fill:#0d2818,stroke:#16c79a,color:#eee
+    style FX fill:#0d2818,stroke:#16c79a,color:#eee
+    style UN fill:#2d2d1b,stroke:#f59e0b,color:#eee
+    style WOT fill:#0d1117,stroke:#3b82f6,color:#eee
+    style APP fill:#0d1117,stroke:#3b82f6,color:#eee
+    style VALID fill:#0d2818,stroke:#16c79a,color:#eee,stroke-width:2px

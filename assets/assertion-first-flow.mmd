@@ -1,20 +1,39 @@
-%%{init: {'theme': 'dark', 'themeVariables': {'actorBkg': '#1e293b', 'actorBorder': '#16c79a', 'actorTextColor': '#eee', 'actorLineColor': '#3b82f6', 'signalColor': '#00b4d8', 'signalTextColor': '#eee', 'activationBkgColor': '#2d1b3d', 'activationBorderColor': '#8b5cf6', 'noteBkgColor': '#1b3d2d', 'noteTextColor': '#eee', 'noteBorderColor': '#16c79a'}}}%%
-sequenceDiagram
-    participant S as Subject
-    participant R as Relay
-    participant A as Attestor
-    participant V as Verifier
+graph TD
+    subgraph SUBJECT["Subject"]
+        S1["Publish assertion\n(any Nostr kind)"]
+    end
 
-    S->>R: publish assertion event (any kind)
-    Note over R: event ID = abc123
+    subgraph RELAY["Relay"]
+        R1["Stores event\nID = abc123"]
+    end
 
-    A->>R: fetch assertion event
-    R-->>A: returns claim
+    subgraph ATTESTOR["Attestor"]
+        A1["Fetch &amp; verify\nassertion event"]
+        A2["Publish kind 31000\ne: abc123 · assertion"]
+    end
 
-    A->>R: publish kind 31000<br/>["e","abc123","relay","assertion"]
+    subgraph VERIFIER["Verifier"]
+        V1["Query #e = abc123"]
+        V2["Receive attestation(s)"]
+        V3["Weight by WoT\ntrust score"]
+    end
 
-    V->>R: {"kinds":[31000],"#e":["abc123"]}
-    R-->>V: attestation event(s)
+    S1 -->|"publish"| R1
+    R1 -->|"fetch"| A1
+    A1 --> A2
+    A2 -->|"publish"| R1
+    V1 -->|"query"| R1
+    R1 -->|"return"| V2
+    V2 --> V3
 
-    V->>R: verify assertion event exists<br/>and authored by subject
-    V->>V: weight attestors by WoT
+    style SUBJECT fill:#1b3d2d,stroke:#16c79a,color:#eee,stroke-width:2px
+    style RELAY fill:#2d2d1b,stroke:#f59e0b,color:#eee,stroke-width:2px
+    style ATTESTOR fill:#2d1b3d,stroke:#8b5cf6,color:#eee,stroke-width:2px
+    style VERIFIER fill:#1b2d3d,stroke:#3b82f6,color:#eee,stroke-width:2px
+    style S1 fill:#0d2818,stroke:#16c79a,color:#eee
+    style R1 fill:#1a1a0d,stroke:#f59e0b,color:#eee
+    style A1 fill:#1a0d2d,stroke:#8b5cf6,color:#eee
+    style A2 fill:#1a0d2d,stroke:#8b5cf6,color:#eee
+    style V1 fill:#0d1b2d,stroke:#3b82f6,color:#eee
+    style V2 fill:#0d1b2d,stroke:#3b82f6,color:#eee
+    style V3 fill:#0d1b2d,stroke:#3b82f6,color:#eee

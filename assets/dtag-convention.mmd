@@ -1,17 +1,17 @@
 graph LR
-    subgraph AF["Assertion-first  —  d: assertion:&lt;ref&gt;"]
-        AF1["assertion:abc123\n(event ID)"]
-        AF2["assertion:30023:def456:my-claim\n(addressable coord)"]
+    subgraph ASSERT["Assertion-first  ·  d: assertion:&lt;ref&gt;"]
+        AF1["assertion:abc123\n(event ID ref)"]
+        AF2["assertion:30023:def456:my-claim\n(addressable coord ref)"]
     end
 
-    subgraph DC["Direct claim  —  d: &lt;type&gt;:&lt;identifier&gt;"]
+    subgraph DIRECT["Direct claim  ·  d: &lt;type&gt;:&lt;identifier&gt;"]
         DC1["endorsement:&lt;subject-pubkey&gt;"]
         DC2["verifier:notary"]
     end
 
-    style AF fill:#1b3d2d,stroke:#16c79a,color:#eee,stroke-width:2px
-    style DC fill:#1b2d3d,stroke:#3b82f6,color:#eee,stroke-width:2px
-    style AF1 fill:#1e293b,stroke:#16c79a,color:#eee
-    style AF2 fill:#1e293b,stroke:#16c79a,color:#eee
-    style DC1 fill:#1e293b,stroke:#3b82f6,color:#eee
-    style DC2 fill:#1e293b,stroke:#3b82f6,color:#eee
+    style ASSERT fill:#1b3d2d,stroke:#16c79a,color:#eee,stroke-width:2px
+    style DIRECT fill:#1b2d3d,stroke:#3b82f6,color:#eee,stroke-width:2px
+    style AF1 fill:#0d2818,stroke:#16c79a,color:#eee
+    style AF2 fill:#0d2818,stroke:#16c79a,color:#eee
+    style DC1 fill:#0d1b2d,stroke:#3b82f6,color:#eee
+    style DC2 fill:#0d1b2d,stroke:#3b82f6,color:#eee

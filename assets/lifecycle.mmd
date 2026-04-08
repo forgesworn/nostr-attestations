@@ -1,21 +1,19 @@
-flowchart TD
-    PUB(["Publish"])
-    PUB --> ACT
+graph TD
+    subgraph LIFECYCLE["Attestation Lifecycle"]
+        PUB(["Publish"])
+        PUB --> ACT
 
-    ACT["Active\nlatest version wins"]
-    ACT -->|"re-publish same d-tag"| ACT
-    ACT -->|"add status: revoked"| REV
-    ACT -->|"NIP-40 expiration passes"| EXP
+        ACT["Active\nlatest version wins"]
+        ACT -->|"re-publish same d-tag"| ACT
+        ACT -->|"add status: revoked"| REV
+        ACT -->|"NIP-40 expiration passes"| EXP
 
-    REV["Revoked\nsupersedes expiration"]
-    EXP["Expired"]
+        REV["Revoked\nsupersedes expiration"]
+        EXP["Expired"]
+    end
 
-    REV --> DONE1(["●"])
-    EXP --> DONE2(["●"])
-
+    style LIFECYCLE fill:#0d1117,stroke:#8b5cf6,color:#eee,stroke-width:2px
     style PUB fill:#1b3d2d,stroke:#16c79a,color:#eee
     style ACT fill:#1b3d2d,stroke:#16c79a,color:#eee,stroke-width:2px
     style REV fill:#3d1b1b,stroke:#ef4444,color:#eee,stroke-width:2px
-    style EXP fill:#2d2d1b,stroke:#f59e0b,color:#000,stroke-width:2px
-    style DONE1 fill:#3d1b1b,stroke:#ef4444,color:#eee
-    style DONE2 fill:#2d2d1b,stroke:#f59e0b,color:#000
+    style EXP fill:#2d2d1b,stroke:#f59e0b,color:#eee,stroke-width:2px
