@@ -1,3 +1,10 @@
+## [2.5.1](https://github.com/forgesworn/nostr-attestations/compare/v2.5.0...v2.5.1) (2026-04-08)
+
+
+### Bug Fixes
+
+* correct implementation evidence count and remove misleading independence claim ([e683703](https://github.com/forgesworn/nostr-attestations/commit/e683703c20989433add2a1589dfbababe579b755))
+
 # [2.5.0](https://github.com/forgesworn/nostr-attestations/compare/v2.4.0...v2.5.0) (2026-03-27)
 
 
