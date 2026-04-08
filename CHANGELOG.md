@@ -1,3 +1,10 @@
+## [2.5.4](https://github.com/forgesworn/nostr-attestations/compare/v2.5.3...v2.5.4) (2026-04-08)
+
+
+### Bug Fixes
+
+* make connector lines visible in dark and light mode ([b6acb69](https://github.com/forgesworn/nostr-attestations/commit/b6acb69130e395820f4a864f7b4631d35870fa0b)), closes [#94a3b8](https://github.com/forgesworn/nostr-attestations/issues/94a3b8) [#0d1117](https://github.com/forgesworn/nostr-attestations/issues/0d1117)
+
 ## [2.5.3](https://github.com/forgesworn/nostr-attestations/compare/v2.5.2...v2.5.3) (2026-04-08)
 
 
