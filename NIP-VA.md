@@ -11,24 +11,24 @@ This NIP defines kind `31000`, an addressable event for attestations between Nos
 Motivation
 ----------
 
-Several independent protocols on Nostr have converged on the same structural pattern: an addressable event where one pubkey makes a signed claim about another pubkey (or about itself). Each protocol invents its own event kind, leading to kind proliferation and missed interoperability. At least two independent proposals — one using kind 31000 with type-tag differentiation, another using kinds 31871–31873 with an assertion-first workflow — arrived at the same conclusion from different directions. This NIP incorporates lessons from both.
+Several protocols on Nostr have converged on the same structural pattern: an addressable event where one pubkey makes a signed claim about another pubkey (or about itself). Each protocol invents its own event kind, leading to kind proliferation and missed interoperability.
 
 Existing NIPs partially address this space but leave significant gaps:
 
 - [NIP-58](58.md) (Badges) is display-oriented — no structured claims, no expiration, no revocation.
-- [NIP-85](85.md) (Trusted Assertions) covers computed social graph metrics, not arbitrary typed claims between identities.
+- [NIP-85](85.md) (Trusted Assertions) addresses trust computation over social graphs, not arbitrary typed claims between identities.
 - [NIP-32](32.md) (Labelling) provides lightweight, non-addressable labels. Labels are regular events with no mechanism to revoke a specific label without deleting the entire event.
 
 A single generic attestation kind allows identity verification, professional licensing, product provenance, peer endorsement, and trust management to share a common event structure. Applications define their own semantics through the `type` tag and application-specific tags.
 
-The assertion-first pattern — where the subject publishes their own claim and third parties attest to it rather than making independent statements about them — emerged independently across multiple implementations before this NIP was drafted, approached from different problem domains. This convergence suggests the pattern reflects a genuine structural need rather than a design preference.
+The assertion-first pattern — where the subject publishes their own claim and third parties attest to it rather than making independent statements about them — emerged across multiple implementations before this NIP was drafted, approached from different problem domains.
 
 Specification
 -------------
 
 ### Event Kind
 
-Kind `31000` (Attestation) — an addressable event per [NIP-01](01.md). The number is unassigned in the official kind table and was chosen as a memorable, round number in the addressable range (30000–39999).
+Kind `31000` (Attestation) — an addressable event per [NIP-01](01.md).
 
 ### Scope
 
@@ -40,9 +40,11 @@ Kind `31871` provides one such workflow layer, well-suited to event-verification
 
 ### Patterns
 
-**Assertion-first (recommended).** The individual publishes their own claim as any Nostr event. The attestor validates it by referencing it via an `e` or `a` tag with the `"assertion"` marker. The type is inherited from the referenced event — no `type` tag is needed on the attestation. This pattern puts the individual at the centre: they own their claim, the attestor merely stamps it.
+**Assertion-first (recommended).** The individual publishes their own claim as any Nostr event. The attestor validates it by referencing it via an `e` or `a` tag with the `"assertion"` marker. The type is inherited from the referenced event — no `type` tag is needed on the attestation. The subject defines the claim; the attestor confirms it.
 
 **Direct claim.** The attestor defines the `type` tag and makes a standalone claim. Used for endorsements, reviews, access grants, and any case where the attestor originates the claim rather than validating someone else's.
+
+![Assertion-first flow](assets/assertion-first-flow.svg)
 
 ### Tags
 
@@ -83,6 +85,7 @@ When both `type` and an assertion reference are present, the `d` tag MUST use th
 |-----|-------|----------|-------------|
 | `status` | `revoked` | Yes | Publisher withdraws the claim |
 | `reason` | `<human-readable>` | No | Why it was revoked |
+| `effective` | `<unix-timestamp>` | No | When the revocation takes effect |
 
 The `status` tag is used for lifecycle state. The only protocol-level value is `revoked`. Applications MAY define additional status values, but clients that do not understand a status value MUST treat the attestation as valid (non-revoked).
 
@@ -95,7 +98,7 @@ The following application-level tags are used by the reference implementation an
 | Tag | Value | Description |
 |-----|-------|-------------|
 | `valid_from` | `<unix-timestamp>` | Deferred activation — attestation is not valid before this time |
-| `valid_to` | `<unix-timestamp>` | Application-enforced validity end (distinct from NIP-40 `expiration`, which triggers relay-side deletion) |
+| `valid_to` | `<unix-timestamp>` | Application-enforced validity end (distinct from NIP-40 `expiration`, which triggers relay-side deletion). Client-enforced only — relays store the event regardless of this value. |
 | `occurred_at` | `<unix-timestamp>` | When the attested event occurred (distinct from `created_at`, which records when the attestation was published) |
 | `schema` | `<URI>` | Machine-readable schema identifier for regulatory mapping or type disambiguation |
 | `request` | `<event-reference>` | Reference to the event that prompted this attestation |
@@ -104,7 +107,7 @@ When both `valid_from` and `valid_to` are present, `valid_to` MUST be greater th
 
 #### Assertion Marker
 
-This NIP introduces `"assertion"` as a new marker value for `e` and `a` tags, following the same positional convention as [NIP-10](10.md)'s `reply`, `root`, and `mention` markers. Using the existing `e`/`a` tag structure (rather than a new tag name) ensures that relay implementations already index these references — no relay changes are needed. The single new value is intentionally narrow: it marks exactly one referenced event as the subject's first-person claim being attested.
+This NIP introduces `"assertion"` as a new marker value for `e` and `a` tags, following the positional convention of [NIP-10](10.md). The `"assertion"` value occupies index 3 (the fourth element) of the tag array. If no relay hint is available, index 2 MUST be an empty string (`""`) to preserve positional alignment. Using the existing `e`/`a` tag structure (rather than a new tag name) ensures that relay implementations already index these references — no relay changes are needed. The single new value is intentionally narrow: it marks exactly one referenced event as the subject's first-person claim being attested.
 
 #### Discoverability Labels
 
@@ -115,7 +118,7 @@ Attestation publishers SHOULD include [NIP-32](32.md) labels for relay-side disc
 | `L` | `nip-va` | Always |
 | `l` | `<type-value>`, `nip-va` | When a `type` tag is present |
 
-These labels allow clients to discover attestations via `{"#L": ["nip-va"]}` or filter by type via `{"#l": ["endorsement"]}` without relying on `d`-tag prefix matching.
+These labels allow clients to discover attestations via `{"#L": ["nip-va"]}` or filter by type via `{"#l": ["endorsement"]}` without relying on `d`-tag prefix matching. Pure assertion-first attestations without a `type` tag will not have an `l` label and cannot be filtered by type via `#l`; query by `#e` or `#a` instead.
 
 ### Content
 
@@ -123,7 +126,7 @@ Application-defined. MAY be empty, human-readable text, or JSON. Clients that do
 
 ### d-tag Convention
 
-![d-tag convention](assets/dtag-convention.png)
+![d-tag convention](assets/dtag-convention.svg)
 
 **Assertion-first:** `assertion:<ref>`
 - `<ref>` is the event ID (for `e`-tag assertions) or addressable coordinate (for `a`-tag assertions) being attested.
@@ -160,7 +163,7 @@ Revocation uses status replacement rather than [NIP-09](09.md) deletion because 
 
 Clients MUST check for `status: revoked` before treating any attestation as valid.
 
-![attestation lifecycle](assets/lifecycle.png)
+![attestation lifecycle](assets/lifecycle.svg)
 
 ### Verification Flow
 
@@ -176,6 +179,8 @@ Clients MUST check for `status: revoked` before treating any attestation as vali
 5. Evaluate publisher trust (web-of-trust)
 6. Parse application-specific tags
 ```
+
+![Verification flow](assets/verification-flow.svg)
 
 ### Self-attestation Discovery
 
@@ -220,7 +225,7 @@ A verifier attests to the validity of a subject's own claim:
 }
 ```
 
-The `"assertion"` marker on the `e` tag distinguishes this from a generic event reference. The type is determined by the referenced assertion event.
+The `"assertion"` marker on the `e` tag (index 3) distinguishes this from a generic event reference. The type is determined by the referenced assertion event.
 
 ### Direct claim (endorsement)
 
@@ -293,7 +298,7 @@ The attestor references a first-person assertion and adds an explicit type for r
 }
 ```
 
-The `type` tag enables `#type` queries while the `d` tag uses the assertion-first format.
+When both `type` and an assertion reference are present, the `d` tag uses the assertion-first format while the `type` tag enables relay-side NIP-32 label filtering.
 
 Relay Queries
 -------------
@@ -307,6 +312,9 @@ Relay Queries
 
 // All attestations of a specific type (via NIP-32 label)
 {"kinds": [31000], "#l": ["endorsement"]}
+
+// Attestations referencing a specific assertion event (assertion-first lookup)
+{"kinds": [31000], "#e": ["<assertion-event-id>"]}
 
 // Specific attestation (revocation check)
 {"kinds": [31000], "authors": ["<issuer-pubkey>"], "#d": ["endorsement:<subject-pubkey>"]}
@@ -335,7 +343,7 @@ The `p` tag reveals the subject. For sensitive attestations, publishers SHOULD u
 
 ### Relay Censorship
 
-A relay can hide revocations. Clients MUST query multiple relays. Treat as revoked if ANY relay returns the revocation.
+A relay can hide revocations. Clients MUST query multiple relays. The authoritative revocation state is the latest version of the addressable event, determined by `created_at`. Signature verification is always required — a revocation is only valid if signed by the original issuer's key. Do not rely on a single relay as the sole source of revocation state.
 
 ### Type Squatting
 
@@ -346,9 +354,9 @@ Relationship to Existing NIPs
 
 | Existing | Relationship |
 |----------|-------------|
-| [NIP-32](32.md) (Labels) | Labels (kind `1985`) are **regular** events. Attestations (kind `31000`) are **addressable** events. This creates four structural differences: (1) Labels have no "latest version wins" — a query returns every label ever published, not the current state. Attestations replace in-place: one event per publisher per d-tag. (2) Labels cannot be individually revoked — deleting a label event ([NIP-09](09.md)) removes all labels in that event, not a specific one. Attestations support granular revocation via `["status", "revoked"]` on the specific d-tag. (3) Labels have no scoped d-tag — there is no way to query "the current label from pubkey X about subject Y of type Z." Attestation d-tags (`<type>:<identifier>` or `assertion:<ref>`) give exactly this. (4) Labels carry no temporal validity — no expiration, no validity windows, no lifecycle. Attestations compose with [NIP-40](40.md) expiration and support status-based lifecycle. Labels are observations; attestations are living, updatable, revocable claims. |
+| [NIP-32](32.md) (Labels) | Labels (kind `1985`) are **regular** events; attestations (kind `31000`) are **addressable**. Labels have no "latest version wins" — queries return all labels ever published. Labels cannot be individually revoked without deleting the entire event. Labels carry no temporal validity. Attestations replace in-place, support granular revocation via `["status", "revoked"]`, and compose with [NIP-40](40.md) expiration. |
 | [NIP-58](58.md) (Badges) | Badges are display-oriented — no structured claims, no expiration, no revocation. Attestations carry typed, structured, revocable claims. |
-| [NIP-85](85.md) (Trusted Assertions) | NIP-85 outputs computed metrics. Attestations record human claims. NIP-85 is downstream — it can ingest attestations as input data. |
+| [NIP-85](85.md) (Trusted Assertions) | NIP-85 outputs computed trust metrics over the social graph. Attestations record human claims. NIP-85 is downstream — it can ingest attestations as input data. |
 | Kind 31871 (Community NIP) | Kind 31871 addresses a distinct problem: verifying whether a specific Nostr event is truthful or valid. It defines a four-kind system (attestation, request, recommendation, proficiency declaration) with a full state machine (`verifying`, `valid`, `invalid`, `revoked`) suited to event-verification workflows where strangers coordinate to assess event validity. NIP-VA addresses a different problem: making typed, addressable, revocable claims about pubkeys — credentials, endorsements, vouches, provenance. The `p` tag identifies a subject identity rather than an event. The two proposals operate at different levels: kind 31871 is a coordination protocol for event verification; kind 31000 is a record format for identity-centric claims. A kind 31871 workflow can produce a kind 31000 attestation as its outcome record. Kind 31871's proficiency declaration (kind 11871) and recommendation (kind 31873) solve attestor discovery for event verification; NIP-VA leaves equivalent discovery to the application layer. |
 | NIP-91 / Service Attestations (38383–38384) | NIP-91 was closed and redirected to NIP-32. Service Attestations (kinds 38383–38384) address a narrower scope: service completion attestations with Namecoin anchoring. NIP-VA subsumes the attestation primitive (a signed claim about a pubkey) while leaving domain-specific features like blockchain anchoring to application profiles built on top. |
 | TSM Assertion Services (37574–37576) | TSM assertions are computed outputs from trust service machines — algorithmic WoT scores, not human-originated claims. NIP-VA records first-person or third-party claims. The two are complementary: TSM services could ingest NIP-VA attestations as input signals for trust computation. |
@@ -409,12 +417,14 @@ Responses SHOULD include `Cache-Control: public, max-age=3600`. The attestation 
 Implementation Evidence
 -----------------------
 
-This pattern emerged independently across six application domains before the NIP was drafted: identity verification (attestation types with ring signature proofs), professional licensing (regulatory credentials), service reputation (bilateral endorsements), product provenance (chain of custody), trust networks (peer endorsement graphs), and wallet verification (build reproducibility). Two reference implementations exist with a combined 800+ tests and 20 frozen conformance vectors.
+This pattern emerged across six application domains before the NIP was drafted: identity verification (attestation types with ring signature proofs), professional licensing (regulatory credentials), service reputation (bilateral endorsements), product provenance (chain of custody), trust networks (peer endorsement graphs), and wallet verification (build reproducibility). A reference implementation exists with 166 tests and 20 frozen conformance vectors.
 
 Known Limitations
 -----------------
 
 **Multi-party attestation.** Kind `31000` represents a single attestor's claim. Scenarios requiring consensus from multiple attestors (e.g. N-of-M credential approval) are not modelled at the protocol level. Applications requiring multi-party consensus SHOULD aggregate multiple kind `31000` events and apply their own threshold logic. Applications that require cryptographic multi-party proof without revealing individual signers MAY use ring signatures in the `content` field. A future extension may standardise threshold aggregation patterns.
+
+**Pure assertion-first filtering.** Assertion-first attestations without a `type` tag have no `l` label and cannot be filtered by type via `#l`. Clients discovering these attestations SHOULD query by `#e` or `#a` with the assertion event ID.
 
 Backwards Compatibility
 -----------------------

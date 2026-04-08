@@ -52,11 +52,10 @@ export function createAttestation(params: AttestationParams): EventTemplate {
     tags.push(['d', buildAssertionDTag(ref)])
   } else if (hasType) {
     const identifier = params.identifier ?? params.subject
-    if (identifier) {
-      tags.push(['d', buildDTag(params.type!, identifier)])
-    } else {
-      tags.push(['d', params.type!])
+    if (!identifier) {
+      throw new Error('direct claims require either identifier or subject to form a valid d-tag')
     }
+    tags.push(['d', buildDTag(params.type!, identifier)])
   }
 
   // type tag (present for both direct claims and hybrid attestations)

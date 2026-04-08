@@ -1,0 +1,19 @@
+sequenceDiagram
+    participant S as Subject
+    participant R as Relay
+    participant A as Attestor
+    participant V as Verifier
+
+    S->>R: publish assertion event (any kind)
+    Note over R: event ID = abc123
+
+    A->>R: fetch assertion event
+    R-->>A: returns claim
+
+    A->>R: publish kind 31000<br/>["e","abc123","relay","assertion"]
+
+    V->>R: {"kinds":[31000],"#e":["abc123"]}
+    R-->>V: attestation event(s)
+
+    V->>R: verify assertion event exists<br/>and is authored by subject
+    V->>V: weight attestors by WoT

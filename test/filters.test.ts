@@ -87,9 +87,9 @@ describe('attestationFilter', () => {
     expect(filter['#p']).toEqual(['abc123'])
   })
 
-  it('adds #type when type provided', () => {
+  it('adds #l when type provided', () => {
     const filter = attestationFilter({ type: 'credential' })
-    expect(filter['#type']).toEqual(['credential'])
+    expect(filter['#l']).toEqual(['credential'])
   })
 
   it('adds #schema when schema provided', () => {

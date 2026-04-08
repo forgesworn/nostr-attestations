@@ -1,0 +1,14 @@
+flowchart TD
+    Q["Query kind 31000\n#p = subject pubkey"] --> S[For each event]
+    S --> RV{status = revoked?}
+    RV -- yes --> SKIP[Skip]
+    RV -- no --> EX{NIP-40 expiration\npassed?}
+    EX -- yes --> SKIP
+    EX -- no --> AF{"assertion-first?\ne or a tag\nwith 'assertion' marker"}
+    AF -- yes --> FA["Fetch assertion event\nfrom relay hint"]
+    FA --> FX{"exists and authored\nby subject?"}
+    FX -- no --> UN["Unverifiable\nMAY display with warning"]
+    FX -- yes --> WOT
+    AF -- no --> WOT["Evaluate attestor trust\nweb-of-trust"]
+    WOT --> APP[Parse application tags]
+    APP --> VALID[Valid attestation]

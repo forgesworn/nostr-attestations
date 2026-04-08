@@ -137,6 +137,6 @@ export interface NostrFilter {
   authors?: string[]
   '#p'?: string[]
   '#d'?: string[]
-  '#type'?: string[]
+  '#l'?: string[]
   '#schema'?: string[]
 }

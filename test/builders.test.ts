@@ -9,7 +9,7 @@ const EVT1 = 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc'
 
 describe('createAttestation', () => {
   it('creates minimal attestation with required tags only', () => {
-    const event = createAttestation({ type: 'credential' })
+    const event = createAttestation({ type: 'credential', identifier: 'test-id' })
     expect(event.kind).toBe(ATTESTATION_KIND)
     expect(event.tags).toContainEqual(['type', 'credential'])
     expect(event.content).toBe('')
@@ -20,9 +20,8 @@ describe('createAttestation', () => {
     expect(event.tags).toContainEqual(['d', 'credential:abc123'])
   })
 
-  it('uses type as d-tag when no identifier', () => {
-    const event = createAttestation({ type: 'verifier' })
-    expect(event.tags).toContainEqual(['d', 'verifier'])
+  it('throws when direct claim has neither identifier nor subject', () => {
+    expect(() => createAttestation({ type: 'verifier' })).toThrow('direct claims require either identifier or subject')
   })
 
   it('adds p tag when subject provided', () => {
@@ -31,24 +30,25 @@ describe('createAttestation', () => {
   })
 
   it('omits p tag when no subject', () => {
-    const event = createAttestation({ type: 'verifier' })
+    const event = createAttestation({ type: 'verifier', identifier: 'notary' })
     const pTags = event.tags.filter(t => t[0] === 'p')
     expect(pTags).toHaveLength(0)
   })
 
   it('adds summary tag', () => {
-    const event = createAttestation({ type: 'credential', summary: 'Verified attorney' })
+    const event = createAttestation({ type: 'credential', identifier: 'abc123', summary: 'Verified attorney' })
     expect(event.tags).toContainEqual(['summary', 'Verified attorney'])
   })
 
   it('adds expiration tag', () => {
-    const event = createAttestation({ type: 'credential', expiration: 1735689600 })
+    const event = createAttestation({ type: 'credential', identifier: 'abc123', expiration: 1735689600 })
     expect(event.tags).toContainEqual(['expiration', '1735689600'])
   })
 
   it('merges additional application-specific tags', () => {
     const event = createAttestation({
       type: 'credential',
+      identifier: 'abc123',
       tags: [['profession', 'attorney'], ['jurisdiction', 'US-NY']],
     })
     expect(event.tags).toContainEqual(['profession', 'attorney'])
@@ -56,7 +56,7 @@ describe('createAttestation', () => {
   })
 
   it('sets content', () => {
-    const event = createAttestation({ type: 'credential', content: '{"proof":"..."}' })
+    const event = createAttestation({ type: 'credential', identifier: 'abc123', content: '{"proof":"..."}' })
     expect(event.content).toBe('{"proof":"..."}')
   })
 
@@ -73,20 +73,20 @@ describe('createAttestation', () => {
   })
 
   it('throws if expiration is NaN', () => {
-    expect(() => createAttestation({ type: 'credential', expiration: NaN })).toThrow('expiration must be a finite number')
+    expect(() => createAttestation({ type: 'credential', identifier: 'abc123', expiration: NaN })).toThrow('expiration must be a finite number')
   })
 
   it('throws if expiration is Infinity', () => {
-    expect(() => createAttestation({ type: 'credential', expiration: Infinity })).toThrow('expiration must be a finite number')
+    expect(() => createAttestation({ type: 'credential', identifier: 'abc123', expiration: Infinity })).toThrow('expiration must be a finite number')
   })
 
   it('adds valid_from tag', () => {
-    const event = createAttestation({ type: 'credential', validFrom: 1700000000 })
+    const event = createAttestation({ type: 'credential', identifier: 'abc123', validFrom: 1700000000 })
     expect(event.tags).toContainEqual(['valid_from', '1700000000'])
   })
 
   it('throws if validFrom is NaN', () => {
-    expect(() => createAttestation({ type: 'credential', validFrom: NaN })).toThrow('validFrom must be a finite number')
+    expect(() => createAttestation({ type: 'credential', identifier: 'abc123', validFrom: NaN })).toThrow('validFrom must be a finite number')
   })
 
   it('defaults identifier to subject when subject provided but no identifier', () => {
@@ -149,7 +149,7 @@ describe('createAttestation', () => {
   })
 
   it('adds valid_to tag', () => {
-    const event = createAttestation({ type: 'credential', validTo: 1735689600 })
+    const event = createAttestation({ type: 'credential', identifier: 'abc123', validTo: 1735689600 })
     expect(event.tags).toContainEqual(['valid_to', '1735689600'])
   })
 
@@ -162,12 +162,12 @@ describe('createAttestation', () => {
   })
 
   it('adds request tag', () => {
-    const event = createAttestation({ type: 'credential', request: '31872:abc:req1' })
+    const event = createAttestation({ type: 'credential', identifier: 'abc123', request: '31872:abc:req1' })
     expect(event.tags).toContainEqual(['request', '31872:abc:req1'])
   })
 
   it('adds schema tag', () => {
-    const event = createAttestation({ type: 'credential', schema: 'https://signet.dev/schemas/v1' })
+    const event = createAttestation({ type: 'credential', identifier: 'abc123', schema: 'https://signet.dev/schemas/v1' })
     expect(event.tags).toContainEqual(['schema', 'https://signet.dev/schemas/v1'])
   })
 
@@ -189,16 +189,16 @@ describe('createAttestation', () => {
   })
 
   it('adds occurred_at tag', () => {
-    const event = createAttestation({ type: 'credential', occurredAt: 1710900000 })
+    const event = createAttestation({ type: 'credential', identifier: 'abc123', occurredAt: 1710900000 })
     expect(event.tags).toContainEqual(['occurred_at', '1710900000'])
   })
 
   it('throws if occurredAt is NaN', () => {
-    expect(() => createAttestation({ type: 'credential', occurredAt: NaN })).toThrow('occurredAt must be a finite number')
+    expect(() => createAttestation({ type: 'credential', identifier: 'abc123', occurredAt: NaN })).toThrow('occurredAt must be a finite number')
   })
 
   it('throws if occurredAt is Infinity', () => {
-    expect(() => createAttestation({ type: 'credential', occurredAt: Infinity })).toThrow('occurredAt must be a finite number')
+    expect(() => createAttestation({ type: 'credential', identifier: 'abc123', occurredAt: Infinity })).toThrow('occurredAt must be a finite number')
   })
 
   it('throws if subject is not a valid hex pubkey', () => {
@@ -212,6 +212,7 @@ describe('createAttestation', () => {
   it('rejects custom tags that override reserved tag names', () => {
     expect(() => createAttestation({
       type: 'credential',
+      identifier: 'abc123',
       tags: [['d', 'injected']],
     })).toThrow('custom tags must not override reserved tag "d"')
   })
@@ -219,6 +220,7 @@ describe('createAttestation', () => {
   it('rejects custom tags that inject status tag', () => {
     expect(() => createAttestation({
       type: 'credential',
+      identifier: 'abc123',
       tags: [['status', 'revoked']],
     })).toThrow('custom tags must not override reserved tag "status"')
   })

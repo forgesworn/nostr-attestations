@@ -41,7 +41,7 @@ export function attestationFilter(params: FilterParams): NostrFilter {
   const filter: NostrFilter = { kinds: [ATTESTATION_KIND] }
   if (params.authors?.length) filter.authors = params.authors
   if (params.subject) filter['#p'] = [params.subject]
-  if (params.type) filter['#type'] = [params.type]
+  if (params.type) filter['#l'] = [params.type]
   if (params.schema) filter['#schema'] = [params.schema]
   return filter
 }
