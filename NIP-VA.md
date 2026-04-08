@@ -28,6 +28,14 @@ Specification
 
 Kind `31000` (Attestation) — an addressable event per [NIP-01](01.md). The number is unassigned in the official kind table and was chosen as a memorable, round number in the addressable range (30000–39999).
 
+### Scope
+
+This NIP defines the attestation **record format** only. It does not specify how attestations are requested, negotiated, or fulfilled. Workflow mechanics (who initiates an attestation, how requests are routed, how proficiency is declared) are application-defined and intentionally outside this spec.
+
+Applications MAY use any workflow layer that suits their use case: automated issuance, user-initiated requests, DVM-based attestation services (NIP-90), or complex multi-step flows managed at the application layer. All of these can produce kind `31000` events as their output record.
+
+Kind `31871` provides one such workflow layer, well-suited to event-verification scenarios with explicit request/response mechanics. Kind `31000` and kind `31871` are complementary: kind `31871` handles the workflow; kind `31000` is the record that workflow produces.
+
 ### Patterns
 
 **Assertion-first (recommended).** The individual publishes their own claim as any Nostr event. The attestor validates it by referencing it via an `e` or `a` tag with the `"assertion"` marker. The type is inherited from the referenced event — no `type` tag is needed on the attestation. This pattern puts the individual at the centre: they own their claim, the attestor merely stamps it.
@@ -130,6 +138,17 @@ Guarantees:
 1. **One per publisher per claim.** Addressable semantics mean latest version wins.
 2. **Relay-side filtering.** Query by `d`-tag prefix for all attestations of a type.
 3. **No collisions.** Different types and assertion references occupy separate `d`-tag slots.
+
+### Type Conventions
+
+Generic type values (`credential`, `endorsement`, `vouch`, `provenance`, `verifier`) are shared vocabulary and SHOULD be used when the attestation fits a common meaning. Applications that need domain-specific types SHOULD prefix them with a reverse-domain namespace to avoid collision:
+
+```
+org.walletscrutiny:verification
+com.example:professional-licence
+```
+
+Generic types without a namespace prefix are considered shared and any application MAY use them. Namespaced types are owned by the declaring application and carry application-specific semantics.
 
 ### Revocation
 
@@ -389,6 +408,11 @@ Implementation Evidence
 -----------------------
 
 This pattern emerged independently across six application domains before the NIP was drafted: identity verification (attestation types with ring signature proofs), professional licensing (regulatory credentials), service reputation (bilateral endorsements), product provenance (chain of custody), trust networks (peer endorsement graphs), and wallet verification (build reproducibility). Two independent reference implementations exist with a combined 150+ tests and 20 frozen conformance vectors.
+
+Known Limitations
+-----------------
+
+**Multi-party attestation.** Kind `31000` represents a single attestor's claim. Scenarios requiring consensus from multiple attestors (e.g. N-of-M credential approval) are not modelled at the protocol level. Applications requiring multi-party consensus SHOULD aggregate multiple kind `31000` events and apply their own threshold logic. Applications that require cryptographic multi-party proof without revealing individual signers MAY use ring signatures in the `content` field. A future extension may standardise threshold aggregation patterns.
 
 Backwards Compatibility
 -----------------------
