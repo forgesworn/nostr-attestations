@@ -21,6 +21,8 @@ Existing NIPs partially address this space but leave significant gaps:
 
 A single generic attestation kind allows identity verification, professional licensing, product provenance, peer endorsement, and trust management to share a common event structure. Applications define their own semantics through the `type` tag and application-specific tags.
 
+The assertion-first pattern — where the subject publishes their own claim and third parties attest to it rather than making independent statements about them — emerged independently across multiple implementations before this NIP was drafted, approached from different problem domains. This convergence suggests the pattern reflects a genuine structural need rather than a design preference.
+
 Specification
 -------------
 
