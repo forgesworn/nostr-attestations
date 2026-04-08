@@ -409,7 +409,7 @@ Responses SHOULD include `Cache-Control: public, max-age=3600`. The attestation 
 Implementation Evidence
 -----------------------
 
-This pattern emerged independently across six application domains before the NIP was drafted: identity verification (attestation types with ring signature proofs), professional licensing (regulatory credentials), service reputation (bilateral endorsements), product provenance (chain of custody), trust networks (peer endorsement graphs), and wallet verification (build reproducibility). Two independent reference implementations exist with a combined 150+ tests and 20 frozen conformance vectors.
+This pattern emerged independently across six application domains before the NIP was drafted: identity verification (attestation types with ring signature proofs), professional licensing (regulatory credentials), service reputation (bilateral endorsements), product provenance (chain of custody), trust networks (peer endorsement graphs), and wallet verification (build reproducibility). Two reference implementations exist with a combined 800+ tests and 20 frozen conformance vectors.
 
 Known Limitations
 -----------------
