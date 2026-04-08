@@ -144,8 +144,8 @@ Guarantees:
 Generic type values (`credential`, `endorsement`, `vouch`, `provenance`, `verifier`) are shared vocabulary and SHOULD be used when the attestation fits a common meaning. Applications that need domain-specific types SHOULD prefix them with a reverse-domain namespace to avoid collision:
 
 ```
-org.walletscrutiny:verification
 com.example:professional-licence
+io.example:wallet-verification
 ```
 
 Generic types without a namespace prefix are considered shared and any application MAY use them. Namespaced types are owned by the declaring application and carry application-specific semantics.
