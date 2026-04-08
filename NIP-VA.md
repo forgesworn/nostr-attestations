@@ -44,7 +44,7 @@ Kind `31871` provides one such workflow layer, well-suited to event-verification
 
 **Direct claim.** The attestor defines the `type` tag and makes a standalone claim. Used for endorsements, reviews, access grants, and any case where the attestor originates the claim rather than validating someone else's.
 
-![Assertion-first flow](assets/assertion-first-flow.svg)
+![Assertion-first flow](https://raw.githubusercontent.com/forgesworn/nostr-attestations/main/assets/assertion-first-flow.svg)
 
 ### Tags
 
@@ -126,7 +126,7 @@ Application-defined. MAY be empty, human-readable text, or JSON. Clients that do
 
 ### d-tag Convention
 
-![d-tag convention](assets/dtag-convention.svg)
+![d-tag convention](https://raw.githubusercontent.com/forgesworn/nostr-attestations/main/assets/dtag-convention.svg)
 
 **Assertion-first:** `assertion:<ref>`
 - `<ref>` is the event ID (for `e`-tag assertions) or addressable coordinate (for `a`-tag assertions) being attested.
@@ -163,7 +163,7 @@ Revocation uses status replacement rather than [NIP-09](09.md) deletion because 
 
 Clients MUST check for `status: revoked` before treating any attestation as valid.
 
-![attestation lifecycle](assets/lifecycle.svg)
+![attestation lifecycle](https://raw.githubusercontent.com/forgesworn/nostr-attestations/main/assets/lifecycle.svg)
 
 ### Verification Flow
 
@@ -180,7 +180,7 @@ Clients MUST check for `status: revoked` before treating any attestation as vali
 6. Parse application-specific tags
 ```
 
-![Verification flow](assets/verification-flow.svg)
+![Verification flow](https://raw.githubusercontent.com/forgesworn/nostr-attestations/main/assets/verification-flow.svg)
 
 ### Self-attestation Discovery
 
