@@ -1,10 +1,21 @@
-stateDiagram-v2
-    [*] --> Active : publisher signs & publishes
-    Active --> Active : publisher updates (same d-tag)
-    Active --> Revoked : publisher adds ["status", "revoked"]
-    Active --> Expired : expiration timestamp passes
-    Revoked --> [*]
-    Expired --> [*]
+flowchart TD
+    PUB(["Publish"])
+    PUB --> ACT
 
-    note right of Active : addressable event —\nlatest version wins
-    note right of Revoked : revocation supersedes\nexpiration
+    ACT["Active\nlatest version wins"]
+    ACT -->|"re-publish same d-tag"| ACT
+    ACT -->|"add status: revoked"| REV
+    ACT -->|"NIP-40 expiration passes"| EXP
+
+    REV["Revoked\nsupersedes expiration"]
+    EXP["Expired"]
+
+    REV --> DONE1(["●"])
+    EXP --> DONE2(["●"])
+
+    style PUB fill:#1b3d2d,stroke:#16c79a,color:#eee
+    style ACT fill:#1b3d2d,stroke:#16c79a,color:#eee,stroke-width:2px
+    style REV fill:#3d1b1b,stroke:#ef4444,color:#eee,stroke-width:2px
+    style EXP fill:#2d2d1b,stroke:#f59e0b,color:#000,stroke-width:2px
+    style DONE1 fill:#3d1b1b,stroke:#ef4444,color:#eee
+    style DONE2 fill:#2d2d1b,stroke:#f59e0b,color:#000

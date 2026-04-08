@@ -1,10 +1,10 @@
 flowchart TD
     Q["Query kind 31000\n#p = subject pubkey"] --> S[For each event]
     S --> RV{status = revoked?}
-    RV -- yes --> SKIP[Skip]
+    RV -- yes --> SKIP[Skip / Discard]
     RV -- no --> EX{NIP-40 expiration\npassed?}
     EX -- yes --> SKIP
-    EX -- no --> AF{"assertion-first?\ne or a tag\nwith 'assertion' marker"}
+    EX -- no --> AF{"assertion-first?\ne or a with\n'assertion' marker"}
     AF -- yes --> FA["Fetch assertion event\nfrom relay hint"]
     FA --> FX{"exists and authored\nby subject?"}
     FX -- no --> UN["Unverifiable\nMAY display with warning"]
@@ -12,3 +12,16 @@ flowchart TD
     AF -- no --> WOT["Evaluate attestor trust\nweb-of-trust"]
     WOT --> APP[Parse application tags]
     APP --> VALID[Valid attestation]
+
+    style Q fill:#1b2d3d,stroke:#3b82f6,color:#eee,stroke-width:2px
+    style S fill:#1e293b,stroke:#3b82f6,color:#eee
+    style RV fill:#2d1b3d,stroke:#8b5cf6,color:#eee
+    style EX fill:#2d1b3d,stroke:#8b5cf6,color:#eee
+    style AF fill:#2d1b3d,stroke:#8b5cf6,color:#eee
+    style SKIP fill:#3d1b1b,stroke:#ef4444,color:#eee
+    style FA fill:#1b3d2d,stroke:#16c79a,color:#eee
+    style FX fill:#2d1b3d,stroke:#8b5cf6,color:#eee
+    style UN fill:#2d2d1b,stroke:#f59e0b,color:#000
+    style WOT fill:#1e293b,stroke:#16c79a,color:#eee
+    style APP fill:#1e293b,stroke:#3b82f6,color:#eee
+    style VALID fill:#1b3d2d,stroke:#16c79a,color:#eee,stroke-width:2px

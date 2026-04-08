@@ -1,3 +1,4 @@
+%%{init: {'theme': 'dark', 'themeVariables': {'actorBkg': '#1e293b', 'actorBorder': '#16c79a', 'actorTextColor': '#eee', 'actorLineColor': '#3b82f6', 'signalColor': '#00b4d8', 'signalTextColor': '#eee', 'activationBkgColor': '#2d1b3d', 'activationBorderColor': '#8b5cf6', 'noteBkgColor': '#1b3d2d', 'noteTextColor': '#eee', 'noteBorderColor': '#16c79a'}}}%%
 sequenceDiagram
     participant S as Subject
     participant R as Relay
@@ -15,5 +16,5 @@ sequenceDiagram
     V->>R: {"kinds":[31000],"#e":["abc123"]}
     R-->>V: attestation event(s)
 
-    V->>R: verify assertion event exists<br/>and is authored by subject
+    V->>R: verify assertion event exists<br/>and authored by subject
     V->>V: weight attestors by WoT
