@@ -1,3 +1,10 @@
+## [2.5.3](https://github.com/forgesworn/nostr-attestations/compare/v2.5.2...v2.5.3) (2026-04-08)
+
+
+### Bug Fixes
+
+* use absolute raw GitHub URLs for diagram images ([f4d368b](https://github.com/forgesworn/nostr-attestations/commit/f4d368be4ec9fbe67a652a0b358b2ca6013839eb))
+
 ## [2.5.2](https://github.com/forgesworn/nostr-attestations/compare/v2.5.1...v2.5.2) (2026-04-08)
 
 
