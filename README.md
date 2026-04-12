@@ -2,6 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/nostr-attestations)](https://www.npmjs.com/package/nostr-attestations)
 [![CI](https://github.com/forgesworn/nostr-attestations/actions/workflows/ci.yml/badge.svg)](https://github.com/forgesworn/nostr-attestations/actions/workflows/ci.yml)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/TheCryptoDonkey?logo=githubsponsors&color=ea4aaa&label=Sponsor)](https://github.com/sponsors/TheCryptoDonkey)
 
 One Nostr event kind for all attestations -- credentials, endorsements, vouches, provenance, licensing, and trust. Supports both direct attestation and assertion-first patterns within a single kind.
 
