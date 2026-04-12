@@ -1,0 +1,27 @@
+version: 2
+updates:
+  # npm devDependencies — nostr-attestations has zero runtime dependencies,
+  # so every npm bump here is a dev-only change. Group them into
+  # a single weekly PR to keep noise low.
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      dev-dependencies:
+        dependency-type: development
+    commit-message:
+      prefix: chore
+      include: scope
+  # GitHub Actions references in .github/workflows. Monthly is
+  # frequent enough; a weekly cadence would produce mostly trivial
+  # SHA bumps.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: chore
+      include: scope
