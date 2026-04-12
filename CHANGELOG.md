@@ -1,3 +1,10 @@
+## [2.5.5](https://github.com/forgesworn/nostr-attestations/compare/v2.5.4...v2.5.5) (2026-04-12)
+
+
+### Bug Fixes
+
+* resolve development dependency vulnerabilities ([8b1546d](https://github.com/forgesworn/nostr-attestations/commit/8b1546df6065beafaaee85f523e669c62ddb466b))
+
 ## [2.5.4](https://github.com/forgesworn/nostr-attestations/compare/v2.5.3...v2.5.4) (2026-04-08)
 
 
