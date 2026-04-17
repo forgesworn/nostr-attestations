@@ -4,7 +4,7 @@
 [![CI](https://github.com/forgesworn/nostr-attestations/actions/workflows/ci.yml/badge.svg)](https://github.com/forgesworn/nostr-attestations/actions/workflows/ci.yml)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/TheCryptoDonkey?logo=githubsponsors&color=ea4aaa&label=Sponsor)](https://github.com/sponsors/TheCryptoDonkey)
 
-One Nostr event kind for all attestations -- credentials, endorsements, vouches, provenance, licensing, and trust. Supports both direct attestation and assertion-first patterns within a single kind.
+One Nostr event kind for all attestations -- credentials, endorsements, vouches, provenance, and licensing. Supports both direct attestation and assertion-first patterns within a single kind.
 
 **Nostr:** [`npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2`](https://njump.me/npub1mgvlrnf5hm9yf0n5mf9nqmvarhvxkc6remu5ec3vf8r0txqkuk7su0e7q2)
 
@@ -22,8 +22,8 @@ import { createAttestation, TYPES } from 'nostr-attestations'
 // Create an unsigned attestation event template
 const event = createAttestation({
   type: TYPES.CREDENTIAL,
-  identifier: '<subject-pubkey>',
-  subject: '<subject-pubkey>',
+  identifier: '<subject-pubkey>', // d-tag segment: names this attestation
+  subject: '<subject-pubkey>',    // p-tag: who the attestation is about
   summary: 'Professional credential verified',
   expiration: 1735689600,
   tags: [['profession', 'attorney'], ['jurisdiction', 'US-NY']],
@@ -37,7 +37,7 @@ No relay client, no signing library, no crypto. Bring your own. Works with nostr
 
 ### Assertion-First Pattern
 
-Attest to someone else's claim — the individual makes an assertion, you verify it:
+Attest to someone else's claim -- the individual makes an assertion, you verify it:
 
 ```typescript
 import { createAttestation } from 'nostr-attestations'
@@ -48,7 +48,7 @@ const event = createAttestation({
   subject: '<subject-pubkey>',
   content: 'Identity verified in person',
 })
-// type is inferred from the referenced assertion — no type tag needed
+// type is inferred from the referenced assertion -- no type tag needed
 ```
 
 ### Temporal Context
@@ -78,15 +78,17 @@ This enables queries like `{"#L": ["nip-va"]}` (all attestations) or `{"#l": ["c
 
 ## Why This?
 
-Nostr has several ways to label or badge identities, but none designed for verifiable attestations. [NIP-58](https://github.com/nostr-protocol/nips/blob/master/58.md) badges are display-only — no expiry, no revocation, no structured claims. [NIP-85](https://github.com/nostr-protocol/nips/blob/master/85.md) covers social graph metrics, not arbitrary claims. [NIP-32](https://github.com/nostr-protocol/nips/blob/master/32.md) labels are lightweight but not individually replaceable per subject.
+Nostr has several ways to label or badge identities, but none designed for verifiable attestations. [NIP-58](https://github.com/nostr-protocol/nips/blob/master/58.md) badges are display-only -- no expiry, no revocation, no structured claims. [NIP-85](https://github.com/nostr-protocol/nips/blob/master/85.md) covers social graph metrics, not arbitrary claims. [NIP-32](https://github.com/nostr-protocol/nips/blob/master/32.md) labels are lightweight but not individually replaceable per subject.
 
-nostr-attestations uses **one kind (31000) with a `type` tag** instead of inventing a new event kind for every attestation use case. Credentials, endorsements, vouches, licensing, provenance, and revocations all share the same event structure. New attestation types need zero protocol changes — just define a new `type` value.
+nostr-attestations uses **one kind (31000) with a `type` tag** instead of inventing a new event kind for every attestation use case. Credentials, endorsements, vouches, licensing, provenance, and revocations all share the same event structure. New attestation types need zero protocol changes -- just define a new `type` value.
+
+Every attestation is **self-describing** -- the `type` tag and [NIP-32](https://github.com/nostr-protocol/nips/blob/master/32.md) labels mean a client can render a meaningful card, and a relay can filter by attestation type, without fetching any referenced events first.
 
 It supports two attestation patterns within the same kind:
-- **Direct attestation** — the attestor defines the type and makes a claim about a subject
-- **Assertion-first** — the subject makes their own claim, and the attestor references and verifies it
+- **Direct attestation** -- the attestor defines the type and makes a claim about a subject
+- **Assertion-first** -- the subject makes their own claim, and the attestor references and verifies it
 
-The base layer is **semantically neutral** — it carries attestations but does not interpret them. Application profiles (identity verification, professional licensing, service reputation) are built downstream, not in the library.
+The base layer is **semantically neutral** -- it carries attestations but does not interpret them. Flows like attestation requests, trust lists, and attestor discovery belong at the application layer, not in the protocol. Application profiles (identity verification, professional licensing, service reputation) are built downstream, not in the library.
 
 ## Revocation
 
@@ -101,7 +103,7 @@ const revocation = createRevocation({
   reason: 'licence-expired',
   effective: 1704067200,
 })
-// Publish — addressable event semantics replace the original
+// Publish -- addressable event semantics replace the original
 
 // Check if a fetched event is revoked
 const revoked = isRevoked(event) // true if ["status", "revoked"] tag present
@@ -136,6 +138,21 @@ if (!attestation) throw new Error('Not a valid attestation')
 //   tags: [...],
 //   content: '...',
 // }
+```
+
+## Validation
+
+```typescript
+import { validateAttestation, isValid } from 'nostr-attestations'
+
+// Structural correctness (d-tag, type, assertion refs, etc.)
+const result = validateAttestation(event)
+if (!result.valid) console.error(result.errors)
+
+// Temporal validity (revocation, expiration, validity window)
+const validity = isValid(event)
+if (!validity.valid) console.warn(validity.reason)
+// reason: 'revoked' | 'expired' | 'not-yet-active' | 'claim-expired'
 ```
 
 ## API Reference
@@ -185,25 +202,25 @@ if (!attestation) throw new Error('Not a valid attestation')
 
 ### Types
 
-`AssertionRef`, `AttestationParams`, `RevocationParams`, `Attestation`, `ValidationResult`, `ValidityResult`, `FilterParams`, `NostrFilter`, `NostrEvent`, `EventTemplate` — all exported from the package root and from `nostr-attestations/types` (zero-runtime import).
+`AssertionRef`, `AttestationParams`, `RevocationParams`, `Attestation`, `ValidationResult`, `ValidityResult`, `FilterParams`, `NostrFilter`, `NostrEvent`, `EventTemplate` -- all exported from the package root and from `nostr-attestations/types` (zero-runtime import).
 
 ## Test Vectors
 
-`vectors/attestations.json` contains 20 frozen conformance test vectors covering the full range of attestation types (credential, endorsement, vouch, verifier, provenance) and states (active, revoked, self-attestation). Any conformant implementation must produce identical parse results from these inputs. The vectors are pinned — if tests against them fail, the implementation is broken, not the vector.
+`vectors/attestations.json` contains 20 frozen conformance test vectors covering the full range of attestation types (credential, endorsement, vouch, verifier, provenance) and states (active, revoked, self-attestation). Any conformant implementation must produce identical parse results from these inputs. The vectors are pinned -- if tests against them fail, the implementation is broken, not the vector.
 
 ## Attested on Nostr
 
-This library's authorship is claimed on Nostr using the very protocol it implements — NIP-VA eating its own dog food.
+This library's authorship is claimed on Nostr using the very protocol it implements -- NIP-VA eating its own dog food.
 
-A self-attestation alone only proves that the holder of a private key *claims* authorship — not that the claim is true. The real value comes from **third-party attestations**: other pubkeys independently publishing `type: endorsement` events that reference this repo.
+A self-attestation alone only proves that the holder of a private key *claims* authorship -- not that the claim is true. The real value comes from **third-party attestations**: other pubkeys independently publishing `type: endorsement` events that reference this repo.
 
-But counting endorsements isn't enough either — anyone can create 50 throwaway npubs and endorse themselves. What matters is **who** endorses, not how many. A single endorsement from a pubkey with a verified NIP-05 domain, a history of notes, and followers you recognise is worth more than a thousand from anonymous keys. This is a web of trust, not a vote count. When verifying, ask: do I know this endorser? Do people I trust follow them? That's how you resist Sybil attacks without a centralised authority.
+But counting endorsements isn't enough either -- anyone can create 50 throwaway npubs and endorse themselves. What matters is **who** endorses, not how many. A single endorsement from a pubkey with a verified NIP-05 domain, a history of notes, and followers you recognise is worth more than a thousand from anonymous keys. This is a web of trust, not a vote count. When verifying, ask: do I know this endorser? Do people I trust follow them? That's how you resist Sybil attacks without a centralised authority.
 
 All verification uses [nak](https://github.com/fiatjaf/nak) (the Nostr Army Knife). Install with `go install github.com/fiatjaf/nak@latest` or `brew install fiatjaf/tap/nak`.
 
-**1. GitHub → Nostr** — this README claims `npub1mgv...` (see header above)
+**1. GitHub → Nostr** -- this README claims `npub1mgv...` (see header above)
 
-**2. Nostr → GitHub** — the repo announcement points back here:
+**2. Nostr → GitHub** -- the repo announcement points back here:
 
 ```bash
 nak req -k 30617 \
@@ -213,7 +230,7 @@ nak req -k 30617 \
 # Look for the "web" tag → github.com/forgesworn/nostr-attestations
 ```
 
-**3. Verify the authorship claim** — signed by the same key:
+**3. Verify the authorship claim** -- signed by the same key:
 
 ```bash
 nak req -k 31000 \
@@ -229,10 +246,10 @@ nak req -k 31000 \
 nak req -k 31000 \
   -t a=30617:da19f1cd34beca44be74da4b306d9d1dd86b6343cef94ce22c49c6f59816e5bd:nostr-attestations \
   wss://relay.damus.io
-# Returns all attestations referencing this repo — filter by pubkey or type client-side
+# Returns all attestations referencing this repo -- filter by pubkey or type client-side
 ```
 
-Same npub on both sides — you'd need to control both GitHub and the private key to fake it. Third-party endorsements add independent signatures that can't be faked by one person.
+Same npub on both sides -- you'd need to control both GitHub and the private key to fake it. Third-party endorsements add independent signatures that can't be faked by one person.
 
 **Endorse it yourself:**
 
