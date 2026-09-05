@@ -35,6 +35,15 @@
 
 # [2.5.0](https://github.com/forgesworn/nostr-attestations/compare/v2.4.0...v2.5.0) (2026-03-27)
 
+## 3.0.0 (2026-09-05)
+
+### Breaking Changes
+
+- the NIP-32 label is `attestation`, matching the spec
+- events carry `["L", "attestation"]` and
+
+
+
 
 ### Features
 
