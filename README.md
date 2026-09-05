@@ -70,11 +70,11 @@ const event = createAttestation({
 All attestations include [NIP-32](https://github.com/nostr-protocol/nips/blob/master/32.md) labels for relay-side discoverability. Typed attestations also include a type label:
 
 ```json
-["L", "nip-va"]
-["l", "credential", "nip-va"]
+["L", "attestation"]
+["l", "credential", "attestation"]
 ```
 
-This enables queries like `{"#L": ["nip-va"]}` (all attestations) or `{"#l": ["credential"]}` (by type).
+This enables queries like `{"#L": ["attestation"]}` (all attestations) or `{"#l": ["credential"]}` (by type).
 
 ## Why This?
 

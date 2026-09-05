@@ -117,9 +117,9 @@ export function createAttestation(params: AttestationParams): EventTemplate {
   }
 
   // NIP-32 discoverability labels (NIP-VA §Discoverability Labels)
-  tags.push(['L', 'nip-va'])
+  tags.push(['L', 'attestation'])
   if (hasType) {
-    tags.push(['l', params.type!, 'nip-va'])
+    tags.push(['l', params.type!, 'attestation'])
   }
 
   if (params.tags) {

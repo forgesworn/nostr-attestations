@@ -177,13 +177,13 @@ describe('createAttestation', () => {
 
   it('adds NIP-32 L namespace and l type label for typed attestations', () => {
     const event = createAttestation({ type: 'credential', identifier: 'abc' })
-    expect(event.tags).toContainEqual(['L', 'nip-va'])
-    expect(event.tags).toContainEqual(['l', 'credential', 'nip-va'])
+    expect(event.tags).toContainEqual(['L', 'attestation'])
+    expect(event.tags).toContainEqual(['l', 'credential', 'attestation'])
   })
 
   it('adds NIP-32 L namespace but no l tag for assertion-only attestations', () => {
     const event = createAttestation({ assertion: { id: EVT1 } })
-    expect(event.tags).toContainEqual(['L', 'nip-va'])
+    expect(event.tags).toContainEqual(['L', 'attestation'])
     const lTags = event.tags.filter(t => t[0] === 'l')
     expect(lTags).toHaveLength(0)
   })
