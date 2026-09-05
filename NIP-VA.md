@@ -1,10 +1,12 @@
 NIP-VA
 ======
 
-Attestations
-------------
+Verifiable Attestations
+-----------------------
 
 `draft` `optional`
+
+Authors: [ForgeSworn](https://github.com/forgesworn)
 
 This NIP defines kind `31000`, an addressable event for attestations between Nostr identities. One kind serves credentials, endorsements, reviews, access grants, and any other attestation type -- differentiated by a `type` tag or by reference to a first-person assertion event.
 
@@ -117,10 +119,10 @@ Attestation publishers SHOULD include [NIP-32](32.md) labels for relay-side disc
 
 | Tag | Value | Condition |
 |-----|-------|-----------|
-| `L` | `nip-va` | Always |
-| `l` | `<type-value>`, `nip-va` | When a `type` tag is present |
+| `L` | `attestation` | Always |
+| `l` | `<type-value>`, `attestation` | When a `type` tag is present |
 
-These labels allow clients to discover attestations via `{"#L": ["nip-va"]}` or filter by type via `{"#l": ["endorsement"]}` without relying on `d`-tag prefix matching. Pure assertion-first attestations without a `type` tag will not have an `l` label and cannot be filtered by type via `#l`; query by `#e` or `#a` instead.
+These labels allow clients to discover attestations via `{"#L": ["attestation"]}` or filter by type via `{"#l": ["endorsement"]}` without relying on `d`-tag prefix matching. Pure assertion-first attestations without a `type` tag will not have an `l` label and cannot be filtered by type via `#l`; query by `#e` or `#a` instead.
 
 ### Content
 
@@ -189,7 +191,7 @@ Clients MUST check for `status: revoked` before treating any attestation as vali
 Self-attestations have no `p` tag. To discover them, clients SHOULD use NIP-32 labels:
 
 ```json
-{"kinds": [31000], "authors": ["<pubkey>"], "#L": ["nip-va"]}
+{"kinds": [31000], "authors": ["<pubkey>"], "#L": ["attestation"]}
 ```
 
 This returns all attestations by the pubkey. Clients filter client-side by `type` tag or d-tag prefix for specific attestation types.
@@ -219,7 +221,7 @@ A verifier attests to the validity of a subject's own claim:
     ["d", "assertion:<subject-event-id>"],
     ["e", "<subject-event-id>", "wss://relay.example.com", "assertion"],
     ["p", "<subject-pubkey>"],
-    ["L", "nip-va"],
+    ["L", "attestation"],
     ["summary", "Identity claim verified in person"]
   ],
   "content": "",
@@ -243,8 +245,8 @@ One identity endorses another based on direct experience:
     ["d", "endorsement:<subject-pubkey>"],
     ["type", "endorsement"],
     ["p", "<subject-pubkey>"],
-    ["L", "nip-va"],
-    ["l", "endorsement", "nip-va"],
+    ["L", "attestation"],
+    ["l", "endorsement", "attestation"],
     ["summary", "Reliable provider, completed 12 transactions"]
   ],
   "content": "",
@@ -266,8 +268,8 @@ The original publisher withdraws a previously issued endorsement:
     ["d", "endorsement:<subject-pubkey>"],
     ["type", "endorsement"],
     ["p", "<subject-pubkey>"],
-    ["L", "nip-va"],
-    ["l", "endorsement", "nip-va"],
+    ["L", "attestation"],
+    ["l", "endorsement", "attestation"],
     ["status", "revoked"],
     ["reason", "fraudulent activity detected"]
   ],
@@ -291,8 +293,8 @@ The attestor references a first-person assertion and adds an explicit type for r
     ["e", "<subject-event-id>", "wss://relay.example.com", "assertion"],
     ["type", "credential"],
     ["p", "<subject-pubkey>"],
-    ["L", "nip-va"],
-    ["l", "credential", "nip-va"],
+    ["L", "attestation"],
+    ["l", "credential", "attestation"],
     ["summary", "Professional licence verified"]
   ],
   "content": "",
@@ -363,7 +365,7 @@ Relationship to Existing NIPs
 | [NIP-85](85.md) (Trusted Assertions) | NIP-85 outputs computed trust metrics over the social graph. Attestations record human claims. NIP-85 is downstream -- it can ingest attestations as input data. |
 | Kind 31871 (Community NIP) | Kind 31871 addresses a distinct problem: verifying whether a specific Nostr event is truthful or valid. It defines a four-kind system (attestation, request, recommendation, proficiency declaration) with a full state machine (`verifying`, `valid`, `invalid`, `revoked`) suited to event-verification workflows where strangers coordinate to assess event validity. NIP-VA addresses a different problem: making typed, addressable, revocable claims about pubkeys -- credentials, endorsements, vouches, provenance. The `p` tag identifies a subject identity rather than an event. The two proposals operate at different levels: kind 31871 is a coordination protocol for event verification; kind 31000 is a record format for identity-centric claims. A kind 31871 workflow can produce a kind 31000 attestation as its outcome record. Kind 31871's proficiency declaration (kind 11871) and recommendation (kind 31873) solve attestor discovery for event verification; NIP-VA leaves equivalent discovery to the application layer. |
 | NIP-91 / Service Attestations (38383–38384) | NIP-91 was closed and redirected to NIP-32. Service Attestations (kinds 38383–38384) address a narrower scope: service completion attestations with Namecoin anchoring. NIP-VA subsumes the attestation primitive (a signed claim about a pubkey) while leaving domain-specific features like blockchain anchoring to application profiles built on top. |
-| TSM Assertion Services (37574–37576) | TSM assertions are computed outputs from trust service machines -- algorithmic WoT scores, not human-originated claims. NIP-VA records first-person or third-party claims. The two are complementary: TSM services could ingest NIP-VA attestations as input signals for trust computation. |
+| TSM Assertion Services | TSM assertions are computed outputs from trust service machines -- algorithmic WoT scores, not human-originated claims. NIP-VA records first-person or third-party claims. The two are complementary: TSM services could ingest NIP-VA attestations as input signals for trust computation. |
 | Agent Reputation Attestations (PR #2285, kind 30085) | Proposes structured reputation scoring specifically for AI agents. NIP-VA provides the general attestation layer (a signed claim about a pubkey); agent-specific scoring algorithms are application logic that can be expressed as NIP-VA attestation content or application-specific tags. |
 | NIP-A1 Testimonials (PR #2198) | Proposes user endorsements via gift-wrapped signed events. NIP-VA's `endorsement` type covers the same use case with addressable semantics -- endorsements are publicly discoverable, individually revocable, and queryable by relay filters, while gift-wrapped testimonials are private by default. The two serve different privacy models. |
 
@@ -423,7 +425,7 @@ Application profiles MAY define additional `.well-known` endpoints for domain-an
 Implementation Evidence
 -----------------------
 
-This pattern emerged across six application domains before the NIP was drafted: identity verification (attestation types with ring signature proofs), professional licensing (regulatory credentials), service reputation (bilateral endorsements), product provenance (chain of custody), trust networks (peer endorsement graphs), and wallet verification (build reproducibility). A reference implementation exists with 166 tests and 20 frozen conformance vectors.
+The assertion-first pattern has been implemented across multiple application domains within the ForgeSworn toolkit -- identity verification (Signet), anonymous trust assertions (Veil), product provenance (NIP-PROVENANCE), and service reputation (NIP-REPUTATION) -- and these implementations converged on the same structural pattern, which motivated this proposal. A reference implementation of the attestation primitive is published at [`nostr-attestations`](https://github.com/forgesworn/nostr-attestations) with 166 tests and 20 frozen conformance vectors. Cross-implementation adoption outside the ForgeSworn toolkit has not yet been demonstrated; reviewers are invited to propose constructions where an independent implementation would differ.
 
 Known Limitations
 -----------------
