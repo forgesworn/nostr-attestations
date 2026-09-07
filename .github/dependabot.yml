@@ -20,6 +20,13 @@ updates:
       prefix: chore
       include: scope
     groups:
+      # First match wins. @vitest/* peer-depend on the exact vitest version, so
+      # an ungrouped major raises one PR per package and neither can install:
+      # npm ci dies on ERESOLVE. Grouped across all update types, so majors
+      # stay under manual review but arrive together and installable.
+      vitest:
+        patterns: ["vitest", "@vitest/*"]
+        update-types: ["patch", "minor", "major"]
       production-minor:
         dependency-type: production
         update-types: ["patch", "minor"]
