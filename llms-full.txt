@@ -4,7 +4,6 @@
 
 GitHub: https://github.com/forgesworn/nostr-attestations
 npm: https://www.npmjs.com/package/nostr-attestations
-Version: 2.5.0
 
 ## Install
 
@@ -184,7 +183,7 @@ Result of structural validation. `errors` is empty when `valid` is `true`.
 
 ```typescript
 interface FilterParams {
-  type?: string      // Filter by attestation type (uses #type tag index)
+  type?: string      // Filter by attestation type (uses #l tag index)
   subject?: string   // Filter by subject pubkey (p-tag)
   authors?: string[] // Filter by attestor pubkeys
   schema?: string    // Filter by schema URI
@@ -201,7 +200,7 @@ interface NostrFilter {
   authors?: string[]
   '#p'?: string[]
   '#d'?: string[]
-  '#type'?: string[]
+  '#l'?: string[]
   '#schema'?: string[]
 }
 ```
@@ -459,7 +458,7 @@ const filter = attestationFilter({
   subject: 'abc123pubkey',
   authors: ['attestor-pubkey-hex'],
 })
-// => { kinds: [31000], authors: [...], '#p': [...], '#type': ['credential'] }
+// => { kinds: [31000], authors: [...], '#p': [...], '#l': ['credential'] }
 ```
 
 ---
@@ -489,13 +488,13 @@ const filter2 = revocationFilter({ assertionId: 'some-event-id' })
 
 **Revocation:** Re-publishing with `["status", "revoked"]` replaces the original via Nostr addressable event semantics. No separate revocation kind is needed.
 
-**NIP-32 labels:** `createAttestation()` automatically adds `["L", "nip-va"]` to all attestations and `["l", "<type>", "nip-va"]` when a type is present, making attestations discoverable via `{"#L": ["nip-va"]}` and type-filterable via `{"#l": ["endorsement"]}`.
+**NIP-32 labels:** `createAttestation()` automatically adds `["L", "attestation"]` to all attestations and `["l", "<type>", "attestation"]` when a type is present, making attestations discoverable via `{"#L": ["attestation"]}` and type-filterable via `{"#l": ["endorsement"]}`.
 
 **Assertion-only attestations:** When a third party confirms a first-person claim without adding their own type, they use an `e` or `a` tag with the `"assertion"` marker. The synthetic type `"assertion"` is used internally.
 
 **Validity windows:** `valid_from` defers activation; `expiration` (NIP-40) and `valid_to` end it. `expiration` triggers relay-side deletion; `valid_to` is application-enforced.
 
-**Conformance vectors:** 20 frozen test vectors in `vectors/attestations.json` define canonical serialisation.
+**Conformance vectors:** frozen test vectors in `vectors/attestations.json` define canonical serialisation.
 
 ---
 
