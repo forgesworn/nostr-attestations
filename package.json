@@ -22,7 +22,9 @@
   "files": [
     "dist/",
     "LICENSE",
-    "vectors/"
+    "vectors/",
+    "llms.txt",
+    "llms-full.txt"
   ],
   "scripts": {
     "build": "tsc",
