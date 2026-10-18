@@ -11,6 +11,9 @@ and frozen test vectors for creating and consuming attestation events on Nostr.
 No relay client, no signing library, no crypto: bring your own. Works with
 nostr-tools, any Nostr SDK, or bare WebSocket code.
 
+Requirements: ESM-only (use `import`, no CommonJS build); `engines` declares
+Node.js >=22; no runtime dependencies.
+
 ## Getting Started
 
 ```
@@ -18,49 +21,70 @@ npm install nostr-attestations
 ```
 
 ```typescript
-import { createAttestation, TYPES } from 'nostr-attestations'
+import { createAttestation, isValid, TYPES } from 'nostr-attestations'
+import { finalizeEvent, generateSecretKey, getPublicKey } from 'nostr-tools/pure'
+
+const secretKey = generateSecretKey()              // the attestor's key
+const subject = getPublicKey(generateSecretKey())  // hex pubkey of who the attestation is about
+const now = Math.floor(Date.now() / 1000)
 
 // Create an unsigned attestation event template
-const event = createAttestation({
+const template = createAttestation({
   type: TYPES.CREDENTIAL,
-  identifier: '<subject-pubkey>',
-  subject: '<subject-pubkey>',
+  identifier: 'attorney-licence-ny',     // d-tag segment: names this attestation (not the subject)
+  subject,                               // p-tag: who the attestation is about
   summary: 'Professional credential verified',
-  expiration: 1735689600,
+  expiration: now + 365 * 24 * 60 * 60,  // unix seconds, one year from now
   tags: [['profession', 'attorney'], ['jurisdiction', 'US-NY']],
   content: JSON.stringify({ proof: '...' }),
 })
-// => { kind: 31000, tags: [...], content: '...' }
-// Sign with your preferred library and publish to relays
+// => { kind: 31000, tags: [...], content: '...' }  (no created_at, pubkey, id or sig)
+
+// Sign (nostr-tools requires created_at, which the template leaves unset), then publish to relays
+const event = finalizeEvent({ ...template, created_at: now }, secretKey)
+isValid(event) // { valid: true }
 ```
+
+Every pubkey and event ID passed to a builder must be 64 lowercase hex
+characters, or the builder throws.
 
 ## Key Concepts
 
 - **One kind, many types**: kind 31000 with a `type` tag. New attestation types need zero protocol changes.
-- **Builders**: `createAttestation()` and `createRevocation()` return unsigned `EventTemplate` objects.
+- **Builders**: `createAttestation()` and `createRevocation()` return unsigned `EventTemplate` objects. `created_at` is optional on `EventTemplate`; add it when signing.
 - **Parsers**: `parseAttestation()` extracts typed data from any `NostrEvent`. `isRevoked()` checks revocation status.
 - **Validators**: `validateAttestation()` checks structural correctness (required tags, d-tag format).
-- **Filters**: `attestationFilter()` and `revocationFilter()` build Nostr relay query filters.
-- **D-tag convention**: `<type>:<identifier>` ensures one attestation per publisher per type per subject.
-- **Revocation**: re-publish with `["status", "revoked"]`. Addressable event semantics handle the rest.
-- **Validity windows**: optional `valid_from` + `expiration` tags define when an attestation is active.
+- **Filters**: `attestationFilter()` and `revocationFilter()` build Nostr relay query filters. `attestationFilter({ type })` filters on `#l`, not `#type`.
+- **D-tag convention**: `<type>:<identifier>`, so there is one attestation per publisher per type per identifier. `identifier` names the attestation and is distinct from `subject` (the p-tag). For direct claims `identifier` defaults to `subject` when omitted, which gives one per publisher per type per subject; `createAttestation` throws if both are missing. `createRevocation` has no such default: pass `identifier` explicitly.
+- **Assertion-first**: `assertion: { id | address, relay? }` references a first-person claim. The d-tag is `assertion:<ref>`, no `type` tag is written and nothing is inferred from the referenced event. Parsers report `type` as `'assertion'` (`TYPES.ASSERTION`, reserved, not accepted as a `type`). Passing `type` as well makes a hybrid with the same `assertion:` d-tag.
+- **Revocation**: re-publish with `["status", "revoked"]`, signed by the original attestor. Addressable event semantics handle the rest. Revoke typed attestations with `type` + `identifier`; assertion-first and hybrid ones with `assertionId` or `assertionAddress` only.
+- **Validity windows**: three optional tags. `expiration` (NIP-40), `valid_from` (`validFrom`) and `valid_to` (`validTo`). `isValid()` returns the first failure in this order: `'revoked'` (status tag), `'expired'` (`now >= expiration`), `'not-yet-active'` (`now < valid_from`), `'claim-expired'` (`now >= valid_to`). `valid_to` is application-level, so an event past both `expiration` and `valid_to` reports `'expired'`.
+- **NIP-32 labels**: every attestation has `["L", "attestation"]`; typed ones also have `["l", "<type>", "attestation"]`. Assertion-only attestations have no `l` label.
 - **Application profiles**: applications define their own types, tags, and content schemas.
 
 ## API Surface
 
-- `createAttestation(params)`: build unsigned attestation event
+- `createAttestation(params)`: build unsigned attestation event. Throws on invalid input (non-hex `subject` or `assertion.id`, colon or `"assertion"` as `type`, no `type` and no `assertion`, no `identifier` and no `subject` for a direct claim, non-finite timestamps, `validTo <= validFrom`, empty `schema`, custom tags named `d`, `type`, `status`, `L` or `l`)
 - `createRevocation(params)`: build unsigned revocation event
-- `parseAttestation(event)`: parse NostrEvent into typed Attestation
+- `parseAttestation(event)`: parse NostrEvent into typed Attestation, or `null`
 - `isRevoked(event)`: check if event is a revoked attestation
-- `validateAttestation(event)`: structural validation
+- `validateAttestation(event)`: structural validation, returns `{ valid, errors }`
 - `buildDTag(type, identifier)`: construct d-tag string
-- `parseDTag(dTag)`: parse d-tag into type and identifier
-- `attestationFilter(params)`: build relay query filter
-- `revocationFilter(type, identifier)`: build revocation check filter
-- `isValid(event, now?)`: check validity (revocation, expiration, validity windows)
+- `parseDTag(dTag)`: parse d-tag into type and identifier, or `null`
+- `attestationFilter({ type?, subject?, authors?, schema? })`: build relay query filter
+- `revocationFilter(type, identifier)` or `revocationFilter({ assertionId | assertionAddress })`: build filter for the latest version of one attestation (add `authors` yourself; d-tags are unique per publisher)
+- `isValid(event, now?)`: check validity, returns `{ valid, reason? }` with `reason` one of `'revoked' | 'expired' | 'not-yet-active' | 'claim-expired'`
 - `buildAssertionDTag(ref)`: construct assertion d-tag string
 - `ATTESTATION_KIND`: 31000
-- `TYPES`: well-known type constants (credential, endorsement, vouch, verifier, provenance)
+- `TYPES`: type constants (credential, endorsement, vouch, verifier, provenance, and the reserved assertion)
+
+## Upgrading
+
+- 3.0: the NIP-32 label namespace is `attestation` (earlier versions wrote `nip-va`). Update `#L` and `#l` relay filters.
+- 2.5.2: `attestationFilter({ type })` uses `#l`, not `#type`.
+- 2.3.1: builders throw unless `subject` and `assertion.id` are 64 lowercase hex; custom tags may not use `d`, `type`, `status`, `L` or `l`.
+- 2.2: `"assertion"` reserved as a type; `isValid` added.
+- 2.0: `type` optional (assertion-first); `parseAttestation` returns `type: 'assertion'` for assertion-only attestations.
 
 ## Use Cases
 
@@ -73,5 +97,6 @@ const event = createAttestation({
 ## Optional
 
 - [NIP-VA.md](https://github.com/forgesworn/nostr-attestations/blob/main/NIP-VA.md): full NIP specification
-- [README](https://github.com/forgesworn/nostr-attestations/blob/main/README.md): full API reference
+- [README](https://github.com/forgesworn/nostr-attestations/blob/main/README.md): full API reference with parameter tables
+- [CHANGELOG](https://github.com/forgesworn/nostr-attestations/blob/main/CHANGELOG.md): release history and migration notes
 - [vectors/](https://github.com/forgesworn/nostr-attestations/tree/main/vectors): frozen conformance test vectors
