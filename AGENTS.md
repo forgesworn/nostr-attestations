@@ -4,7 +4,7 @@ Instructions in this file apply to the entire repository.
 
 ## Project Summary
 
-Zero-dependency TypeScript library for NIP-VA (kind 31000) Verifiable Attestation events on Nostr. Provides builders, parsers, validators, and filters for creating and consuming attestation events. ESM-only. TypeScript native. Pure data transformation: no network I/O, no signing.
+Zero-dependency TypeScript library for NIP-VA (kind 31000) Verifiable Attestation events on Nostr. Provides builders, parsers, validators, and filters for creating and consuming attestation events. ESM-only. TypeScript native. Pure data transformation: no network I/O, no signing. Node.js >=22 is declared in `engines` (CI runs Node 24).
 
 ## Key Commands
 
@@ -22,16 +22,16 @@ Zero-dependency TypeScript library for NIP-VA (kind 31000) Verifiable Attestatio
 
 ```
 src/
-  constants.ts     : ATTESTATION_KIND (31000), TYPES, tag name constants
+  constants.ts     : ATTESTATION_KIND (31000), TYPES (including the reserved ASSERTION)
   types.ts         : all type definitions (AttestationParams, Attestation, NostrEvent, etc.)
   helpers.ts       : internal helpers (findTag), not part of public API
   builders.ts      : createAttestation, createRevocation; return unsigned EventTemplate
   parsers.ts       : parseAttestation, isRevoked; extract typed data from NostrEvent
   validators.ts    : validateAttestation, structural correctness checks
-  filters.ts       : buildDTag, parseDTag, attestationFilter, revocationFilter
-  validity.ts      : validity period helpers
+  filters.ts       : buildDTag, buildAssertionDTag, parseDTag, attestationFilter, revocationFilter
+  validity.ts      : isValid, ValidityResult (revocation, expiration, valid_from, valid_to)
   index.ts         : barrel exports
-test/              : vitest tests (128 tests across 6 files)
+test/              : vitest tests (166 tests across 6 files)
 vectors/
   attestations.json: 20 frozen conformance test vectors
 ```
@@ -47,6 +47,11 @@ vectors/
 ## Working Guidelines
 
 - `identifier` is the d-tag second segment (any string naming the attestation). `subject` is the p-tag (hex pubkey of who the attestation is about). They are distinct concepts; do not conflate them.
+- For direct claims `createAttestation` falls back to `subject` when `identifier` is omitted, and throws if both are missing. `createRevocation` has no such fallback: it needs `type` + `identifier`, or `assertionId` / `assertionAddress`. Hybrid attestations (type plus assertion) use the `assertion:<ref>` d-tag, so revoke them by assertion reference.
+- The d-tag is unique per publisher per type per identifier, not per subject. Docs must not say "per subject" unless identifier defaults to subject.
+- Assertion-only attestations get no `type` tag and no `l` label. Nothing is inferred from the referenced event; `parseAttestation` and `parseDTag` report type `"assertion"` (`TYPES.ASSERTION`, reserved).
+- `isValid` order: `revoked`, then `expired` (`expiration`), `not-yet-active` (`valid_from`), `claim-expired` (`valid_to`).
+- Builders require 64 lowercase hex for `subject` and `assertion.id`; doc examples must use real-looking hex, not `<placeholder>` strings, and timestamps relative to `Date.now()`.
 - The first colon in the d-tag is the delimiter. Type values must NOT contain colons.
 - `parseDTag()` returns `null` for malformed d-tags, not an error. Callers must handle the `null` case.
 - `EventTemplate` has optional `created_at`; signing libraries set this at sign time. Do not require it in builders.

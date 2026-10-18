@@ -11,7 +11,7 @@ npm: https://www.npmjs.com/package/nostr-attestations
 npm install nostr-attestations
 ```
 
-ESM-only. Zero runtime dependencies. Works with nostr-tools, any Nostr SDK, or bare WebSocket code.
+ESM-only (use `import`; there is no CommonJS build). `engines` declares Node.js >=22. Zero runtime dependencies. Works with nostr-tools, any Nostr SDK, or bare WebSocket code.
 
 ---
 
@@ -57,7 +57,7 @@ interface EventTemplate {
 }
 ```
 
-Unsigned event returned by builders. Pass to your signing library (`nostr-tools`, NDK, etc.) to add `pubkey`, `id`, `sig`, and `created_at`.
+Unsigned event returned by builders. Pass to your signing library (`nostr-tools`, NDK, etc.) to add `pubkey`, `id`, `sig`, and `created_at`. `created_at` is optional here because signers set it; nostr-tools `finalizeEvent` requires it, so spread the template with `created_at: Math.floor(Date.now() / 1000)` before signing.
 
 ---
 
@@ -98,8 +98,8 @@ Reference to a first-person assertion event being confirmed by a third party. Ex
 ```typescript
 interface AttestationParams {
   type?: string          // Application-defined type (must not contain colons). Optional when assertion is provided.
-  identifier?: string    // D-tag second segment: hex pubkey or context string
-  subject?: string       // P-tag: hex pubkey of the subject (third-party attestations)
+  identifier?: string    // D-tag second segment: names the attestation. Defaults to subject for direct claims
+  subject?: string       // P-tag: 64 lowercase hex pubkey of the subject (third-party attestations)
   assertion?: AssertionRef  // Reference to a first-person assertion event
   summary?: string       // Human-readable fallback for clients that don't understand the type
   expiration?: number    // Unix timestamp for attestation expiry (NIP-40)
@@ -113,7 +113,7 @@ interface AttestationParams {
 }
 ```
 
-At least one of `type` or `assertion` must be provided.
+At least one of `type` or `assertion` must be provided. Every pubkey and event ID must be 64 lowercase hex characters.
 
 ---
 
@@ -214,11 +214,11 @@ Nostr relay filter object returned by `attestationFilter()` and `revocationFilte
 ```typescript
 interface ValidityResult {
   valid: boolean
-  reason?: string   // present when valid is false
+  reason?: 'revoked' | 'expired' | 'not-yet-active' | 'claim-expired'   // present when valid is false
 }
 ```
 
-Result of validity window checking by `isValid()`.
+Result of validity checking by `isValid()`.
 
 ---
 
@@ -231,13 +231,14 @@ Create an unsigned attestation event template. The caller is responsible for sig
 At least one of `type` or `assertion` must be provided.
 
 **D-tag construction rules:**
-- When `assertion` is present: `assertion:<ref>` (assertion takes precedence)
+- When `assertion` is present: `assertion:<ref>` (assertion takes precedence, even with a `type`; `identifier` is ignored)
 - When `type` and `identifier` are present: `<type>:<identifier>`
-- When only `type` is present: `<type>` (no colon)
+- When `type` and `subject` are present but `identifier` is not: `<type>:<subject>` (identifier defaults to subject)
+- When `type` is present with neither `identifier` nor `subject`: throws
 
 **Tags produced (in order):**
 - `d` — addressable identifier
-- `type` — the type value (NIP-32 `l` label tag also added)
+- `type`: the type value (only when `type` is given)
 - `p` — subject pubkey (if `subject` provided)
 - `e` or `a` — assertion reference with `"assertion"` marker (if `assertion` provided)
 - `summary` — human-readable summary (if provided)
@@ -247,38 +248,43 @@ At least one of `type` or `assertion` must be provided.
 - `request` — prompting event reference (if provided)
 - `schema` — schema URI (if provided)
 - `occurred_at` — event occurrence timestamp (if provided)
-- `L`, `l` — NIP-32 labels from type (for typed attestations)
+- `L`, `l`: NIP-32 labels. `L` is always written; `l` only when `type` is given
 - Additional application tags from `params.tags`
 
 **Throws** `Error` when:
 - Neither `type` nor `assertion` is provided
 - `type` contains a colon
 - `type` is the reserved value `"assertion"`
+- `subject` is not 64 lowercase hex characters
 - `assertion` has both `id` and `address`
 - `assertion` has neither `id` nor `address`
-- `expiration` is not finite
-- `validTo` is not greater than `validFrom`
+- `assertion.id` is not 64 lowercase hex characters
+- `type` is given without `assertion`, and neither `identifier` nor `subject` is given
+- `expiration`, `validFrom` or `occurredAt` is not finite
+- `validTo` is not finite, or is not greater than `validFrom`
 - `schema` is empty or whitespace
-- `occurredAt` is not finite
+- a custom tag in `tags` is named `d`, `type`, `status`, `L` or `l`
 
 ```typescript
-import { createAttestation, TYPES, ATTESTATION_KIND } from 'nostr-attestations'
+import { createAttestation, TYPES } from 'nostr-attestations'
+
+const subject = 'a'.repeat(64)  // placeholder: 64 lowercase hex characters
 
 // Basic typed attestation
 const event = createAttestation({
   type: TYPES.CREDENTIAL,
-  identifier: 'abc123pubkey',
-  subject: 'abc123pubkey',
+  identifier: 'attorney-licence-ny',  // names this attestation; omit it to default to subject
+  subject,
   summary: 'Professional credential verified',
   expiration: Math.floor(Date.now() / 1000) + 31536000,
   tags: [['profession', 'attorney'], ['jurisdiction', 'US-NY']],
   content: JSON.stringify({ proof: '...' }),
 })
-// => { kind: 31000, tags: [['d', 'credential:abc123pubkey'], ['type', 'credential'], ...], content: '...' }
+// => { kind: 31000, tags: [['d', 'credential:attorney-licence-ny'], ['type', 'credential'], ...], content: '...' }
 
 // Assertion-only attestation (confirm a third-party claim)
 const assertionEvent = createAttestation({
-  assertion: { id: 'some-event-id', relay: 'wss://relay.example.com' },
+  assertion: { id: 'b'.repeat(64), relay: 'wss://relay.example.com' },  // placeholder event ID
   summary: 'Confirmed',
 })
 ```
@@ -291,7 +297,7 @@ Create an unsigned revocation event template. When published, this replaces the 
 
 **Tags produced:**
 - `d` — matching the original attestation
-- `type` — for typed attestations
+- `type`: for typed attestations
 - `status` with value `"revoked"`
 - `p` — subject pubkey (if provided)
 - `reason` — revocation reason (if provided)
@@ -300,7 +306,11 @@ Create an unsigned revocation event template. When published, this replaces the 
 **Throws** `Error` when:
 - Neither `(type + identifier)` nor `(assertionId | assertionAddress)` is provided
 - Both `assertionId` and `assertionAddress` are provided
+- `type` is the reserved value `"assertion"`
+- `subject` is not 64 lowercase hex characters
 - `effective` is not finite
+
+Unlike `createAttestation`, `identifier` does not default to `subject`: pass the same `identifier` the original used. A hybrid attestation (`type` plus `assertion`) has the d-tag `assertion:<ref>`, so revoke it with `assertionId` or `assertionAddress` only; if both a typed pair and an assertion reference are given, the typed form wins. Publish the revocation with the original attestor's key.
 
 ```typescript
 import { createRevocation } from 'nostr-attestations'
@@ -308,15 +318,15 @@ import { createRevocation } from 'nostr-attestations'
 // Revoke a typed attestation
 const revocation = createRevocation({
   type: 'credential',
-  identifier: 'abc123pubkey',
-  subject: 'abc123pubkey',
+  identifier: 'attorney-licence-ny',
+  subject: 'a'.repeat(64),  // placeholder: the original subject
   reason: 'Licence expired',
   effective: Math.floor(Date.now() / 1000),
 })
 
 // Revoke an assertion-only attestation
 const assertionRevocation = createRevocation({
-  assertionId: 'some-event-id',
+  assertionId: 'b'.repeat(64),  // placeholder: the assertion event ID used when attesting
   reason: 'Withdrawn by subject',
 })
 ```
@@ -393,7 +403,15 @@ if (!result.valid) {
 
 ### `isValid(event: NostrEvent, now?: number): ValidityResult`
 
-Check whether an attestation event is currently valid. Checks revocation status, NIP-40 expiration, `valid_from` (deferred activation), and `valid_to` (claim expiry). Revocation always takes precedence.
+Check whether an attestation event is currently valid. Checks revocation status, NIP-40 expiration, `valid_from` (deferred activation), and `valid_to` (claim expiry). Does not verify signatures or structure. `now` is unix seconds and defaults to the current time.
+
+Checks run in this order and the first failure is returned:
+1. `status` is `revoked`: `'revoked'`
+2. `expiration` tag (NIP-40), `now >= expiration`: `'expired'`
+3. `valid_from` tag, `now < valid_from`: `'not-yet-active'`
+4. `valid_to` tag, `now >= valid_to`: `'claim-expired'`
+
+An event past both `expiration` and `valid_to` therefore reports `'expired'`. A tag that is not a finite number is ignored.
 
 ```typescript
 import { isValid } from 'nostr-attestations'
@@ -466,7 +484,7 @@ const filter = attestationFilter({
 ### `revocationFilter(type: string, identifier: string): NostrFilter`
 ### `revocationFilter(options: { assertionId?: string; assertionAddress?: string }): NostrFilter`
 
-Build a Nostr relay filter to fetch the latest version of a specific attestation (for revocation checking). Queries by `#d` tag, which returns the most recent addressable event.
+Build a Nostr relay filter to fetch the latest version of a specific attestation (for revocation checking). Queries by `#d` tag. The filter has no `authors`, and d-tags are only unique per publisher, so add `authors: [attestorPubkey]` yourself to get the original attestor's latest version.
 
 ```typescript
 import { revocationFilter } from 'nostr-attestations'
@@ -484,17 +502,27 @@ const filter2 = revocationFilter({ assertionId: 'some-event-id' })
 
 ## Wire Format & Protocol Notes
 
-**D-tag convention:** `<type>:<identifier>` — ensures one attestation per publisher per type per subject. The colon is the delimiter; type values must not contain colons.
+**D-tag convention:** `<type>:<identifier>`, so a publisher holds one attestation per type per identifier. `identifier` names the attestation and is distinct from `subject` (the p-tag); for direct claims it defaults to `subject` when omitted, which gives one per publisher per type per subject. The first colon is the delimiter; type values must not contain colons.
 
 **Revocation:** Re-publishing with `["status", "revoked"]` replaces the original via Nostr addressable event semantics. No separate revocation kind is needed.
 
 **NIP-32 labels:** `createAttestation()` automatically adds `["L", "attestation"]` to all attestations and `["l", "<type>", "attestation"]` when a type is present, making attestations discoverable via `{"#L": ["attestation"]}` and type-filterable via `{"#l": ["endorsement"]}`.
 
-**Assertion-only attestations:** When a third party confirms a first-person claim without adding their own type, they use an `e` or `a` tag with the `"assertion"` marker. The synthetic type `"assertion"` is used internally.
+**Assertion-only attestations:** When a third party confirms a first-person claim without adding their own type, they use an `e` or `a` tag with the `"assertion"` marker. No `type` tag is written and nothing is inferred from the referenced event. The d-tag is `assertion:<ref>`, and parsers (`parseAttestation`, `parseDTag`) report the synthetic type `"assertion"` (`TYPES.ASSERTION`, reserved: builders reject it as a `type`). Fetch the referenced event to see what was asserted. Attestations with no `type` carry no `l` label.
 
-**Validity windows:** `valid_from` defers activation; `expiration` (NIP-40) and `valid_to` end it. `expiration` triggers relay-side deletion; `valid_to` is application-enforced.
+**Validity windows:** `valid_from` defers activation; `expiration` (NIP-40) and `valid_to` end it. `expiration` triggers relay-side deletion; `valid_to` is application-enforced. `isValid()` reports `'expired'` for `expiration`, `'not-yet-active'` for `valid_from` and `'claim-expired'` for `valid_to`, checking `expiration` first.
 
 **Conformance vectors:** frozen test vectors in `vectors/attestations.json` define canonical serialisation.
+
+---
+
+## Upgrading
+
+- 3.0: the NIP-32 label namespace is `attestation` (earlier versions wrote `nip-va`). Events carry `["L", "attestation"]` and `["l", "<type>", "attestation"]`. Update `#L` and `#l` relay filters; events indexed under the old label are not found by the new one.
+- 2.5.2: `attestationFilter({ type })` filters on `#l`, not `#type`.
+- 2.3.1: builders throw unless `subject` and `assertion.id` are 64 lowercase hex; custom tags may not use `d`, `type`, `status`, `L` or `l`.
+- 2.2: `"assertion"` is a reserved type value; `isValid` added.
+- 2.0: `type` is optional (assertion-first); `parseAttestation` returns `type: 'assertion'` for assertion-only attestations; `assertion`, `validTo`, `request` and `schema` params, `buildAssertionDTag` and the `nostr-attestations/types` subpath were added.
 
 ---
 

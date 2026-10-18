@@ -1,3 +1,21 @@
+# [3.0.0](https://github.com/forgesworn/nostr-attestations/compare/v2.5.5...v3.0.0) (2026-09-05)
+
+
+### Features
+
+* the NIP-32 label is `attestation`, matching the spec ([ddc665f](https://github.com/forgesworn/nostr-attestations/commit/ddc665fbe4093cc728ce646af567b3fc4f984faf))
+
+
+### BREAKING CHANGES
+
+* events carry `["L", "attestation"]` and `["l", "<type>", "attestation"]` where earlier versions carried `nip-va`. Relay filters on `#L` and `#l` must change with them; anything indexed under the old label is not found by the new one.
+
+### Migration from 2.x
+
+* Replace `nip-va` with `attestation` in any `#L` filter, any `#l` filter that names the namespace, and any code that reads the third element of an `l` tag.
+* Events published by 2.x keep their `nip-va` labels. Query both namespaces if you need old and new events together.
+* No function signatures changed. Other changes since 1.x are listed in the README under "Upgrading from 1.x or 2.x".
+
 ## [2.5.5](https://github.com/forgesworn/nostr-attestations/compare/v2.5.4...v2.5.5) (2026-04-12)
 
 
@@ -34,16 +52,6 @@
 * correct implementation evidence count and remove misleading independence claim ([e683703](https://github.com/forgesworn/nostr-attestations/commit/e683703c20989433add2a1589dfbababe579b755))
 
 # [2.5.0](https://github.com/forgesworn/nostr-attestations/compare/v2.4.0...v2.5.0) (2026-03-27)
-
-## 3.0.0 (2026-09-05)
-
-### Breaking Changes
-
-- the NIP-32 label is `attestation`, matching the spec
-- events carry `["L", "attestation"]` and
-
-
-
 
 ### Features
 
@@ -108,8 +116,7 @@
 
 ### BREAKING CHANGES
 
-* Attestation.type is now string | null (was string).
-Null when type is inferred from a referenced assertion event.
+* Attestation.type stays `string`: assertion-only attestations report the synthetic type `assertion`. (This entry first said `string | null`; that change was reverted before release.)
 
 - Support assertion-first attestation pattern via e/a tags with
   "assertion" marker — the subject makes a claim, the attestor
