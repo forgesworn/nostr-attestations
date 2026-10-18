@@ -1,5 +1,3 @@
-# [3.0.0](https://github.com/forgesworn/nostr-attestations/compare/v2.5.5...v3.0.0) (2026-09-05)
-
 ## 3.0.1 (2026-10-18)
 
 ### Bug Fixes
@@ -7,6 +5,7 @@
 - align README and llms files with the source (#46) (docs)
 
 
+# [3.0.0](https://github.com/forgesworn/nostr-attestations/compare/v2.5.5...v3.0.0) (2026-09-05)
 
 
 ### Features
