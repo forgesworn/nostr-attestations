@@ -14,6 +14,12 @@ nostr-tools, any Nostr SDK, or bare WebSocket code.
 Requirements: ESM-only (use `import`, no CommonJS build); `engines` declares
 Node.js >=22; no runtime dependencies.
 
+## ForgeSworn ecosystem
+
+- [ForgeSworn library guide](https://forgesworn.dev/llms.txt): Find related libraries, tools and integration guides by task and runtime.
+- [ForgeSworn on GitHub](https://github.com/forgesworn): Browse the organisation’s public repositories.
+- [Project source](https://github.com/forgesworn/nostr-attestations): Canonical source repository, documentation and release information.
+
 ## Getting Started
 
 ```
